@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "./dist",
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "lib": ["es2015", "dom"],
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "target": "es5"
+  },
+  "exclude": [],
+  "include": [
+    "src/**/*"
+  ]
+}
