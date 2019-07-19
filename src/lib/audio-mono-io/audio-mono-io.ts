@@ -9,7 +9,7 @@ export class AudioMonoIO {
   protected microphoneVirtualNode: GainNode;
   protected oscillatorNode: OscillatorNode;
 
-  protected fftSize: number = 1024;
+  protected fftSize: number = 256;
 
   public constructor() {
     this.audioContext = new AudioContext();
@@ -23,12 +23,12 @@ export class AudioMonoIO {
     return this.audioContext.sampleRate;
   }
 
-  public getTimeDomainData(): Float32Array {
+  public getFrequencyDomainData(): Float32Array {
+    let data: Float32Array;
+
     this.inputEnable();
-
-    const data = new Float32Array(this.analyserNode.fftSize);
-
-    this.analyserNode.getFloatTimeDomainData(data);
+    data = new Float32Array(this.analyserNode.frequencyBinCount);   // same as: 0.5 * fftSize
+    this.analyserNode.getFloatFrequencyData(data);
 
     return data;
   }
@@ -95,7 +95,7 @@ export class AudioMonoIO {
   protected inputEnable(): void {
     if (!this.analyserNode) {
       this.analyserNode = this.audioContext.createAnalyser();
-      this.analyserNode.fftSize = 256;
+      this.analyserNode.fftSize = this.fftSize;
       this.analyserNode.smoothingTimeConstant = 0;
       this.analyserNode.connect(this.audioContext.destination);
       this.microphoneVirtualNode = this.audioContext.createGain();

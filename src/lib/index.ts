@@ -2,4 +2,4 @@
 
 export * from './version';
 
-export * from './web-audio/web-audio';
+export * from './audio-mono-io/audio-mono-io';

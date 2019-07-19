@@ -25,7 +25,7 @@
   <button onclick="getFrequencyDomainData()">get FFT data</button>
 
   <textarea id="play">1000 1100 1200 1300 1400</textarea>
-  <input id="play-ms" value="100" />
+  <input id="play-ms" value="200" />
   <button onclick="play()">Play</button>
 
   <script>
@@ -39,18 +39,19 @@
     }
 
     function playSound() {
-      audioMonoIO.setPeriodicWave(playList.shift());
-      if (playList.length) {
-        setTimeout(playSound, parseInt(document.getElementById('play-ms').value));
-      } else {
+      if (playList.length === 0) {
         audioMonoIO.setPeriodicWave(0);
+        return;
       }
+
+      audioMonoIO.setPeriodicWave(playList.shift());
+      setTimeout(playSound, parseInt(document.getElementById('play-ms').value));
     }
 
     function getFrequencyDomainData() {
       var data = [];
 
-      audioMonoIO.getTimeDomainData().forEach(value => data.push(value.toFixed(6)));
+      audioMonoIO.getFrequencyDomainData().forEach(value => data.push(value.toFixed(6)));
       document.getElementById('fft-output').innerHTML = data.join(', ')
     }
 
