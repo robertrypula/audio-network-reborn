@@ -10,9 +10,13 @@
 <body onLoad="run()">
 
   <script>
+    var test;
+
     function run() {
       console.log(AudioNetworkLite);
       alert(AudioNetworkLite.version);
+
+      test = new AudioNetworkLite.WebAudio();
     }
   </script>
   <!-- you can access distribution version via: <script src="https://unpkg.com/audio-network-lite"></script> -->
