@@ -9,14 +9,56 @@
 </head>
 <body onLoad="run()">
 
+  <div>
+    <label>Sample Rate:</label>
+    <span id="sample-rate"></span>
+  </div>
+
+  <div>
+    <label>FFT output:</label>
+    <span id="fft-output"></span>
+  </div>
+
+  <button onclick="audioMonoIO.outputDisable()">Output disable</button>
+  <button onclick="audioMonoIO.inputDisable()">Input disable</button>
+
+  <button onclick="getFrequencyDomainData()">get FFT data</button>
+
+  <textarea id="play">1000 1100 1200 1300 1400</textarea>
+  <input id="play-ms" value="100" />
+  <button onclick="play()">Play</button>
+
   <script>
-    var test;
+    var audioMonoIO;
+    var playList = [];
 
     function run() {
-      console.log(AudioNetworkLite);
-      alert(AudioNetworkLite.version);
+      audioMonoIO = new AudioNetworkLite.AudioMonoIO();
 
-      test = new AudioNetworkLite.WebAudio();
+      document.getElementById('sample-rate').innerHTML = audioMonoIO.audioContext.sampleRate;
+    }
+
+    function playSound() {
+      audioMonoIO.setPeriodicWave(playList.shift());
+      if (playList.length) {
+        setTimeout(playSound, parseInt(document.getElementById('play-ms').value));
+      } else {
+        audioMonoIO.setPeriodicWave(0);
+      }
+    }
+
+    function getFrequencyDomainData() {
+      var data = [];
+
+      audioMonoIO.getTimeDomainData().forEach(value => data.push(value.toFixed(6)));
+      document.getElementById('fft-output').innerHTML = data.join(', ')
+    }
+
+    function play() {
+      document.getElementById('play').value.split(' ').filter(item => item.trim() !== '').forEach(item => {
+        playList.push(item);
+      });
+      setTimeout(playSound, parseInt(document.getElementById('play-ms').value));
     }
   </script>
   <!-- you can access distribution version via: <script src="https://unpkg.com/audio-network-lite"></script> -->
