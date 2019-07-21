@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { SimpleCanvas } from '..';
+import { NYQUIST_TWICE, SimpleCanvas } from '..';
 
 /**
  * For 'getUnifiedFrequencies' function debugging purposes. Code example:
@@ -19,7 +19,7 @@ export const visualizeUnifiedFrequencies = (
 ): void => {
   const frequencyBinsCount = 0.5 * fftSize;
   const simpleCanvas = new SimpleCanvas(
-    canvasElementId, (Math.max(...sampleRates)) / 2 + 50, sampleRates.length * binSpacing
+    canvasElementId, (Math.max(...sampleRates)) / NYQUIST_TWICE + 50, sampleRates.length * binSpacing
   );
 
   sampleRates.forEach((sampleRate, index) => {
@@ -56,7 +56,7 @@ export const getUnifiedFrequencies = (
 ): number[] => {
   const unifiedFrequencies: number[] = [];
   const frequencyBinsCount = 0.5 * fftSize;
-  const highestFrequency = Math.min(...sampleRates) / 2;
+  const highestFrequency = Math.min(...sampleRates) / NYQUIST_TWICE;
 
   if (sampleRates.length !== 2) {
     throw new Error('Not implemented and will probably never be... ;)');

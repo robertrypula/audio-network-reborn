@@ -1,30 +1,54 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { AudioMonoIO, getClosestBinIndexes, getUnifiedFrequencies } from '..';
-import { FftResult } from '..';
-
-const BYTE = 256;
-const SAMPLE_RATES = [48000, 44100];
-const MILLISECONDS_IN_SECOND = 1000;
-const NYQUIST_TWICE = 2;
-const RX_SAFE_MARGIN_FACTOR = 2;
-const RX_SAFE_MARGIN_MILLISECONDS = 0;
+import {
+  AudioMonoIO,
+  BYTE,
+  ConfigInterface,
+  FftResult,
+  FrequencyBandInterface,
+  getClosestBinIndexes,
+  getUnifiedFrequencies,
+  MILLISECONDS_IN_SECOND,
+  NYQUIST_TWICE,
+  SpeedProfile,
+  speedProfileConfig,
+  SUPPORTED_SAMPLE_RATES
+} from '..';
 
 export class PhysicalLayer {
-  protected audioMonoIO: AudioMonoIO;
-  protected unifiedTxFrequencies: number[];
-  protected rxBinIndexes: number[];
-  protected fftSize: number;
+  public readonly audioMonoIO: AudioMonoIO;
 
-  public constructor(speed: number) {
+  protected config: ConfigInterface;
+  protected rxBinIndexes: number[];
+  protected speedProfile: SpeedProfile;
+  protected unifiedTxFrequencies: number[];
+
+  public constructor(
+    speedProfile: SpeedProfile = SpeedProfile.SlimBandSlow
+  ) {
     this.audioMonoIO = new AudioMonoIO();
-    this.configure(speed * 1024, 2000);
+    this.setSpeedProfile(speedProfile);
   }
 
-  public tx(byte: number | null): void {
-    this.audioMonoIO.setPeriodicWave(
-      byte !== null && byte >= 0 && byte < BYTE ? this.unifiedTxFrequencies[byte] : 0
-    );
+  public getFrequencyBand(): FrequencyBandInterface {
+    return {
+      begin: this.unifiedTxFrequencies[0],
+      end: this.unifiedTxFrequencies[this.unifiedTxFrequencies.length - 1]
+    };
+  }
+
+  public getRxTimeTickMilliseconds(): number {
+    return Math.ceil(
+      this.config.safeMarginFactor * MILLISECONDS_IN_SECOND * this.config.fftSize / Math.min(...SUPPORTED_SAMPLE_RATES)
+    ) + this.config.safeMarginMilliseconds;
+  }
+
+  public getSpeedProfile(): SpeedProfile {
+    return this.speedProfile;
+  }
+
+  public getTxTimeTickMilliseconds(): number {
+    return NYQUIST_TWICE * this.getRxTimeTickMilliseconds();
   }
 
   public rx(): number {
@@ -33,20 +57,20 @@ export class PhysicalLayer {
     return fftResult.pick(this.rxBinIndexes).getLoudestBinIndex();
   }
 
-  public getRxTimeTickMilliseconds(): number {
-    return Math.ceil(
-      RX_SAFE_MARGIN_FACTOR * MILLISECONDS_IN_SECOND * this.fftSize / Math.min(...SAMPLE_RATES)
-    ) + RX_SAFE_MARGIN_MILLISECONDS;
+  public setSpeedProfile(speedProfile: SpeedProfile): void {
+    this.config = speedProfileConfig[speedProfile];
+    this.speedProfile = speedProfile;
+
+    this.audioMonoIO.setFftSize(this.config.fftSize);
+    this.unifiedTxFrequencies =
+      getUnifiedFrequencies(this.config.fftSize, this.config.frequencyStart, BYTE, SUPPORTED_SAMPLE_RATES);
+    this.rxBinIndexes =
+      getClosestBinIndexes(this.config.fftSize, this.audioMonoIO.getSampleRate(), this.unifiedTxFrequencies);
   }
 
-  public getTxTimeTickMilliseconds(): number {
-    return NYQUIST_TWICE * this.getRxTimeTickMilliseconds();
-  }
-
-  protected configure(fftSize: number, frequencyStart: number) {
-    this.fftSize = fftSize;
-    this.audioMonoIO.setFftSize(fftSize);
-    this.unifiedTxFrequencies = getUnifiedFrequencies(fftSize, frequencyStart, BYTE, SAMPLE_RATES);
-    this.rxBinIndexes = getClosestBinIndexes(fftSize, this.audioMonoIO.getSampleRate(), this.unifiedTxFrequencies);
+  public tx(byte: number | null): void {
+    this.audioMonoIO.setPeriodicWave(
+      byte !== null && byte >= 0 && byte < BYTE ? this.unifiedTxFrequencies[byte] : 0
+    );
   }
 }

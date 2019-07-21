@@ -11,48 +11,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <div style="padding-bottom: 20px;">
-    <button onclick="run(1)">Init 1 - very fast</button>
-    <button onclick="run(2)">Init 2 - fast</button>
-    <button onclick="run(4)">Init 3 - normal</button>
-    <button onclick="run(8)">Init 4 - slow</button>
-    <button onclick="run(16)">Init 5 - very slow</button>
+  <div style="padding-bottom: 20px;" id="div-init">
+    <button onclick="init(AudioNetworkLite.SpeedProfile.FatBandFast)">Init - FatBandFast</button>
+    <button onclick="init(AudioNetworkLite.SpeedProfile.FatBandSlow)">Init - FatBandSlow</button>
+    <button onclick="init(AudioNetworkLite.SpeedProfile.NormalBandFast)">Init - NormalBandFast</button>
+    <button onclick="init(AudioNetworkLite.SpeedProfile.NormalBandSlow)">Init - NormalBandSlow</button>
+    <button onclick="init(AudioNetworkLite.SpeedProfile.SlimBandFast)">Init - SlimBandFast</button>
+    <button onclick="init(AudioNetworkLite.SpeedProfile.SlimBandSlow)">Init - SlimBandSlow</button>
   </div>
 
-  <div style="padding-bottom: 20px;">
-    <textarea style="width: 70%; height: 100px;" id="tx1">0 1 2 3 4 5 6 7 8 9 10 200 201 202 203 204 205 206 207 208 209 210</textarea>
-    <br/>
-    <button onclick="transmit('tx1')">Transmit</button>
-    <br/>
-    <textarea style="width: 70%; height: 100px;" id="tx2">0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200 210 220 230 240 250 255</textarea>
-    <br/>
-    <button onclick="transmit('tx2')">Transmit</button>
-  </div>
-
-  <div style="padding-bottom: 20px;">
-    <label>Sample Rate</label>
-    <pre id="sample-rate"></pre>
-    <label>Rx tick</label>
-    <pre id="rx-tick"></pre>
-  </div>
-  <div style="padding-bottom: 20px;">
+  <div id="div-app" style="display: none;">
     <div style="padding-bottom: 20px;">
-      <button onclick="receive()">Receive</button>
+      <label>Sample Rate</label>
+      <pre id="sample-rate"></pre>
+      <label>Rx tick</label>
+      <pre id="rx-tick"></pre>
+      <label>Band</label>
+      <pre id="band"></pre>
     </div>
-    <label>Rx Data (0)</label>
-    <pre id="rx-data-0"></pre>
-    <label>Rx Data (1)</label>
-    <pre id="rx-data-1"></pre>
+
+    <div style="padding-bottom: 20px;">
+      <textarea style="width: 70%; height: 100px;" id="tx1">0 1 2 3 4 5 6 7 8 9 10 200 201 202 203 204 205 206 207 208 209 210</textarea>
+      <br/>
+      <button onclick="transmit('tx1')">Transmit</button>
+      <br/>
+      <textarea style="width: 70%; height: 100px;" id="tx2">0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200 210 220 230 240 250 255</textarea>
+      <br/>
+      <button onclick="transmit('tx2')">Transmit</button>
+    </div>
+    <div style="padding-bottom: 20px;">
+      <div style="padding-bottom: 20px;">
+        <button onclick="receive()">Receive</button>
+      </div>
+      <label>Rx Data (0)</label>
+      <pre id="rx-data-0"></pre>
+      <label>Rx Data (1)</label>
+      <pre id="rx-data-1"></pre>
+    </div>
   </div>
 
   <script>
     var dataLinkLayer;
     var txInterval;
 
-    function run(speed) {
-      dataLinkLayer = new AudioNetworkLite.DataLinkLayer(speed);
+    function init(speedProfile) {
+      dataLinkLayer = new AudioNetworkLite.DataLinkLayer();
+      dataLinkLayer.physicalLayer.setSpeedProfile(speedProfile);
+
+      document.getElementById('div-app').style.display = 'block';
+      document.getElementById('div-init').style.display = 'none';
       document.getElementById('sample-rate').innerHTML = dataLinkLayer.physicalLayer.audioMonoIO.getSampleRate();
-      document.getElementById('rx-tick').innerHTML = dataLinkLayer.physicalLayer.getRxTimeTickMilliseconds();
+
+      const rxTick = dataLinkLayer.physicalLayer.getRxTimeTickMilliseconds();
+      const txTick = dataLinkLayer.physicalLayer.getTxTimeTickMilliseconds();
+      document.getElementById('rx-tick').innerHTML = rxTick + ' | ' + (1000 / txTick).toFixed(2) + ' B/s';
+
+      const band = dataLinkLayer.physicalLayer.getFrequencyBand();
+      document.getElementById('band').innerHTML = band.begin.toFixed(0) + ' - ' + band.end.toFixed(0) + ' | ' + (band.end - band.begin).toFixed(0);
     }
 
     function receive() {

@@ -3,20 +3,13 @@
 import { DataFrame, PhysicalLayer } from '..';
 
 export class DataLinkLayer {
-  protected physicalLayer: PhysicalLayer;
+  public readonly physicalLayer: PhysicalLayer;
+
   protected txDataFrame: DataFrame;
   protected rxData: number[] = [];         // TODO refactor to buffer
 
-  public constructor(speed: number) {
-    this.physicalLayer = new PhysicalLayer(speed);
-  }
-
-  public setData(data: number[]): void {
-    this.txDataFrame = new DataFrame(data);
-  }
-
-  public txTimeTick(): void {
-    this.physicalLayer.tx(this.txDataFrame.getNextByte());
+  public constructor() {
+    this.physicalLayer = new PhysicalLayer();
   }
 
   public getData(): number[][] {
@@ -29,5 +22,13 @@ export class DataLinkLayer {
 
   public rxTimeTick(): void {
     this.rxData.push(this.physicalLayer.rx());
+  }
+
+  public setData(data: number[]): void {
+    this.txDataFrame = new DataFrame(data);
+  }
+
+  public txTimeTick(): void {
+    this.physicalLayer.tx(this.txDataFrame.getNextByte());
   }
 }
