@@ -6,6 +6,7 @@ import { FftResult } from '..';
 const BYTE = 256;
 const SAMPLE_RATES = [48000, 44100];
 const MILLISECONDS_IN_SECOND = 1000;
+const NYQUIST_TWICE = 2;
 const RX_SAFE_MARGIN_FACTOR = 2;
 const RX_SAFE_MARGIN_MILLISECONDS = 0;
 
@@ -39,7 +40,7 @@ export class PhysicalLayer {
   }
 
   public getTxTimeTickMilliseconds(): number {
-    return 2 * this.getRxTimeTickMilliseconds();
+    return NYQUIST_TWICE * this.getRxTimeTickMilliseconds();
   }
 
   protected configure(fftSize: number, frequencyStart: number) {
