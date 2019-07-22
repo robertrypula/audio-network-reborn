@@ -50,7 +50,7 @@ export class AudioMonoIO {
     }
 
     if (this.analyserNode) {
-      this.analyserNode.disconnect(this.audioContext.destination);
+      // this.analyserNode.disconnect(this.audioContext.destination);           // TODO check it on different browsers
       this.analyserNode = null;
     }
   }
@@ -63,9 +63,7 @@ export class AudioMonoIO {
   }
 
   public setPeriodicWave(frequency: number): void {
-    if (frequency) {
-      this.outputEnable();
-    }
+    this.outputEnable();
     this.oscillatorNode.frequency.value = frequency;
     this.oscillatorNode.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
   }
@@ -97,7 +95,7 @@ export class AudioMonoIO {
       this.analyserNode = this.audioContext.createAnalyser();
       this.analyserNode.fftSize = this.fftSize;
       this.analyserNode.smoothingTimeConstant = 0;
-      this.analyserNode.connect(this.audioContext.destination);
+      // this.analyserNode.connect(this.audioContext.destination);           // TODO check it on different browsers
       this.microphoneVirtualNode = this.audioContext.createGain();
       this.microphoneVirtualNode.connect(this.analyserNode);
       this.connectMicrophoneTo(this.microphoneVirtualNode);

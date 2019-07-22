@@ -4,63 +4,82 @@
   <meta charset="UTF-8">
   <title>Audio Network Lite</title>
   <style>
+    pre {
+      white-space: normal;
+    }
   </style>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body onLoad="run()">
-
-  <div>
-    <label>Sample Rate:</label>
-    <span id="sample-rate"></span>
+<body>
+  <div style="padding-bottom: 20px;">
+    <button onclick="run(1)">Init 1 - very fast</button>
+    <button onclick="run(2)">Init 2 - fast</button>
+    <button onclick="run(4)">Init 3 - normal</button>
+    <button onclick="run(8)">Init 4 - slow</button>
+    <button onclick="run(16)">Init 5 - very slow</button>
   </div>
 
-  <div>
-    <label>FFT output:</label>
-    <span id="fft-output"></span>
+  <div style="padding-bottom: 20px;">
+    <textarea style="width: 70%; height: 100px;" id="tx1">0 1 2 3 4 5 6 7 8 9 10 200 201 202 203 204 205 206 207 208 209 210</textarea>
+    <br/>
+    <button onclick="transmit('tx1')">Transmit</button>
+    <br/>
+    <textarea style="width: 70%; height: 100px;" id="tx2">0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200 210 220 230 240 250 255</textarea>
+    <br/>
+    <button onclick="transmit('tx2')">Transmit</button>
   </div>
 
-  <button onclick="audioMonoIO.outputDisable()">Output disable</button>
-  <button onclick="audioMonoIO.inputDisable()">Input disable</button>
-
-  <button onclick="getFrequencyDomainData()">get FFT data</button>
-
-  <textarea id="play">1000 1100 1200 1300 1400</textarea>
-  <input id="play-ms" value="200" />
-  <button onclick="play()">Play</button>
+  <div style="padding-bottom: 20px;">
+    <label>Sample Rate</label>
+    <pre id="sample-rate"></pre>
+    <label>Rx tick</label>
+    <pre id="rx-tick"></pre>
+  </div>
+  <div style="padding-bottom: 20px;">
+    <div style="padding-bottom: 20px;">
+      <button onclick="receive()">Receive</button>
+    </div>
+    <label>Rx Data (0)</label>
+    <pre id="rx-data-0"></pre>
+    <label>Rx Data (1)</label>
+    <pre id="rx-data-1"></pre>
+  </div>
 
   <script>
-    var audioMonoIO;
-    var playList = [];
+    var dataLinkLayer;
+    var txInterval;
 
-    function run() {
-      audioMonoIO = new AudioNetworkLite.AudioMonoIO();
-
-      document.getElementById('sample-rate').innerHTML = audioMonoIO.audioContext.sampleRate;
+    function run(speed) {
+      dataLinkLayer = new AudioNetworkLite.DataLinkLayer(speed);
+      document.getElementById('sample-rate').innerHTML = dataLinkLayer.physicalLayer.audioMonoIO.getSampleRate();
+      document.getElementById('rx-tick').innerHTML = dataLinkLayer.physicalLayer.getRxTimeTickMilliseconds();
     }
 
-    function playSound() {
-      if (playList.length === 0) {
-        audioMonoIO.setPeriodicWave(0);
-        return;
-      }
+    function receive() {
+      setInterval(() => {
+        var rxData;
 
-      audioMonoIO.setPeriodicWave(playList.shift());
-      setTimeout(playSound, parseInt(document.getElementById('play-ms').value));
+        dataLinkLayer.rxTimeTick();
+        rxData = dataLinkLayer.getData();
+        document.getElementById('rx-data-0').innerHTML = rxData[0].join(', ');
+        document.getElementById('rx-data-1').innerHTML = rxData[1].join(', ');
+      }, dataLinkLayer.physicalLayer.getRxTimeTickMilliseconds());
     }
 
-    function getFrequencyDomainData() {
-      var data = [];
+    function transmit(id) {
+      var tx = document.getElementById(id).value
+        .split(' ')
+        .filter((item) => item.trim() !== '')
+        .map(item => parseInt(item));
 
-      audioMonoIO.getFrequencyDomainData().forEach(value => data.push(value.toFixed(6)));
-      document.getElementById('fft-output').innerHTML = data.join(', ')
+      clearInterval(txInterval);
+      dataLinkLayer.setData(tx);
+      dataLinkLayer.txTimeTick();
+      txInterval = setInterval(() => {
+        dataLinkLayer.txTimeTick();
+      }, dataLinkLayer.physicalLayer.getTxTimeTickMilliseconds());
     }
 
-    function play() {
-      document.getElementById('play').value.split(' ').filter(item => item.trim() !== '').forEach(item => {
-        playList.push(item);
-      });
-      setTimeout(playSound, parseInt(document.getElementById('play-ms').value));
-    }
   </script>
   <!-- you can access distribution version via: <script src="https://unpkg.com/audio-network-lite"></script> -->
 </body>
