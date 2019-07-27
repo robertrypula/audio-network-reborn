@@ -16,7 +16,7 @@ describe('Index', () => {
     expect(AudioNetworkLite.githubUrl).toBeTruthy();
   });
 
-  it('should be dummy test that uses lib code', () => {
+  it('should be dummy integration test that uses the lib code', () => {
     audioMonoIoFactory.audioMonoIoCreateMode = AudioMonoIoCreateMode.Stub;
     const dataLinkLayer = new DataLinkLayer();
 
@@ -27,6 +27,6 @@ describe('Index', () => {
     expect(dataLinkLayer.txTimeTick()).toBe(false);
 
     dataLinkLayer.rxTimeTick();
-    expect(dataLinkLayer.getData()).toEqual([[0], []]);
+    expect(dataLinkLayer.getData()).toEqual([[0], [], [], []]);
   });
 });
