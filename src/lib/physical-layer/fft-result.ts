@@ -4,8 +4,7 @@ export class FftResult {
   public constructor(
     protected frequencyDomainData: Float32Array,
     protected sampleRate: number
-  ) {
-  }
+  ) {}
 
   public pick(binIndexes: number[]): FftResult {
     const newFrequencyDomainData = new Float32Array(binIndexes.length);

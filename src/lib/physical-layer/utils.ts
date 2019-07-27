@@ -1,58 +1,56 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { NYQUIST_TWICE, SimpleCanvas } from '..';
+import {
+  BYTE,
+  ConfigInterface,
+  MILLISECONDS_IN_SECOND,
+  NYQUIST_TWICE,
+  SimpleCanvas,
+  SUPPORTED_SAMPLE_RATES,
+  TransmissionMode,
+  TransmissionModeDetails,
+  transmissionModeToConfigLookUp
+} from '..';
 
-/**
- * For 'getUnifiedFrequencies' function debugging purposes. Code example:
- *
- * const fftSize = 2048;
- * const unifiedFrequencies = AudioNetworkLite.getUnifiedFrequencies(fftSize, 1000, 256);
- * AudioNetworkLite.visualizeUnifiedFrequencies(unifiedFrequencies, 'canvas', fftSize);
- */
-export const visualizeUnifiedFrequencies = (
-  unifiedFrequencies: number[],
-  canvasElementId: string = 'canvas',
-  fftSize: number = 2048,
-  sampleRates: number[] = [48000, 44100],
-  binHeight: number = 30,
-  binSpacing: number = 60
-): void => {
-  const frequencyBinsCount = 0.5 * fftSize;
-  const simpleCanvas = new SimpleCanvas(
-    canvasElementId, (Math.max(...sampleRates)) / NYQUIST_TWICE + 50, sampleRates.length * binSpacing
-  );
+export const getClosestBinIndexes = (fftSize: number, sampleRate: number, frequencies: number[]): number[] => {
+  return frequencies.map((frequency: number) => Math.round(frequency * fftSize / sampleRate));
+};
 
-  sampleRates.forEach((sampleRate, index) => {
-    const resolution = sampleRate / fftSize;
+export const getFftTimePeriod = (config: ConfigInterface) => {
+  return Math.ceil(
+    MILLISECONDS_IN_SECOND * config.safeMarginFactor * config.fftSize / Math.min(...SUPPORTED_SAMPLE_RATES)
+  ) / MILLISECONDS_IN_SECOND;
+};
 
-    for (let bin = 0; bin < frequencyBinsCount; bin++) {
-      simpleCanvas.line(
-        bin * resolution,
-        index * binSpacing + (binHeight / 3),
-        bin * resolution,
-        index * binSpacing + (binHeight * 2 / 3)
-      );
-      simpleCanvas.rectangle(
-        (bin - 0.5) * resolution,
-        index * binSpacing,
-        ((bin + 0.5) * resolution) - 1,
-        index * binSpacing + binHeight
-      );
-    }
-  });
+export const getTransmissionModeDetails = (
+  transmissionMode: TransmissionMode,
+  includeLongArrays: boolean = false
+): TransmissionModeDetails => {
+  const config = transmissionModeToConfigLookUp[transmissionMode];
+  const unifiedFrequencies =
+    getUnifiedFrequencies(config.fftSize, config.frequencyStart, BYTE, SUPPORTED_SAMPLE_RATES);
 
-  unifiedFrequencies.forEach((frequency: number) => {
-    const y = binHeight * 1.5;
-    const halfHeight = binHeight / 3;
-    simpleCanvas.line(frequency, y - halfHeight, frequency, y + halfHeight);
-  });
+  return {
+    band: {
+      bandwidth: unifiedFrequencies[unifiedFrequencies.length - 1] - unifiedFrequencies[0],
+      begin: unifiedFrequencies[0],
+      end: unifiedFrequencies[unifiedFrequencies.length - 1]
+    },
+    config,
+    rawByteRate: getRawByteRate(config),
+    transmissionMode
+  };
+};
+
+export const getRawByteRate = (config: ConfigInterface) => {
+  return 1 / (NYQUIST_TWICE * getFftTimePeriod(config));
 };
 
 export const getUnifiedFrequencies = (
-  fftSize: number = 2048,
-  frequencyStart: number = 1000,
-  bins: number = 256,
-  sampleRates: number[] = [48000, 44100]
+  fftSize: number,
+  frequencyStart: number,
+  bins: number,
+  sampleRates: number[]
 ): number[] => {
   const unifiedFrequencies: number[] = [];
   const frequencyBinsCount = 0.5 * fftSize;
@@ -99,6 +97,48 @@ export const getUnifiedFrequencies = (
   return unifiedFrequencies;
 };
 
-export const getClosestBinIndexes = (fftSize: number, sampleRate: number, frequencies: number[]): number[] => {
-  return frequencies.map((frequency: number) => Math.round(frequency * fftSize / sampleRate));
+/**
+ * For 'getUnifiedFrequencies' function debugging purposes. Code example:
+ *
+ * const fftSize = 2048;
+ * const unifiedFrequencies = AudioNetworkLite.getUnifiedFrequencies(fftSize, 1000, 256, [48000, 44100]);
+ * AudioNetworkLite.visualizeUnifiedFrequencies(unifiedFrequencies, 'canvas', fftSize);
+ */
+export const visualizeUnifiedFrequencies = (
+  unifiedFrequencies: number[],
+  canvasElementId: string = 'canvas',
+  fftSize: number = 2048,
+  sampleRates: number[] = [48000, 44100],
+  binHeight: number = 30,
+  binSpacing: number = 60
+): void => {
+  const frequencyBinsCount = 0.5 * fftSize;
+  const simpleCanvas = new SimpleCanvas(
+    canvasElementId, (Math.max(...sampleRates)) / NYQUIST_TWICE + 50, sampleRates.length * binSpacing
+  );
+
+  sampleRates.forEach((sampleRate, index) => {
+    const resolution = sampleRate / fftSize;
+
+    for (let bin = 0; bin < frequencyBinsCount; bin++) {
+      simpleCanvas.line(
+        bin * resolution,
+        index * binSpacing + (binHeight / 3),
+        bin * resolution,
+        index * binSpacing + (binHeight * 2 / 3)
+      );
+      simpleCanvas.rectangle(
+        (bin - 0.5) * resolution,
+        index * binSpacing,
+        ((bin + 0.5) * resolution) - 1,
+        index * binSpacing + binHeight
+      );
+    }
+  });
+
+  unifiedFrequencies.forEach((frequency: number) => {
+    const y = binHeight * 1.5;
+    const halfHeight = binHeight / 3;
+    simpleCanvas.line(frequency, y - halfHeight, frequency, y + halfHeight);
+  });
 };

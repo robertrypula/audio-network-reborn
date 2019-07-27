@@ -1,50 +1,41 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import {
-  AudioMonoIO,
+  AudioMonoIoInterface,
+  BandInterface,
   BYTE,
-  ConfigInterface,
   FftResult,
-  FrequencyBandInterface,
   getClosestBinIndexes,
-  getUnifiedFrequencies,
+  getTransmissionModeDetails,
   MILLISECONDS_IN_SECOND,
   NYQUIST_TWICE,
-  SpeedProfile,
-  speedProfileConfig,
-  SUPPORTED_SAMPLE_RATES
+  SILENCE,
+  TransmissionMode,
+  TransmissionModeDetails
 } from '..';
+import { audioMonoIoFactory } from './audio-mono-io/audio-mono-io-factory';
 
 export class PhysicalLayer {
-  public readonly audioMonoIO: AudioMonoIO;
+  public readonly audioMonoIo: AudioMonoIoInterface;
 
-  protected config: ConfigInterface;
   protected rxBinIndexes: number[];
-  protected speedProfile: SpeedProfile;
-  protected unifiedTxFrequencies: number[];
+  protected transmissionModeDetails: TransmissionModeDetails;
 
-  public constructor(
-    speedProfile: SpeedProfile = SpeedProfile.SlimBandSlow
-  ) {
-    this.audioMonoIO = new AudioMonoIO();
-    this.setSpeedProfile(speedProfile);
-  }
-
-  public getFrequencyBand(): FrequencyBandInterface {
-    return {
-      begin: this.unifiedTxFrequencies[0],
-      end: this.unifiedTxFrequencies[this.unifiedTxFrequencies.length - 1]
-    };
+  public constructor(transmissionMode: TransmissionMode = TransmissionMode.SlimBandSlow) {
+    this.audioMonoIo = audioMonoIoFactory.createAudioMonoIo();
+    this.setTransmissionMode(transmissionMode);
   }
 
   public getRxTimeTickMilliseconds(): number {
-    return Math.ceil(
-      this.config.safeMarginFactor * MILLISECONDS_IN_SECOND * this.config.fftSize / Math.min(...SUPPORTED_SAMPLE_RATES)
-    ) + this.config.safeMarginMilliseconds;
+    return Math.round(MILLISECONDS_IN_SECOND / this.transmissionModeDetails.rawByteRate);
   }
 
-  public getSpeedProfile(): SpeedProfile {
-    return this.speedProfile;
+  public getTransmissionModeDetails(): TransmissionModeDetails {
+    const copy = {...this.transmissionModeDetails};
+
+    copy.band = { ...this.transmissionModeDetails.band };
+
+    return copy;
   }
 
   public getTxTimeTickMilliseconds(): number {
@@ -52,25 +43,24 @@ export class PhysicalLayer {
   }
 
   public rx(): number {
-    const fftResult = new FftResult(this.audioMonoIO.getFrequencyDomainData(), this.audioMonoIO.getSampleRate());
+    const fftResult = new FftResult(this.audioMonoIo.getFrequencyDomainData(), this.audioMonoIo.getSampleRate());
 
     return fftResult.pick(this.rxBinIndexes).getLoudestBinIndex();
   }
 
-  public setSpeedProfile(speedProfile: SpeedProfile): void {
-    this.config = speedProfileConfig[speedProfile];
-    this.speedProfile = speedProfile;
+  public setTransmissionMode(transmissionMode: TransmissionMode): void {
+    const sampleRate = this.audioMonoIo.getSampleRate();
+    let fftSize: number;
 
-    this.audioMonoIO.setFftSize(this.config.fftSize);
-    this.unifiedTxFrequencies =
-      getUnifiedFrequencies(this.config.fftSize, this.config.frequencyStart, BYTE, SUPPORTED_SAMPLE_RATES);
-    this.rxBinIndexes =
-      getClosestBinIndexes(this.config.fftSize, this.audioMonoIO.getSampleRate(), this.unifiedTxFrequencies);
+    this.transmissionModeDetails = getTransmissionModeDetails(transmissionMode, true);
+    fftSize = this.transmissionModeDetails.config.fftSize;
+    this.audioMonoIo.setFftSize(fftSize);
+    this.rxBinIndexes = getClosestBinIndexes(fftSize, sampleRate, this.transmissionModeDetails.unifiedFrequencies);
   }
 
   public tx(byte: number | null): void {
-    this.audioMonoIO.setPeriodicWave(
-      byte !== null && byte >= 0 && byte < BYTE ? this.unifiedTxFrequencies[byte] : 0
+    this.audioMonoIo.setPeriodicWave(
+      byte !== null && byte >= 0 && byte < BYTE ? this.transmissionModeDetails.unifiedFrequencies[byte] : SILENCE
     );
   }
 }

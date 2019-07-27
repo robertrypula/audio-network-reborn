@@ -1,6 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-export class AudioMonoIO {
+import { AudioMonoIoInterface } from '../model';
+
+export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
   protected audioContext: AudioContext;
 
   protected analyserNode: AnalyserNode;
@@ -111,15 +113,3 @@ export class AudioMonoIO {
     }
   }
 }
-
-/*
-5,859375 48.0   171 ms   12 Hz spacing, 3072 Hz band
-5,383301 44.1   186 ms   12 Hz spacing, 3072 Hz band
-
-         48.0   86 ms   24 Hz spacing, 6.1 Hz band
-         44.1   93 ms   24 Hz spacing, 6.1 Hz band
-
-					8 FFT/s
-					4 bytes/s
-
- */

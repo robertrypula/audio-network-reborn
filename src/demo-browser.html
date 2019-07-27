@@ -12,12 +12,12 @@
 </head>
 <body>
   <div style="padding-bottom: 20px;" id="div-init">
-    <button onclick="init(AudioNetworkLite.SpeedProfile.FatBandFast)">Init - FatBandFast</button>
-    <button onclick="init(AudioNetworkLite.SpeedProfile.FatBandSlow)">Init - FatBandSlow</button>
-    <button onclick="init(AudioNetworkLite.SpeedProfile.NormalBandFast)">Init - NormalBandFast</button>
-    <button onclick="init(AudioNetworkLite.SpeedProfile.NormalBandSlow)">Init - NormalBandSlow</button>
-    <button onclick="init(AudioNetworkLite.SpeedProfile.SlimBandFast)">Init - SlimBandFast</button>
-    <button onclick="init(AudioNetworkLite.SpeedProfile.SlimBandSlow)">Init - SlimBandSlow</button>
+    <button onclick="init(AudioNetworkLite.TransmissionMode.FatBandFast)">Init - FatBandFast</button>
+    <button onclick="init(AudioNetworkLite.TransmissionMode.FatBandSlow)">Init - FatBandSlow</button>
+    <button onclick="init(AudioNetworkLite.TransmissionMode.NormalBandFast)">Init - NormalBandFast</button>
+    <button onclick="init(AudioNetworkLite.TransmissionMode.NormalBandSlow)">Init - NormalBandSlow</button>
+    <button onclick="init(AudioNetworkLite.TransmissionMode.SlimBandFast)">Init - SlimBandFast</button>
+    <button onclick="init(AudioNetworkLite.TransmissionMode.SlimBandSlow)">Init - SlimBandSlow</button>
   </div>
 
   <div id="div-app" style="display: none;">
@@ -54,13 +54,16 @@
     var dataLinkLayer;
     var txInterval;
 
-    function init(speedProfile) {
+    function init(transmissionMode) {
       dataLinkLayer = new AudioNetworkLite.DataLinkLayer();
-      dataLinkLayer.physicalLayer.setSpeedProfile(speedProfile);
+      dataLinkLayer.physicalLayer.setTransmissionMode(transmissionMode);
+
+
+      console.log(AudioNetworkLite.getTransmissionModeDetails());
 
       document.getElementById('div-app').style.display = 'block';
       document.getElementById('div-init').style.display = 'none';
-      document.getElementById('sample-rate').innerHTML = dataLinkLayer.physicalLayer.audioMonoIO.getSampleRate();
+      document.getElementById('sample-rate').innerHTML = dataLinkLayer.physicalLayer.audioMonoIo.getSampleRate();
 
       const rxTick = dataLinkLayer.physicalLayer.getRxTimeTickMilliseconds();
       const txTick = dataLinkLayer.physicalLayer.getTxTimeTickMilliseconds();

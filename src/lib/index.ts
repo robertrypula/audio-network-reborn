@@ -2,9 +2,10 @@
 
 export * from './version';
 
-export * from './audio-mono-io/audio-mono-io';
 export * from './data-link-layer/data-frame';
 export * from './data-link-layer/data-link-layer';
+export * from './physical-layer/audio-mono-io/audio-mono-io-factory';
+export * from './physical-layer/audio-mono-io/audio-mono-io-web-audio-api';
 export * from './physical-layer/config';
 export * from './physical-layer/constants';
 export * from './physical-layer/fft-result';
