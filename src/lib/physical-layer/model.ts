@@ -40,8 +40,15 @@ export enum TransmissionMode {
   SlimBandSlow = 'SlimBandSlow'
 }
 
+// 1000 - 7000     6 k
+//
+// 9000 - 15000  - 6 k
+//
+// 16500 - 19500 - 3 k
+
 export interface TransmissionModeDetails {
   band: BandInterface;
+  binIndexes?: number[];
   config: ConfigInterface;
   rawByteRate: number;
   transmissionMode: TransmissionMode;

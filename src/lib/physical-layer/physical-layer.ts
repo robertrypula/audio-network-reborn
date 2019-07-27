@@ -2,14 +2,12 @@
 
 import {
   AudioMonoIoInterface,
-  BandInterface,
   BYTE,
   FftResult,
-  getClosestBinIndexes,
   getTransmissionModeDetails,
   MILLISECONDS_IN_SECOND,
   NYQUIST_TWICE,
-  SILENCE,
+  SILENCE_FREQUENCY,
   TransmissionMode,
   TransmissionModeDetails
 } from '..';
@@ -18,7 +16,6 @@ import { audioMonoIoFactory } from './audio-mono-io/audio-mono-io-factory';
 export class PhysicalLayer {
   public readonly audioMonoIo: AudioMonoIoInterface;
 
-  protected rxBinIndexes: number[];
   protected transmissionModeDetails: TransmissionModeDetails;
 
   public constructor(transmissionMode: TransmissionMode = TransmissionMode.SlimBandSlow) {
@@ -31,11 +28,7 @@ export class PhysicalLayer {
   }
 
   public getTransmissionModeDetails(): TransmissionModeDetails {
-    const copy = {...this.transmissionModeDetails};
-
-    copy.band = { ...this.transmissionModeDetails.band };
-
-    return copy;
+    return this.transmissionModeDetails;
   }
 
   public getTxTimeTickMilliseconds(): number {
@@ -45,22 +38,19 @@ export class PhysicalLayer {
   public rx(): number {
     const fftResult = new FftResult(this.audioMonoIo.getFrequencyDomainData(), this.audioMonoIo.getSampleRate());
 
-    return fftResult.pick(this.rxBinIndexes).getLoudestBinIndex();
+    return fftResult.pick(this.transmissionModeDetails.binIndexes).getLoudestBinIndex();
   }
 
   public setTransmissionMode(transmissionMode: TransmissionMode): void {
-    const sampleRate = this.audioMonoIo.getSampleRate();
-    let fftSize: number;
-
-    this.transmissionModeDetails = getTransmissionModeDetails(transmissionMode, true);
-    fftSize = this.transmissionModeDetails.config.fftSize;
-    this.audioMonoIo.setFftSize(fftSize);
-    this.rxBinIndexes = getClosestBinIndexes(fftSize, sampleRate, this.transmissionModeDetails.unifiedFrequencies);
+    this.transmissionModeDetails = getTransmissionModeDetails(transmissionMode, this.audioMonoIo.getSampleRate());
+    this.audioMonoIo.setFftSize(this.transmissionModeDetails.config.fftSize);
   }
 
   public tx(byte: number | null): void {
     this.audioMonoIo.setPeriodicWave(
-      byte !== null && byte >= 0 && byte < BYTE ? this.transmissionModeDetails.unifiedFrequencies[byte] : SILENCE
+      byte !== null && byte >= 0 && byte < BYTE
+        ? this.transmissionModeDetails.unifiedFrequencies[byte]
+        : SILENCE_FREQUENCY
     );
   }
 }

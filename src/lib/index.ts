@@ -2,6 +2,7 @@
 
 export * from './version';
 
+export * from './application-layer/application-layer';
 export * from './data-link-layer/data-frame';
 export * from './data-link-layer/data-link-layer';
 export * from './physical-layer/audio-mono-io/audio-mono-io-factory';
@@ -12,4 +13,7 @@ export * from './physical-layer/fft-result';
 export * from './physical-layer/model';
 export * from './physical-layer/physical-layer';
 export * from './physical-layer/utils';
-export * from './visualization/simple-canvas';
+export * from './visualization/simple-canvas/simple-canvas';
+export * from './visualization/spectrogram/spectrogram';
+export * from './visualization/spectrogram/spectrogram-utils';
+export * from './visualization/visualizers';

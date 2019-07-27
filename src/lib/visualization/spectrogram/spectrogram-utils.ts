@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+// TODO migrate the code from ES5
+
 /*
 const getKey = function (frequencyData, indexMin, indexMax, frequencySpacing) {
   return frequencyData.length + '|' + indexMin + '|' + indexMax + '|' + frequencySpacing.toFixed(12);

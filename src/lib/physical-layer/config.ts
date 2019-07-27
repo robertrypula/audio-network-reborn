@@ -5,7 +5,8 @@ import { TransmissionModeToConfigLookUp } from './model';
 /*
   8192 - 186 ms -  6 Hz - 1536 Hz   -  5.2 FFT/s     -  2.60 B/s
   4096 -  93 ms - 12 Hz - 3072 Hz   - 10.5 FFT/s     -  5.25 B/s
-  2048 -  47 ms - 24 Hz - 6144 Hz   - 20.0 FFT/s     - 10.00 B/s
+  2048 -  46 ms - 22 Hz - 6144 Hz   - 20.0 FFT/s     - 10.00 B/s
+  1024 -  23 ms - 43 Hz - 12.0 kHz  - 40.0 FFT/s     - 20.00 B/s
   3000 - 6000   | 3000 Hz
   9000 - 15000  | 6000 Hz
  */

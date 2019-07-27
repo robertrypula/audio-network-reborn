@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+// TODO migrate the code from ES5
+
 /*tslint:disable*/
 
 import * as spectrogramUtils from './spectrogram-utils';
@@ -35,10 +37,10 @@ export class Spectrogram {
       this.$$indexMin = null;
       this.$$indexMax = null;
       this.$$frequencySpacing = null;
-  
+
       this.$$initializeHtml();
     };
-  
+
     public add = function (frequencyData, indexMin, indexMax, frequencySpacing, indexMarker, rowMarker) {
       var
         key = spectrogramUtils.getKey(frequencyData, indexMin, indexMax, frequencySpacing),
@@ -47,30 +49,30 @@ export class Spectrogram {
         data,
         lastRowNeedsToBeRemoved,
         lastRow;
-  
+
       if (frequencyData.length === 0) {
         return;
       }
-  
+
       if (reinitializationNeeded) {
         this.$$reset();
         this.$$keyLast = key;
         this.$$indexMin = indexMin;
         this.$$indexMax = indexMax;
         this.$$frequencySpacing = frequencySpacing;
-  
+
         data = this.$$generateHeaderLegend(frequencyData.length);
         this.$$insertRow(LEFT_COLUMN_MODE_HEADER, data, INDEX_MARKER_DISABLED);
-  
+
         data = this.$$generateHeaderMarker(frequencyData.length);
         this.$$insertRow(LEFT_COLUMN_MODE_HEADER, data, INDEX_MARKER_DISABLED);
       }
-  
+
       leftColumnMode = rowMarker
         ? LEFT_COLUMN_MODE_COLOR_LIGHT
         : LEFT_COLUMN_MODE_COLOR_DARK;
       this.$$insertRow(leftColumnMode, frequencyData, indexMarker);
-  
+
       lastRowNeedsToBeRemoved = this.$$renderedRowCounter > this.$$rowLimit;
       if (lastRowNeedsToBeRemoved) {
         lastRow = document.querySelectorAll('#' + this.$$id + ' > .s-row:last-child')[0];
@@ -78,23 +80,23 @@ export class Spectrogram {
         this.$$renderedRowCounter--;
       }
     };
-  
+
     public clear = function () {
       // TODO this is temporary code and acctually it's not clearing anything... REFACTOR!
       this.add([0, 1, 2], 0, 1, 1, 0, 0);
     };
-  
+
     protected initializeHtml = function () {
       var html;
-  
+
       html = '';
       html += '<div class="spectrogram-container">';
       html += '    <div class="spectrogram" id="' + this.$$id + '"></div>';
       html += '</div>';
-  
+
       this.$$domElement.innerHTML = html;
     };
-  
+
     protected reset = function () {
       document.getElementById(this.$$id).innerHTML = '';
       this.$$renderedRowCounter = 0;
@@ -103,11 +105,11 @@ export class Spectrogram {
       this.$$indexMax = null;
       this.$$frequencySpacing = null;
     };
-  
-  
+
+
     protected generateHeaderLegend = function (length) {
       var i, decibel, decibelOffset, legend, range, innerIndex;
-  
+
       legend = [];
       for (i = 0; i < length; i++) {
         if (i < this.$$indexMin || i > this.$$indexMax) {
@@ -116,18 +118,18 @@ export class Spectrogram {
           range = this.$$indexMax - this.$$indexMin;
           innerIndex = i - this.$$indexMin;
           decibelOffset = (-DECIBEL_MIN * innerIndex) / range;
-  
+
           decibel = DECIBEL_MIN + decibelOffset;
         }
         legend.push(decibel);
       }
-  
+
       return legend;
     };
-  
+
     protected generateHeaderMarker = function (length) {
       var i, decibel, marker;
-  
+
       marker = [];
       for (i = 0; i < length; i++) {
         if (i < this.$$indexMin || i > this.$$indexMax) {
@@ -139,10 +141,10 @@ export class Spectrogram {
         }
         marker.push(decibel);
       }
-  
+
       return marker;
     };
-  
+
     protected insertRow = function (leftColumnMode, data, indexMarker) {
       var
         row = spectrogramUtils.getRow(),
@@ -154,7 +156,7 @@ export class Spectrogram {
         decibel,
         cell,
         i;
-  
+
       switch (leftColumnMode) {
         case LEFT_COLUMN_MODE_COLOR_LIGHT:
           color = spectrogramUtils.getColor(DECIBEL_FOR_COLOR_LIGHT);
@@ -165,7 +167,7 @@ export class Spectrogram {
       }
       cell = spectrogramUtils.getCell(cssClass, color, title);
       row.appendChild(cell);
-  
+
       for (i = this.$$indexMin; i <= this.$$indexMax; i++) {
         decibel = data[i];
         if (typeof decibel === 'undefined') {
@@ -180,7 +182,7 @@ export class Spectrogram {
         cell = spectrogramUtils.getCell(cssClass, color, title);
         row.appendChild(cell);
       }
-  
+
       if (isHeader) {
         document.getElementById(this.$$id).appendChild(row);
       } else {
@@ -188,7 +190,7 @@ export class Spectrogram {
         secondRow = document.querySelector('#' + this.$$id + ' > .s-row:nth-child(2)');
         secondRow.parentNode.insertBefore(row, secondRow.nextSibling);
       }
-  
+
       this.$$renderedRowCounter++;
     };
   */
