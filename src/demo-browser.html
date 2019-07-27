@@ -59,7 +59,7 @@
       dataLinkLayer = new AudioNetworkLite.DataLinkLayer();
       dataLinkLayer.physicalLayer.setTransmissionMode(transmissionMode);
 
-      console.log(AudioNetworkLite.getTransmissionModeDetailsList());
+      console.log(AudioNetworkLite.getDspConfigList());
 
       document.getElementById('div-app').style.display = 'block';
       document.getElementById('div-init').style.display = 'none';
@@ -69,7 +69,7 @@
       const txTick = dataLinkLayer.physicalLayer.getTxTimeTickMilliseconds();
       document.getElementById('rx-tick').innerHTML = rxTick + ' | ' + (1000 / txTick).toFixed(2) + ' B/s';
 
-      const band = dataLinkLayer.physicalLayer.getTransmissionDetails().band;
+      const band = dataLinkLayer.physicalLayer.getDspConfig().band;
       document.getElementById('band').innerHTML = band.begin.toFixed(0) + ' - ' + band.end.toFixed(0) + ' | ' + band.bandwidth.toFixed(0);
     }
 
@@ -94,7 +94,9 @@
       dataLinkLayer.setData(tx);
       dataLinkLayer.txTimeTick();
       txInterval = setInterval(() => {
-        dataLinkLayer.txTimeTick();
+        if (!dataLinkLayer.txTimeTick()) {
+          clearInterval(txInterval);
+        }
       }, dataLinkLayer.physicalLayer.getTxTimeTickMilliseconds());
     }
 

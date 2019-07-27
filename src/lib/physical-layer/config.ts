@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { TransmissionModeToConfigLookUp } from './model';
+import { TransmissionModeToDspConfigInitialLookUp } from './model';
 
 /*
   8192 - 186 ms -  6 Hz - 1536 Hz   -  5.2 FFT/s     -  2.60 B/s
@@ -32,7 +32,7 @@ import { TransmissionModeToConfigLookUp } from './model';
 //                   ############
 //       ############
 
-export const transmissionModeToConfigLookUp: TransmissionModeToConfigLookUp = {
+export const transmissionModeToDspConfigInitialLookUp: TransmissionModeToDspConfigInitialLookUp = {
   FatBandFast: {
     fftSize: 2048,
     frequencyStart: 9000,

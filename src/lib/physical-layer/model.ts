@@ -23,7 +23,16 @@ export interface BandInterface {
   end: number;
 }
 
-export interface ConfigInterface {
+export interface DspConfig {
+  band: BandInterface;
+  dspConfigInitial: DspConfigInitialInterface;
+  rawByteRate: number;
+  transmissionMode: TransmissionMode;
+  unifiedBinIndexes?: number[];
+  unifiedFrequencies?: number[];
+}
+
+export interface DspConfigInitialInterface {
   fftSize: number;
   frequencyStart: number;
   safeMarginFactor: number;
@@ -46,15 +55,6 @@ export enum TransmissionMode {
 //
 // 16500 - 19500 - 3 k
 
-export interface TransmissionDetails {
-  band: BandInterface;
-  config: ConfigInterface;
-  rawByteRate: number;
-  transmissionMode: TransmissionMode;
-  unifiedBinIndexes?: number[];
-  unifiedFrequencies?: number[];
-}
-
 /*
     FatBandFastAudibleLower = 'FatBandFastAudibleLower',
     FatBandFastAudibleUpper = 'FatBandFastAudibleUpper',
@@ -76,4 +76,6 @@ export interface TransmissionDetails {
     SlimBandSlowInaudible = 'SlimBandSlowInaudible'
 */
 
-export type TransmissionModeToConfigLookUp = { [key in keyof typeof TransmissionMode]: ConfigInterface };
+export type TransmissionModeToDspConfigInitialLookUp = {
+  [key in keyof typeof TransmissionMode]: DspConfigInitialInterface
+};

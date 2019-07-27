@@ -28,7 +28,11 @@ export class DataLinkLayer {
     this.txDataFrame = new DataFrame(data);
   }
 
-  public txTimeTick(): void {
-    this.physicalLayer.tx(this.txDataFrame.getNextByte());
+  public txTimeTick(): boolean {
+    const nextByte = this.txDataFrame.getNextByte();
+
+    this.physicalLayer.tx(nextByte);
+
+    return nextByte !== null;
   }
 }

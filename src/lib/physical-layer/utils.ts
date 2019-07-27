@@ -2,57 +2,57 @@
 
 import {
   BYTE,
-  ConfigInterface,
+  DspConfig,
+  DspConfigInitialInterface,
   MILLISECONDS_IN_SECOND,
   NYQUIST_TWICE,
   SUPPORTED_SAMPLE_RATES,
-  TransmissionDetails,
   TransmissionMode,
-  transmissionModeToConfigLookUp
+  transmissionModeToDspConfigInitialLookUp
 } from '..';
 
 export const getClosestBinIndexes = (fftSize: number, sampleRate: number, frequencies: number[]): number[] => {
   return frequencies.map((frequency: number) => Math.round(frequency * fftSize / sampleRate));
 };
 
-export const getFftTimePeriod = (config: ConfigInterface) => {
+export const getFftTimePeriod = (config: DspConfigInitialInterface): number => {
   return Math.ceil(
     MILLISECONDS_IN_SECOND * config.safeMarginFactor * config.fftSize / Math.min(...SUPPORTED_SAMPLE_RATES)
   ) / MILLISECONDS_IN_SECOND;
 };
 
-export const getTransmissionDetails = (
+export const getDspConfig = (
   transmissionMode: TransmissionMode,
   sampleRate: number = null
-): TransmissionDetails => {
-  const config = transmissionModeToConfigLookUp[transmissionMode];
+): DspConfig => {
+  const config = transmissionModeToDspConfigInitialLookUp[transmissionMode];
   const unifiedFrequencies = getUnifiedFrequencies(config.fftSize, config.frequencyStart, BYTE, SUPPORTED_SAMPLE_RATES);
-  const transmissionModeDetails: TransmissionDetails = {
+  const dspConfig: DspConfig = {
     band: {
       bandwidth: unifiedFrequencies[unifiedFrequencies.length - 1] - unifiedFrequencies[0],
       begin: unifiedFrequencies[0],
       end: unifiedFrequencies[unifiedFrequencies.length - 1]
     },
-    config,
+    dspConfigInitial: config,
     rawByteRate: getRawByteRate(config),
     transmissionMode
   };
 
   if (sampleRate !== null) {
-    transmissionModeDetails.unifiedFrequencies = unifiedFrequencies;
-    transmissionModeDetails.unifiedBinIndexes = getClosestBinIndexes(config.fftSize, sampleRate, unifiedFrequencies);
+    dspConfig.unifiedFrequencies = unifiedFrequencies;
+    dspConfig.unifiedBinIndexes = getClosestBinIndexes(config.fftSize, sampleRate, unifiedFrequencies);
   }
 
-  return transmissionModeDetails;
+  return dspConfig;
 };
 
-export const getTransmissionModeDetailsList = () => {
+export const getDspConfigList = (sampleRate: number = null): DspConfig[] => {
   return Object.keys(TransmissionMode).map(
-    (transmissionMode: TransmissionMode) => getTransmissionDetails(transmissionMode)
+    (transmissionMode: TransmissionMode) => getDspConfig(transmissionMode, sampleRate)
   );
 };
 
-export const getRawByteRate = (config: ConfigInterface) => {
+export const getRawByteRate = (config: DspConfigInitialInterface): number => {
   return 1 / (NYQUIST_TWICE * getFftTimePeriod(config));
 };
 
