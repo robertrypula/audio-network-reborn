@@ -65,6 +65,16 @@ export const transmissionModeToDspConfigInitialLookUp: TransmissionModeToDspConf
     frequencyStart: 3000,
     safeMarginFactor: 1.075
   },
+  NormalBandSlowAudibleUpper: {
+    fftSize: 4096,
+    frequencyStart: 12000,
+    safeMarginFactor: 1.075
+  },
+  NormalBandSlowInaudible: {
+    fftSize: 4096,
+    frequencyStart: 16500,
+    safeMarginFactor: 1.075
+  },
 
   // Slim band ~ 1.5 kHz
   SlimBandFastAudibleLower: {

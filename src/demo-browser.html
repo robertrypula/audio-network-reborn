@@ -54,14 +54,24 @@
     function initializeTransmissionModeDropdown() {
       var html = AudioNetworkLite.getDspConfigList().map((dspConfig) => {
         return '<option value="' + dspConfig.transmissionMode + '">' +
-          (dspConfig.band.bandwidth / 1000).toFixed(1) + ' kHz bandwidth | ' +
-          dspConfig.rawByteRate.toFixed(1) + ' B/s | ' +
-          (dspConfig.band.begin / 1000).toFixed(1) + '-' + (dspConfig.band.end / 1000).toFixed(1) + ' kHz | ' +
+          kHz(dspConfig.band.bandwidth) + ' kHz bandwidth | ' +
+          byteRate(dspConfig.rawByteRate) + ' B/s | ' +
+          kHz(dspConfig.band.begin) + '-' + kHz(dspConfig.band.end) + ' kHz | ' +
           dspConfig.transmissionMode +
           '</option>';
       }).join('\n');
       document.getElementById('transmission-mode').innerHTML =
         '<option value="">--- Select Transmission Mode ---</option>\n' + html;
+    }
+
+    function kHz(value) {
+      const s = (value / 1000).toFixed(1);
+      return s.indexOf('.') ===  1 ? '&nbsp;' + s : s;
+    }
+
+    function byteRate(value) {
+      const s = value.toFixed(1);
+      return s.indexOf('.') ===  1 ? '&nbsp;' + s : s;
     }
 
     function onTransmissionModeChange(transmissionMode) {
