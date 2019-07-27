@@ -15,18 +15,14 @@ export const getClosestBinIndexes = (fftSize: number, sampleRate: number, freque
   return frequencies.map((frequency: number) => Math.round(frequency * fftSize / sampleRate));
 };
 
-export const getFftTimePeriod = (config: DspConfigInitialInterface): number => {
-  return Math.ceil(
-    MILLISECONDS_IN_SECOND * config.safeMarginFactor * config.fftSize / Math.min(...SUPPORTED_SAMPLE_RATES)
-  ) / MILLISECONDS_IN_SECOND;
-};
-
 export const getDspConfig = (
   transmissionMode: TransmissionMode,
   sampleRate: number = null
 ): DspConfig => {
   const config = transmissionModeToDspConfigInitialLookUp[transmissionMode];
   const unifiedFrequencies = getUnifiedFrequencies(config.fftSize, config.frequencyStart, BYTE, SUPPORTED_SAMPLE_RATES);
+  const timeTickMillisecondsRx = getTimeTickMillisecondsRx(config);
+  const timeTickMillisecondsTx = NYQUIST_TWICE * timeTickMillisecondsRx;
   const dspConfig: DspConfig = {
     band: {
       bandwidth: unifiedFrequencies[unifiedFrequencies.length - 1] - unifiedFrequencies[0],
@@ -34,7 +30,9 @@ export const getDspConfig = (
       end: unifiedFrequencies[unifiedFrequencies.length - 1]
     },
     dspConfigInitial: config,
-    rawByteRate: getRawByteRate(config),
+    rawByteRate: MILLISECONDS_IN_SECOND / timeTickMillisecondsTx,
+    timeTickMillisecondsRx,
+    timeTickMillisecondsTx,
     transmissionMode
   };
 
@@ -52,8 +50,12 @@ export const getDspConfigList = (sampleRate: number = null): DspConfig[] => {
   );
 };
 
-export const getRawByteRate = (config: DspConfigInitialInterface): number => {
-  return 1 / (NYQUIST_TWICE * getFftTimePeriod(config));
+export const getLongestFftWindowTime = (config: DspConfigInitialInterface): number => {
+  return config.fftSize / Math.min(...SUPPORTED_SAMPLE_RATES);
+};
+
+export const getTimeTickMillisecondsRx = (config: DspConfigInitialInterface): number => {
+  return Math.ceil(MILLISECONDS_IN_SECOND * config.safeMarginFactor * getLongestFftWindowTime(config));
 };
 
 export const getUnifiedFrequencies = (

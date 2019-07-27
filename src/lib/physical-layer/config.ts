@@ -3,23 +3,15 @@
 import { TransmissionModeToDspConfigInitialLookUp } from './model';
 
 /*
-  8192 - 186 ms -  6 Hz - 1536 Hz   -  5.2 FFT/s     -  2.60 B/s
-  4096 -  93 ms - 12 Hz - 3072 Hz   - 10.5 FFT/s     -  5.25 B/s
-  2048 -  46 ms - 22 Hz - 6144 Hz   - 20.0 FFT/s     - 10.00 B/s
-  1024 -  23 ms - 43 Hz - 12.0 kHz  - 40.0 FFT/s     - 20.00 B/s
-  3000 - 6000   | 3000 Hz
-  9000 - 15000  | 6000 Hz
- */
+  8192 - 186 ms -  6 Hz -  1.5 kHz   -  5.2 FFT/s     -  2.60 B/s
+  4096 -  93 ms - 12 Hz -  3.0 kHz   - 10.5 FFT/s     -  5.25 B/s
+  2048 -  46 ms - 22 Hz -  6.0 kHz   - 20.0 FFT/s     - 10.00 B/s
+  1024 -  23 ms - 43 Hz - 12.0 kHz   - 40.0 FFT/s     - 20.00 B/s
 
-/*
-5,859375 48.0   171 ms   12 Hz spacing, 3072 Hz band
-5,383301 44.1   186 ms   12 Hz spacing, 3072 Hz band
-
-         48.0   86 ms   24 Hz spacing, 6.1 Hz band
-         44.1   93 ms   24 Hz spacing, 6.1 Hz band
-
-					8 FFT/s
-					4 bytes/s
+  3000 -  6000  | 3 kHz
+  1000 -  7000  | 6 kHz
+  9000 - 15000  | 6 kHz
+ 16500 - 19500  | 3 kHz
  */
 
 //                   ############
@@ -33,32 +25,54 @@ import { TransmissionModeToDspConfigInitialLookUp } from './model';
 //       ############
 
 export const transmissionModeToDspConfigInitialLookUp: TransmissionModeToDspConfigInitialLookUp = {
-  FatBandFast: {
+  // Extraordinary band ~ 12.0 kHz
+  ExtraordinaryBandSlow: {
+    fftSize: 1024,
+    frequencyStart: 7500,
+    safeMarginFactor: 1.075
+  },
+
+  // Fat band ~ 6.0 kHz
+  FatBandFastAudibleUpper: {
     fftSize: 2048,
     frequencyStart: 9000,
     safeMarginFactor: 0.672
   },
-  FatBandSlow: {
+  FatBandSlowAudibleUpper: {
     fftSize: 2048,
     frequencyStart: 9000,
     safeMarginFactor: 1.075
   },
-  NormalBandFast: {
+
+  // Normal band ~ 3.0 kHz
+  NormalBandFastAudibleLower: {
     fftSize: 4096,
     frequencyStart: 3000,
     safeMarginFactor: 0.672
   },
-  NormalBandSlow: {
+  NormalBandFastAudibleUpper: {
+    fftSize: 4096,
+    frequencyStart: 12000,
+    safeMarginFactor: 0.672
+  },
+  NormalBandFastInaudible: {
+    fftSize: 4096,
+    frequencyStart: 16500,
+    safeMarginFactor: 0.672
+  },
+  NormalBandSlowAudibleLower: {
     fftSize: 4096,
     frequencyStart: 3000,
     safeMarginFactor: 1.075
   },
-  SlimBandFast: {
+
+  // Slim band ~ 1.5 kHz
+  SlimBandFastAudibleLower: {
     fftSize: 8192,
     frequencyStart: 4500,
     safeMarginFactor: 0.672
   },
-  SlimBandSlow: {
+  SlimBandSlowAudibleLower: {
     fftSize: 8192,
     frequencyStart: 4500,
     safeMarginFactor: 1.075

@@ -27,6 +27,8 @@ export interface DspConfig {
   band: BandInterface;
   dspConfigInitial: DspConfigInitialInterface;
   rawByteRate: number;
+  timeTickMillisecondsRx: number;
+  timeTickMillisecondsTx: number;
   transmissionMode: TransmissionMode;
   unifiedBinIndexes?: number[];
   unifiedFrequencies?: number[];
@@ -39,42 +41,27 @@ export interface DspConfigInitialInterface {
 }
 
 export enum TransmissionMode {
-  FatBandFast = 'FatBandFast',
-  FatBandSlow = 'FatBandSlow',
-
-  NormalBandFast = 'NormalBandFast',
-  NormalBandSlow = 'NormalBandSlow',
-
-  SlimBandFast = 'SlimBandFast',
-  SlimBandSlow = 'SlimBandSlow'
+  // ExtraordinaryBandFast = 'ExtraordinaryBandFast',
+  ExtraordinaryBandSlow = 'ExtraordinaryBandSlow',
+  // FatBandFastAudibleLower = 'FatBandFastAudibleLower',
+  FatBandFastAudibleUpper = 'FatBandFastAudibleUpper',
+  // FatBandFastInaudible = 'FatBandFastInaudible',
+  // FatBandSlowAudibleLower = 'FatBandSlowAudibleLower',
+  FatBandSlowAudibleUpper = 'FatBandSlowAudibleUpper',
+  // FatBandSlowInaudible = 'FatBandSlowInaudible',
+  NormalBandFastAudibleLower = 'NormalBandFastAudibleLower',
+  NormalBandFastAudibleUpper = 'NormalBandFastAudibleUpper',
+  NormalBandFastInaudible = 'NormalBandFastInaudible',
+  NormalBandSlowAudibleLower = 'NormalBandSlowAudibleLower',
+  // NormalBandSlowAudibleUpper = 'NormalBandSlowAudibleUpper',
+  // NormalBandSlowInaudible = 'NormalBandSlowInaudible',
+  SlimBandFastAudibleLower = 'SlimBandFastAudibleLower',
+  // SlimBandFastAudibleUpper = 'SlimBandFastAudibleUpper',
+  // SlimBandFastInaudible = 'SlimBandFastInaudible',
+  SlimBandSlowAudibleLower = 'SlimBandSlowAudibleLower'
+  // SlimBandSlowAudibleUpper = 'SlimBandSlowAudibleUpper',
+  // SlimBandSlowInaudible = 'SlimBandSlowInaudible'
 }
-
-// 1000 - 7000     6 k
-//
-// 9000 - 15000  - 6 k
-//
-// 16500 - 19500 - 3 k
-
-/*
-    FatBandFastAudibleLower = 'FatBandFastAudibleLower',
-    FatBandFastAudibleUpper = 'FatBandFastAudibleUpper',
-    FatBandFastInaudible = 'FatBandFastInaudible',
-    FatBandSlowAudibleLower = 'FatBandSlowAudibleLower',
-    FatBandSlowAudibleUpper = 'FatBandSlowAudibleUpper',
-    FatBandSlowInaudible = 'FatBandSlowInaudible',
-    NormalBandFastAudibleLower = 'NormalBandFastAudibleLower',
-    NormalBandFastAudibleUpper = 'NormalBandFastAudibleUpper',
-    NormalBandFastInaudible = 'NormalBandFastInaudible',
-    NormalBandSlowAudibleLower = 'NormalBandSlowAudibleLower',
-    NormalBandSlowAudibleUpper = 'NormalBandSlowAudibleUpper',
-    NormalBandSlowInaudible = 'NormalBandSlowInaudible',
-    SlimBandFastAudibleLower = 'SlimBandFastAudibleLower',
-    SlimBandFastAudibleUpper = 'SlimBandFastAudibleUpper',
-    SlimBandFastInaudible = 'SlimBandFastInaudible',
-    SlimBandSlowAudibleLower = 'SlimBandSlowAudibleLower'
-    SlimBandSlowAudibleUpper = 'SlimBandSlowAudibleUpper'
-    SlimBandSlowInaudible = 'SlimBandSlowInaudible'
-*/
 
 export type TransmissionModeToDspConfigInitialLookUp = {
   [key in keyof typeof TransmissionMode]: DspConfigInitialInterface

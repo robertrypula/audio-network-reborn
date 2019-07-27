@@ -6,8 +6,6 @@ import {
   DspConfig,
   FftResult,
   getDspConfig,
-  MILLISECONDS_IN_SECOND,
-  NYQUIST_TWICE,
   SILENCE_FREQUENCY,
   TransmissionMode
 } from '..';
@@ -18,21 +16,13 @@ export class PhysicalLayer {
 
   protected dspConfig: DspConfig;
 
-  public constructor(transmissionMode: TransmissionMode = TransmissionMode.SlimBandFast) {
+  public constructor(transmissionMode: TransmissionMode = TransmissionMode.SlimBandFastAudibleLower) {
     this.audioMonoIo = audioMonoIoFactory.createAudioMonoIo();
     this.setTransmissionMode(transmissionMode);
   }
 
-  public getRxTimeTickMilliseconds(): number {
-    return Math.round(MILLISECONDS_IN_SECOND / this.dspConfig.rawByteRate);
-  }
-
   public getDspConfig(): DspConfig {
     return this.dspConfig;
-  }
-
-  public getTxTimeTickMilliseconds(): number {
-    return NYQUIST_TWICE * this.getRxTimeTickMilliseconds();
   }
 
   public rx(): number {
