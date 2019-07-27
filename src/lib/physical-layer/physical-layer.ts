@@ -2,7 +2,7 @@
 
 import {
   AudioMonoIoInterface,
-  BYTE,
+  BYTE_UNIQUE_VALUES,
   DspConfig,
   FftResult,
   getDspConfig,
@@ -42,7 +42,7 @@ export class PhysicalLayer {
 
   public tx(byte: number | null): void {
     this.audioMonoIo.setPeriodicWave(
-      byte !== null && byte >= 0 && byte < BYTE
+      byte !== null && byte >= 0 && byte < BYTE_UNIQUE_VALUES
         ? this.dspConfig.unifiedFrequencies[byte]
         : SILENCE_FREQUENCY
     );

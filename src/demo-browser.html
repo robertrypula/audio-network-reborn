@@ -53,7 +53,6 @@
 
     function initializeTransmissionModeDropdown() {
       var html = AudioNetworkLite.getDspConfigList().map((dspConfig) => {
-        console.log(dspConfig);
         return '<option value="' + dspConfig.transmissionMode + '">' +
           (dspConfig.band.bandwidth / 1000).toFixed(1) + ' kHz bandwidth | ' +
           dspConfig.rawByteRate.toFixed(1) + ' B/s | ' +
@@ -84,7 +83,7 @@
 
     function main() {
       initializeTransmissionModeDropdown();
-      AudioNetworkLite.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkLite.AudioMonoIoCreateMode.Stub;
+      // AudioNetworkLite.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkLite.AudioMonoIoCreateMode.Stub;
       dataLinkLayer = new AudioNetworkLite.DataLinkLayer();
       document.getElementById('sample-rate').innerHTML =
         (dataLinkLayer.physicalLayer.audioMonoIo.getSampleRate() / 1000).toFixed(1);

@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import {
-  BYTE,
+  BYTE_UNIQUE_VALUES,
   DspConfig,
   DspConfigInitialInterface,
   MILLISECONDS_IN_SECOND,
@@ -20,7 +20,9 @@ export const getDspConfig = (
   sampleRate: number = null
 ): DspConfig => {
   const config = transmissionModeToDspConfigInitialLookUp[transmissionMode];
-  const unifiedFrequencies = getUnifiedFrequencies(config.fftSize, config.frequencyStart, BYTE, SUPPORTED_SAMPLE_RATES);
+  const unifiedFrequencies = getUnifiedFrequencies(
+    config.fftSize, config.frequencyStart, BYTE_UNIQUE_VALUES, SUPPORTED_SAMPLE_RATES
+  );
   const timeTickMillisecondsRx = getTimeTickMillisecondsRx(config);
   const timeTickMillisecondsTx = NYQUIST_TWICE * timeTickMillisecondsRx;
   const dspConfig: DspConfig = {
@@ -61,12 +63,12 @@ export const getTimeTickMillisecondsRx = (config: DspConfigInitialInterface): nu
 export const getUnifiedFrequencies = (
   fftSize: number,
   frequencyStart: number,
-  bins: number,
+  frequenciesToUnifyCount: number,
   sampleRates: number[]
 ): number[] => {
   const unifiedFrequencies: number[] = [];
   const frequencyBinsCount = 0.5 * fftSize;
-  const highestFrequency = Math.min(...sampleRates) / NYQUIST_TWICE;
+  const highestPossibleFrequency = Math.min(...sampleRates) / NYQUIST_TWICE;
 
   if (sampleRates.length !== 2) {
     throw new Error('Not implemented and will probably never be... ;)');
@@ -75,35 +77,26 @@ export const getUnifiedFrequencies = (
     throw new Error('Sample rates values ​​must be given in descending order');
   }
 
-  for (let bin = 0; bin < frequencyBinsCount; bin++) {
-    const frequency0 = bin * sampleRates[0] / fftSize;
-    const bin1ClosestToFrequency0 = frequency0 * fftSize / sampleRates[1];
-    let bin1Integer = Math.floor(bin1ClosestToFrequency0);
-    let bin1Fraction = bin1ClosestToFrequency0 % 1;
-
-    if (bin1Fraction >= 0.5) {      // TODO we don't need fraction, we could just do simple Math.round()
-      bin1Integer++;
-      bin1Fraction -= 1;
-    }
-
-    const frequency1 = bin1Integer * sampleRates[1] / fftSize;
+  for (let binIndex0 = 0; binIndex0 < frequencyBinsCount; binIndex0++) {
+    const frequency0 = binIndex0 * sampleRates[0] / fftSize;
+    const binIndex1ClosestToFrequency0 = frequency0 * fftSize / sampleRates[1];
+    const binIndex1Integer = Math.round(binIndex1ClosestToFrequency0);
+    const frequency1 = binIndex1Integer * sampleRates[1] / fftSize;
     const frequencyMiddle = (frequency0 + frequency1) / 2;
 
-    if (frequencyMiddle >= highestFrequency) {
+    if (frequencyMiddle >= highestPossibleFrequency) {
       break;
     }
-
     if (frequencyMiddle >= frequencyStart) {
       unifiedFrequencies.push(frequencyMiddle);
     }
-
-    if (unifiedFrequencies.length === bins) {
+    if (unifiedFrequencies.length === frequenciesToUnifyCount) {
       break;
     }
   }
 
-  if (unifiedFrequencies.length !== bins) {
-    throw new Error('Could not find desired bins amounts');
+  if (unifiedFrequencies.length !== frequenciesToUnifyCount) {
+    throw new Error('Could not find desired unified frequencies amounts');
   }
 
   return unifiedFrequencies;
