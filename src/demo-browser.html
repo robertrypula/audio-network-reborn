@@ -55,6 +55,7 @@
     var txInterval;
 
     function init(transmissionMode) {
+      AudioNetworkLite.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkLite.AudioMonoIoCreateMode.Stub;
       dataLinkLayer = new AudioNetworkLite.DataLinkLayer();
       dataLinkLayer.physicalLayer.setTransmissionMode(transmissionMode);
 
@@ -68,7 +69,7 @@
       const txTick = dataLinkLayer.physicalLayer.getTxTimeTickMilliseconds();
       document.getElementById('rx-tick').innerHTML = rxTick + ' | ' + (1000 / txTick).toFixed(2) + ' B/s';
 
-      const band = dataLinkLayer.physicalLayer.getTransmissionModeDetails().band;
+      const band = dataLinkLayer.physicalLayer.getTransmissionDetails().band;
       document.getElementById('band').innerHTML = band.begin.toFixed(0) + ' - ' + band.end.toFixed(0) + ' | ' + band.bandwidth.toFixed(0);
     }
 

@@ -79,7 +79,7 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
   }
 
   protected connectMicrophoneTo(node: AudioNode): void {
-    // TODO
+    // TODO fix known issue: inputEnable/inputDisable doesn't wait for promise
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
       .then((mediaStream: MediaStream) => {

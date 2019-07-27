@@ -6,8 +6,8 @@ import {
   MILLISECONDS_IN_SECOND,
   NYQUIST_TWICE,
   SUPPORTED_SAMPLE_RATES,
+  TransmissionDetails,
   TransmissionMode,
-  TransmissionModeDetails,
   transmissionModeToConfigLookUp
 } from '..';
 
@@ -21,13 +21,13 @@ export const getFftTimePeriod = (config: ConfigInterface) => {
   ) / MILLISECONDS_IN_SECOND;
 };
 
-export const getTransmissionModeDetails = (
+export const getTransmissionDetails = (
   transmissionMode: TransmissionMode,
   sampleRate: number = null
-): TransmissionModeDetails => {
+): TransmissionDetails => {
   const config = transmissionModeToConfigLookUp[transmissionMode];
   const unifiedFrequencies = getUnifiedFrequencies(config.fftSize, config.frequencyStart, BYTE, SUPPORTED_SAMPLE_RATES);
-  const transmissionModeDetails: TransmissionModeDetails = {
+  const transmissionModeDetails: TransmissionDetails = {
     band: {
       bandwidth: unifiedFrequencies[unifiedFrequencies.length - 1] - unifiedFrequencies[0],
       begin: unifiedFrequencies[0],
@@ -40,7 +40,7 @@ export const getTransmissionModeDetails = (
 
   if (sampleRate !== null) {
     transmissionModeDetails.unifiedFrequencies = unifiedFrequencies;
-    transmissionModeDetails.binIndexes = getClosestBinIndexes(config.fftSize, sampleRate, unifiedFrequencies);
+    transmissionModeDetails.unifiedBinIndexes = getClosestBinIndexes(config.fftSize, sampleRate, unifiedFrequencies);
   }
 
   return transmissionModeDetails;
@@ -48,7 +48,7 @@ export const getTransmissionModeDetails = (
 
 export const getTransmissionModeDetailsList = () => {
   return Object.keys(TransmissionMode).map(
-    (transmissionMode: TransmissionMode) => getTransmissionModeDetails(transmissionMode)
+    (transmissionMode: TransmissionMode) => getTransmissionDetails(transmissionMode)
   );
 };
 

@@ -3,7 +3,7 @@
 export enum AudioMonoIoCreateMode {
   // AutoDetectWebAudioOrNode = 'AutoDetectWebAudioOrNode',
   // Node = 'Node',
-  // Stub = 'Stub',
+  Stub = 'Stub',
   WebAudioApi = 'WebAudioApi'
 }
 
@@ -46,12 +46,12 @@ export enum TransmissionMode {
 //
 // 16500 - 19500 - 3 k
 
-export interface TransmissionModeDetails {
+export interface TransmissionDetails {
   band: BandInterface;
-  binIndexes?: number[];
   config: ConfigInterface;
   rawByteRate: number;
   transmissionMode: TransmissionMode;
+  unifiedBinIndexes?: number[];
   unifiedFrequencies?: number[];
 }
 
