@@ -69,9 +69,9 @@
 
         console.log(dspConfig);
         return '<option value="' + dspConfig.transmissionMode + '">' +
-          kHz(dspConfig.band.bandwidth) + ' kHz' +
-          ' | ' + byteRate(dspConfig.rawByteRate) + ' B/s' +
+          byteRate(dspConfig.rawByteRate) + ' B/s' +
           ' | ' + kHz(dspConfig.band.begin) + '-' + kHz(dspConfig.band.end) + ' kHz' +
+          ' (' + (dspConfig.band.bandwidth / 1000).toFixed(1) + ' kHz' + ')' +
           // ' | ' + dspConfig.transmissionMode +
           '</option>';
       }).join('\n');

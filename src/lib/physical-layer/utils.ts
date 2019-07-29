@@ -4,6 +4,7 @@ import {
   BYTE_UNIQUE_VALUES,
   DspConfig,
   DspConfigInitialInterface,
+  FREQUENCY_FORBIDDEN_RANGE,
   MILLISECONDS_IN_SECOND,
   NYQUIST_TWICE,
   SUPPORTED_SAMPLE_RATES,
@@ -21,7 +22,7 @@ export const getDspConfig = (
 ): DspConfig => {
   const config = transmissionModeToDspConfigInitialLookUp[transmissionMode];
   const unifiedFrequencies = getUnifiedFrequencies(
-    config.fftSize, config.frequencyStart, BYTE_UNIQUE_VALUES, SUPPORTED_SAMPLE_RATES
+    config.fftSize, config.frequencyEnd, BYTE_UNIQUE_VALUES, SUPPORTED_SAMPLE_RATES
   );
   const timeTickMillisecondsRx = getTimeTickMillisecondsRx(config);
   const timeTickMillisecondsTx = NYQUIST_TWICE * timeTickMillisecondsRx;
@@ -62,7 +63,7 @@ export const getTimeTickMillisecondsRx = (config: DspConfigInitialInterface): nu
 
 export const getUnifiedFrequencies = (
   fftSize: number,
-  frequencyStart: number,
+  frequencyEnd: number,
   frequenciesToUnifyCount: number,
   sampleRates: number[]
 ): number[] => {
@@ -77,17 +78,17 @@ export const getUnifiedFrequencies = (
     throw new Error('Sample rates values ​​must be given in descending order');
   }
 
-  for (let binIndex0 = 0; binIndex0 < frequencyBinsCount; binIndex0++) {
+  for (let binIndex0 = frequencyBinsCount - 1; binIndex0 >= 0; binIndex0--) {
     const frequency0 = binIndex0 * sampleRates[0] / fftSize;
     const binIndex1ClosestToFrequency0 = frequency0 * fftSize / sampleRates[1];
     const binIndex1Integer = Math.round(binIndex1ClosestToFrequency0);
     const frequency1 = binIndex1Integer * sampleRates[1] / fftSize;
     const frequencyMiddle = (frequency0 + frequency1) / 2;
 
-    if (frequencyMiddle >= highestPossibleFrequency) {
-      break;
+    if (frequencyMiddle >= highestPossibleFrequency || isInsideForbiddenFrequencies(frequencyMiddle)) {
+      continue;
     }
-    if (frequencyMiddle >= frequencyStart) {
+    if (frequencyMiddle <= frequencyEnd) {
       unifiedFrequencies.push(frequencyMiddle);
     }
     if (unifiedFrequencies.length === frequenciesToUnifyCount) {
@@ -99,5 +100,11 @@ export const getUnifiedFrequencies = (
     throw new Error('Could not find desired unified frequencies amounts');
   }
 
+  unifiedFrequencies.reverse();
+
   return unifiedFrequencies;
+};
+
+const isInsideForbiddenFrequencies = (frequency: number): boolean => {
+  return FREQUENCY_FORBIDDEN_RANGE.some((range: number[]) => range[0] < frequency && frequency < range[1]);
 };

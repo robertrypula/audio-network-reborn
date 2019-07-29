@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { FREQUENCY_END_INAUDIBLE, FREQUENCY_END_LOWER, FREQUENCY_END_UPPER } from './constants';
 import { TransmissionModeToDspConfigInitialLookUp } from './model';
 
 /*
@@ -31,108 +32,108 @@ export const transmissionModeToDspConfigInitialLookUp: TransmissionModeToDspConf
   // Extraordinary band ~ 12.0 kHz
   ExtraordinaryBandFast: {
     fftSize: 1024,
-    frequencyStart: 7500,
+    frequencyEnd: FREQUENCY_END_INAUDIBLE,
     safeMarginFactor: 0.85
   },
   ExtraordinaryBandSlow: {
     fftSize: 1024,
-    frequencyStart: 7500,
+    frequencyEnd: FREQUENCY_END_INAUDIBLE,
     safeMarginFactor: 1.12
   },
 
   // Fat band ~ 6.0 kHz
   FatBandFastAudibleLower: {
     fftSize: 2048,
-    frequencyStart: 1000,
+    frequencyEnd: FREQUENCY_END_LOWER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_FAST
   },
   FatBandFastAudibleUpper: {
     fftSize: 2048,
-    frequencyStart: 9000,
+    frequencyEnd: FREQUENCY_END_UPPER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_FAST
   },
   FatBandFastInaudible: {
     fftSize: 2048,
-    frequencyStart: 13500,
+    frequencyEnd: FREQUENCY_END_INAUDIBLE,
     safeMarginFactor: SAFE_MARGIN_FACTOR_FAST
   },
   FatBandSlowAudibleLower: {
     fftSize: 2048,
-    frequencyStart: 1000,
+    frequencyEnd: FREQUENCY_END_LOWER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_SLOW
   },
   FatBandSlowAudibleUpper: {
     fftSize: 2048,
-    frequencyStart: 9000,
+    frequencyEnd: FREQUENCY_END_UPPER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_SLOW
   },
   FatBandSlowInaudible: {
     fftSize: 2048,
-    frequencyStart: 13500,
+    frequencyEnd: FREQUENCY_END_INAUDIBLE,
     safeMarginFactor: SAFE_MARGIN_FACTOR_SLOW
   },
 
   // Normal band ~ 3.0 kHz
   NormalBandFastAudibleLower: {
     fftSize: 4096,
-    frequencyStart: 3000,
+    frequencyEnd: FREQUENCY_END_LOWER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_FAST
   },
   NormalBandFastAudibleUpper: {
     fftSize: 4096,
-    frequencyStart: 12000,
+    frequencyEnd: FREQUENCY_END_UPPER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_FAST
   },
   NormalBandFastInaudible: {
     fftSize: 4096,
-    frequencyStart: 16500,
+    frequencyEnd: FREQUENCY_END_INAUDIBLE,
     safeMarginFactor: SAFE_MARGIN_FACTOR_FAST
   },
   NormalBandSlowAudibleLower: {
     fftSize: 4096,
-    frequencyStart: 3000,
+    frequencyEnd: FREQUENCY_END_LOWER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_SLOW
   },
   NormalBandSlowAudibleUpper: {
     fftSize: 4096,
-    frequencyStart: 12000,
+    frequencyEnd: FREQUENCY_END_UPPER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_SLOW
   },
   NormalBandSlowInaudible: {
     fftSize: 4096,
-    frequencyStart: 16500,
+    frequencyEnd: FREQUENCY_END_INAUDIBLE,
     safeMarginFactor: SAFE_MARGIN_FACTOR_SLOW
   },
 
   // Slim band ~ 1.5 kHz
   SlimBandFastAudibleLower: {
     fftSize: 8192,
-    frequencyStart: 4500,
+    frequencyEnd: FREQUENCY_END_LOWER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_FAST
   },
   SlimBandFastAudibleUpper: {
     fftSize: 8192,
-    frequencyStart: 13500,
+    frequencyEnd: FREQUENCY_END_UPPER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_FAST
   },
   SlimBandFastInaudible: {
     fftSize: 8192,
-    frequencyStart: 17500,
+    frequencyEnd: FREQUENCY_END_INAUDIBLE,
     safeMarginFactor: SAFE_MARGIN_FACTOR_FAST
   },
   SlimBandSlowAudibleLower: {
     fftSize: 8192,
-    frequencyStart: 4500,
+    frequencyEnd: FREQUENCY_END_LOWER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_SLOW
   },
   SlimBandSlowAudibleUpper: {
     fftSize: 8192,
-    frequencyStart: 13500,
+    frequencyEnd: FREQUENCY_END_UPPER,
     safeMarginFactor: SAFE_MARGIN_FACTOR_SLOW
   },
   SlimBandSlowInaudible: {
     fftSize: 8192,
-    frequencyStart: 17500,
+    frequencyEnd: FREQUENCY_END_INAUDIBLE,
     safeMarginFactor: SAFE_MARGIN_FACTOR_SLOW
   }
 };

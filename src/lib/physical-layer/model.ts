@@ -36,7 +36,7 @@ export interface DspConfig {
 
 export interface DspConfigInitialInterface {
   fftSize: number;
-  frequencyStart: number;
+  frequencyEnd: number;
   safeMarginFactor: number;
 }
 
