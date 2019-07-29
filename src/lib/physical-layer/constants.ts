@@ -8,4 +8,3 @@ export const SILENCE_FREQUENCY = 0;
 export const FREQUENCY_08_KHZ = 8000;
 export const FREQUENCY_16_KHZ = 16000;
 export const FREQUENCY_20_KHZ = 20000;
-
