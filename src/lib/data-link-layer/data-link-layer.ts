@@ -46,10 +46,10 @@ export class DataLinkLayer {
   }
 
   public txTimeTick(): boolean {
-    const nextByte = this.txDataFrame.getNextByte();
+    const nextRawByte = this.txDataFrame.getNextRawByte();
 
-    this.physicalLayer.tx(nextByte);
+    this.physicalLayer.tx(nextRawByte);
 
-    return nextByte !== null;
+    return nextRawByte !== null;
   }
 }
