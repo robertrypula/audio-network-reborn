@@ -1,7 +1,17 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FREQUENCY_END_INAUDIBLE, FREQUENCY_END_LOWER, FREQUENCY_END_UPPER } from './constants';
+import { FREQUENCY_08_KHZ, FREQUENCY_16_KHZ, FREQUENCY_20_KHZ } from './constants';
 import { TransmissionModeToDspConfigInitialLookUp } from './model';
+
+export const FREQUENCY_MARGIN = 600;
+export const FREQUENCY_FORBIDDEN_RANGE = [
+  [FREQUENCY_08_KHZ - FREQUENCY_MARGIN, FREQUENCY_08_KHZ + FREQUENCY_MARGIN],
+  [FREQUENCY_16_KHZ - FREQUENCY_MARGIN, FREQUENCY_16_KHZ + FREQUENCY_MARGIN],
+  [FREQUENCY_20_KHZ - FREQUENCY_MARGIN, +Infinity]
+];
+export const FREQUENCY_END_LOWER = FREQUENCY_08_KHZ - FREQUENCY_MARGIN;
+export const FREQUENCY_END_UPPER = FREQUENCY_16_KHZ - FREQUENCY_MARGIN;
+export const FREQUENCY_END_INAUDIBLE = FREQUENCY_20_KHZ - FREQUENCY_MARGIN;
 
 /*
   8192 - 186 ms -  6 Hz -  1.5 kHz   -  5.2 FFT/s     -  2.60 B/s
