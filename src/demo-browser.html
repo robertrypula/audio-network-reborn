@@ -18,11 +18,11 @@
   <div class="section">
     <select id="transmission-mode" onchange="onTransmissionModeChange(this.value)"></select>
   </div>
-  <div class="section">
-    <b>SampleRate</b>
-    <span id="sample-rate"></span> kHz
-  </div>
   <div id="div-app" style="display: none;">
+    <div class="section">
+      <b>SampleRate</b>
+      <span id="sample-rate"></span> kHz
+    </div>
     <div class="section">
       <textarea style="width: 70%; height: 60px;" id="tx-data">0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200 210 220 230 240 250 255</textarea>
     </div>
@@ -55,6 +55,15 @@
     var rxInterval;
     var txInterval;
 
+    function initializeDataLinkLayer() {
+      if (!dataLinkLayer) {
+        // AudioNetworkLite.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkLite.AudioMonoIoCreateMode.Stub;
+        dataLinkLayer = new AudioNetworkLite.DataLinkLayer();
+        document.getElementById('sample-rate').innerHTML =
+          (dataLinkLayer.physicalLayer.audioMonoIo.getSampleRate() / 1000).toFixed(1);
+      }
+    }
+
     function initializeTransmissionModeDropdown() {
       var html = AudioNetworkLite.getDspConfigList().map((dspConfig) => {
         return '<option value="' + dspConfig.transmissionMode + '">' +
@@ -79,6 +88,7 @@
     }
 
     function onTransmissionModeChange(transmissionMode) {
+      initializeDataLinkLayer();
       if (transmissionMode) {
         dataLinkLayer.physicalLayer.setTransmissionMode(transmissionMode);
         document.getElementById('div-app').style.display = 'block';
@@ -97,10 +107,6 @@
 
     function main() {
       initializeTransmissionModeDropdown();
-      // AudioNetworkLite.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkLite.AudioMonoIoCreateMode.Stub;
-      dataLinkLayer = new AudioNetworkLite.DataLinkLayer();
-      document.getElementById('sample-rate').innerHTML =
-        (dataLinkLayer.physicalLayer.audioMonoIo.getSampleRate() / 1000).toFixed(1);
     }
 
     function clearRxInterval() {
