@@ -93,6 +93,10 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
   }
 
   protected inputEnable(): void {
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+
     if (!this.analyserNode) {
       this.analyserNode = this.audioContext.createAnalyser();
       this.analyserNode.fftSize = this.fftSize;
@@ -105,6 +109,10 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
   }
 
   protected outputEnable(): void {
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+
     if (!this.oscillatorNode) {
       this.oscillatorNode = this.audioContext.createOscillator();
       this.oscillatorNode.connect(this.audioContext.destination);
