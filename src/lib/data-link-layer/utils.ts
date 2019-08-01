@@ -30,21 +30,21 @@ export const getFletcher16 = (data: number[]): number[] => {
   // TODO write own based on getFletcher8
   let i = 0;
   let length = data.length;
+  let sum0 = 0xFF;
   let sum1 = 0xFF;
-  let sum2 = 0xFF;
 
   while (length) {
     let tLength = length > 20 ? 20 : length;
     length -= tLength;
     do {
-      sum2 += sum1 += data[i++];
+      sum1 += sum0 += data[i++];
     } while (--tLength);
+    sum0 = (sum0 & 0xFF) + (sum0 >> 8);
     sum1 = (sum1 & 0xFF) + (sum1 >> 8);
-    sum2 = (sum2 & 0xFF) + (sum2 >> 8);
   }
 
+  sum0 = (sum0 & 0xFF) + (sum0 >> 8);
   sum1 = (sum1 & 0xFF) + (sum1 >> 8);
-  sum2 = (sum2 & 0xFF) + (sum2 >> 8);
 
-  return [sum2 << 8, sum1];
+  return [sum1 << 8, sum0];
 };

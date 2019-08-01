@@ -2,12 +2,16 @@
 
 import { getFletcher16 } from './utils';
 
+/*tslint:disable:no-bitwise*/
+
 export class DataFrame {
   protected rawBytes: number[] = [];
   protected rawBytePosition: number = 0;
 
   public getCalculatedChecksumFromPayload(): number {
-    return 0x1234; // TODO implement
+    const checksum = this.getCalculatedChecksumAsArrayFromPayload();
+
+    return checksum[0] << 8 | checksum[1];
   }
 
   public getChecksumFromRawBytes(): number {
@@ -18,7 +22,7 @@ export class DataFrame {
   public getLengthFromPayload(): number {
     return this.rawBytes.length - 2;
   }
-  
+
   public getLengthFromRawBytes(): number {
     return this.rawBytes.length >= 1
       ? ((this.rawBytes[0] >>> 5) & 0x07) + 1
@@ -49,19 +53,27 @@ export class DataFrame {
 
   public setPayload(payload: number[]): void {
     const payloadLength = payload.length;
-    
+    let checksum: number[];
+
     if (payloadLength === 0 || payloadLength > 8) {
-      throw new Error('');
+      throw new Error('Payload length out of range');
     }
-    
+
     this.rawBytes = [0, 0, ...payload];
     this.rawBytePosition = 0;
-    // TODO mix everything into first two bytes
-    
+
+    checksum = this.getCalculatedChecksumAsArrayFromPayload();
+    this.rawBytes[0] = checksum[0] & 0x1F;
+    this.rawBytes[1] = checksum[1];
+    this.rawBytes[0] = this.rawBytes[0] | (((payloadLength - 1) & 0x3) << 5);
   }
 
   public setRawBytes(rawBytes: number[]): void {
     this.rawBytes = rawBytes;
     this.rawBytePosition = 0;
+  }
+
+  protected getCalculatedChecksumAsArrayFromPayload(): number[] {
+    return getFletcher16(this.getPayload());
   }
 }
