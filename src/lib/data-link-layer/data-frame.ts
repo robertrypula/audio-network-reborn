@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import * as fromConstants from './constants';
 import { getFletcher16 } from './utils';
 
 /*tslint:disable:no-bitwise*/
@@ -11,21 +12,21 @@ export class DataFrame {
   public getCalculatedChecksumFromPayload(): number {
     const checksum = this.getCalculatedChecksumAsArrayFromPayload();
 
-    return checksum[0] << 8 | checksum[1];
+    return (checksum[0] << 8) | checksum[1];
   }
 
   public getChecksumFromRawBytes(): number {
-    return this.rawBytes.length >= 2
+    return this.rawBytes.length > fromConstants.FRAME_HEADER_LENGTH
       ? ((this.rawBytes[0] << 8) | this.rawBytes[1]) & 0x1FFF
       : null;
   }
   public getLengthFromPayload(): number {
-    return this.rawBytes.length - 2;
+    return this.rawBytes.length - fromConstants.FRAME_HEADER_LENGTH;
   }
 
   public getLengthFromRawBytes(): number {
-    return this.rawBytes.length >= 1
-      ? ((this.rawBytes[0] >>> 5) & 0x07) + 1
+    return this.rawBytes.length > fromConstants.FRAME_HEADER_LENGTH
+      ? ((this.rawBytes[0] >>> 5) & 0x07) + fromConstants.FRAME_PAYLOAD_LENGTH_OFFSET
       : null;
   }
 
@@ -45,17 +46,20 @@ export class DataFrame {
 
   public isValid(): boolean {
     return (
-      this.rawBytes.length > 2 &&
+      this.rawBytes.length > fromConstants.FRAME_HEADER_LENGTH &&
       this.getChecksumFromRawBytes() === this.getCalculatedChecksumFromPayload() &&
       this.getLengthFromRawBytes() === this.getLengthFromPayload()
     );
   }
 
-  public setPayload(payload: number[]): void {
+  public setPayload(payload: number[]): DataFrame {
     const payloadLength = payload.length;
     let checksum: number[];
 
-    if (payloadLength === 0 || payloadLength > 8) {
+    if (
+      payloadLength < fromConstants.FRAME_PAYLOAD_LENGTH_MIN ||
+      payloadLength > fromConstants.FRAME_PAYLOAD_LENGTH_MAX
+    ) {
       throw new Error('Payload length out of range');
     }
 
@@ -64,13 +68,17 @@ export class DataFrame {
 
     checksum = this.getCalculatedChecksumAsArrayFromPayload();
     this.rawBytes[0] = checksum[0] & 0x1F;
+    this.rawBytes[0] = (((payloadLength - fromConstants.FRAME_PAYLOAD_LENGTH_OFFSET) & 0x07) << 5) | this.rawBytes[0];
     this.rawBytes[1] = checksum[1];
-    this.rawBytes[0] = this.rawBytes[0] | (((payloadLength - 1) & 0x3) << 5);
+
+    return this;
   }
 
-  public setRawBytes(rawBytes: number[]): void {
+  public setRawBytes(rawBytes: number[]): DataFrame {
     this.rawBytes = rawBytes;
     this.rawBytePosition = 0;
+
+    return this;
   }
 
   protected getCalculatedChecksumAsArrayFromPayload(): number[] {

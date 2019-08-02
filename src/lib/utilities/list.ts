@@ -130,7 +130,7 @@ export class List<T> {
     this.size = 0;
     this.sizeMax = sizeMax;
     this.data.length = 0;        // drop all data
-    this.data.length = sizeMax;  // pre-allokate space
+    this.data.length = sizeMax;  // pre-allocate space
 
     return this;
   }

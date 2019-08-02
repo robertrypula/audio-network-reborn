@@ -42,7 +42,8 @@ export class DataLinkLayer {
   }
 
   public setData(data: number[]): void {
-    this.txDataFrame = new DataFrame(data);
+    this.txDataFrame = new DataFrame();
+    this.txDataFrame.setRawBytes(data);
   }
 
   public txTimeTick(): boolean {

@@ -2,8 +2,11 @@
 
 /*tslint:disable:no-bitwise*/
 
+export const getBytesFromString = (text: string): number[] => {
+  return text.split('').map((item) => item.charCodeAt(0));
+};
+
 export const getFletcher8 = (data: number[]): number => {
-  // taken from my other project: audio-network
   let byte: number;
   let byteNumber: number;
   let halfOfByte: number;
@@ -26,25 +29,42 @@ export const getFletcher8 = (data: number[]): number => {
 };
 
 export const getFletcher16 = (data: number[]): number[] => {
-  // Inspired by https://github.com/jb55/fletcher/blob/master/index.js
-  // TODO write own based on getFletcher8
-  let i = 0;
-  let length = data.length;
-  let sum0 = 0xFF;
-  let sum1 = 0xFF;
+   let sum0 = 0;
+   let sum1 = 0;
 
-  while (length) {
-    let tLength = length > 20 ? 20 : length;
-    length -= tLength;
-    do {
-      sum1 += sum0 += data[i++];
-    } while (--tLength);
-    sum0 = (sum0 & 0xFF) + (sum0 >> 8);
-    sum1 = (sum1 & 0xFF) + (sum1 >> 8);
+   for(let i = 0; i < data.length; i++) {
+      sum0 = (sum0 + data[i]) % 0xFF;
+      sum1 = (sum1 + sum0) % 0xFF;
+   }
+
+   return [sum1, sum0];
+};
+
+export const getMovingWindowSubArrays = (
+  data: number[], lengthMinFromLeft: number, lengthMax: number, callback: (subArray: number[]) => void
+): void => {
+  if (data.length < lengthMax) {
+    return;
   }
 
-  sum0 = (sum0 & 0xFF) + (sum0 >> 8);
-  sum1 = (sum1 & 0xFF) + (sum1 >> 8);
+  for (let i = -lengthMax + lengthMinFromLeft; i <= data.length - lengthMax; i++) {
+    const start = Math.max(0, i);
+    const end = Math.min(i + lengthMax, data.length);
+    callback(data.slice(start, end));
+  }
+};
 
-  return [sum1 << 8, sum0];
+export const getRandomInt = (min: number, max: number): number => { // https://stackoverflow.com/a/1527820
+  min = Math.ceil(min);
+  max = Math.floor(max);
+
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+export const getRightAlignedSubArrays = (
+  data: number[], lengthMin: number, callback: (subArray: number[]) => void
+): void => {
+  for (let i = 0; i < data.length - lengthMin + 1; i++) {
+    callback(data.slice(i));
+  }
 };
