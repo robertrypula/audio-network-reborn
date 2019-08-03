@@ -18,7 +18,7 @@ export const getAllOneByteErrorsInPlace = (data: number[], callback: () => void,
 };
 
 export const getBytesFromString = (text: string): number[] => {
-  return text.split('').map((item) => item.charCodeAt(0));
+  return text.split('').map((item) => item.charCodeAt(0) % 256);
 };
 
 export const getFletcher8 = (data: number[]): number => {
@@ -82,4 +82,8 @@ export const getRightAlignedSubArrays = (
   for (let i = 0; i < data.length - lengthMin + 1; i++) {
     callback(data.slice(i));
   }
+};
+
+export const getStringFromBytes = (bytes: number[]): string => {
+  return bytes.map((i) => String.fromCharCode(i)).join('');
 };

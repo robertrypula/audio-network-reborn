@@ -15,7 +15,6 @@ export * from './physical-layer/fft-result';
 export * from './physical-layer/model';
 export * from './physical-layer/physical-layer';
 export * from './physical-layer/utils';
-export * from './utilities/list';
 export * from './visualization/simple-canvas/simple-canvas';
 export * from './visualization/spectrogram/spectrogram';
 export * from './visualization/spectrogram/spectrogram-utils';

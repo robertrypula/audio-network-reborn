@@ -24,7 +24,7 @@ describe('Utils', () => {
   });
 
   describe('getBytesFromString', () => {
-    it('should return array with ASCII values for given string', () => {
+    it('should return array of char codes limited to range 0 - 255 from given string', () => {
       expect(utils.getBytesFromString('abc\n')).toEqual([0x61, 0x62, 0x63, 0x0A]);
     });
   });
@@ -98,6 +98,12 @@ describe('Utils', () => {
 
       utils.getRightAlignedSubArrays([100], 3, (subArray) => result.push(subArray));
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getStringFromBytes', () => {
+    it('should return string from given array of bytes with unicode char codes limited to range 0-255', () => {
+      expect(utils.getStringFromBytes([0x61, 0x62, 0x63, 0x0A])).toEqual('abc\n');
     });
   });
 });

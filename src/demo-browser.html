@@ -24,7 +24,7 @@
       <span id="sample-rate"></span> kHz
     </div>
     <div class="section">
-      <textarea style="width: 70%; height: 60px;" id="tx-data">0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200 210 220 230 240 250 255</textarea>
+      <textarea style="width: 70%; height: 60px;" id="tx-data">0 10 20 30 40 120 250 255</textarea>
     </div>
     <div class="section">
       <button onclick="send('tx-data')">Send</button>
@@ -130,8 +130,8 @@
         rxData = dataLinkLayer.getData();
         document.getElementById('rx-data-0').innerHTML = rxData[0].join(', ');
         document.getElementById('rx-data-1').innerHTML = rxData[1].join(', ');
-        document.getElementById('rx-frame-0').innerHTML = rxData[2].map(item => item.join(', ')).join(' <br/> ');
-        document.getElementById('rx-frame-1').innerHTML = rxData[3].map(item => item.join(', ')).join(' <br/> ');
+        document.getElementById('rx-frame-0').innerHTML = rxData[2].map(item => item.getPayload().join(', ')).join(' <br/> ');
+        document.getElementById('rx-frame-1').innerHTML = rxData[3].map(item => item.getPayload().join(', ')).join(' <br/> ');
       }, dataLinkLayer.physicalLayer.getDspConfig().timeTickMillisecondsRx);
     }
 

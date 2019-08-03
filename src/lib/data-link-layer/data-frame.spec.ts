@@ -87,56 +87,49 @@ describe('DataFrame', () => {
       expect([framesValid, framesInvalid]).toEqual([0, 255 * dataFrame.getRawBytes().length]);
     });
 
-    /*
-    it('should detect expected number of frames in long byte stream', () => {
-      const dataFrame = new DataFrame();
-      const validFrameRawBytes = (new DataFrame()).setPayload(utils.getBytesFromString('abcdefgh')).getRawBytes();
-      let byteStream: number[] = [];
-      let framesValid = 0;
-      let framesInvalid = 0;
+    it('should detect expected number of frames in long random byte stream', () => {
+      const useStoredRandom = true;
+      const storedRandomA = [
+        0x40, 0x1D, 0xFD, 0xF3, 0x87, 0x15, 0x2A, 0xD7, 0x3C, 0x45, 0xB6, 0x3C, 0x45, 0x55, 0x10, 0x96, 0x7A, 0xCB,
+        0x5C, 0x9A, 0x36, 0x82, 0xD1, 0xF7, 0x87, 0x89, 0x9E, 0xA4, 0xBE, 0xBA, 0xDF, 0xD4, 0xBD, 0x97, 0xBA, 0x44,
+        0x60, 0x07, 0xAE, 0x7A, 0x40, 0xF2, 0x7A, 0x51, 0x5B, 0x4B, 0xFF, 0x64, 0x67, 0x60, 0x66, 0x6C, 0x65, 0x24
+      ];
+      const storedRandomB = [
+        0x3D, 0xBF, 0x80, 0x37, 0xD8, 0x24, 0x05, 0x2E, 0x26, 0xE7, 0xD5, 0x57, 0xA3, 0x06, 0xA3, 0xA8, 0x75, 0xC4,
+        0x60, 0xA5, 0x4B, 0x3D, 0x18, 0x13, 0xD0, 0xD4, 0xC0, 0x7E, 0x2C, 0x10, 0xEB, 0xD6, 0x80, 0x17, 0xC6, 0xDD,
+        0x67, 0x3E, 0x71, 0x0E, 0xC3, 0xDF, 0x76, 0xF6, 0x2A, 0xD9, 0xAF, 0x2A, 0x1D, 0xA9, 0x46, 0xE3, 0x7F, 0x38
+      ];
       const min = fromConstants.FRAME_RAW_BYTES_LENGTH_MIN;
       const max = fromConstants.FRAME_RAW_BYTES_LENGTH_MAX;
-
-      for (let i = 0; i < 1000000; i++) {
-        byteStream.push(utils.getRandomInt(0, 255));
-      }
-      byteStream = [
-        ...byteStream.slice(0, byteStream.length >>> 1),
-        ...validFrameRawBytes,
-        ...byteStream.slice(byteStream.length >>> 1)
+      const frameCounter = { validFake: 0, validReal: 0, invalid: 0 };
+      const frameText = 'abcdefgh';
+      const byteStream = [
+        ...(useStoredRandom ? storedRandomA : new Array(10e6).fill(0).map(() => utils.getRandomInt(0, 255))),
+        ...new DataFrame().setPayload(utils.getBytesFromString(frameText)).getRawBytes(),
+        ...(useStoredRandom ? storedRandomB : new Array(10e6).fill(0).map(() => utils.getRandomInt(0, 255)))
       ];
 
       utils.getMovingWindowSubArrays(byteStream, min, max, (subArray) => {
         utils.getRightAlignedSubArrays(subArray, min, (rawBytes) => {
-          dataFrame.setRawBytes(rawBytes);
-          if (dataFrame.isValid()) {
-            framesValid++;
-            console.log(
-              dataFrame.getLengthFromRawBytes(), dataFrame.getPayload().map((i) => String.fromCharCode(i)).join('')
-            );
-          } else {
-            framesInvalid++;
-          }
+          const dataFrame = new DataFrame().setRawBytes(rawBytes);
+          dataFrame.isValid()
+            ? (utils.getStringFromBytes(dataFrame.getPayload()) === frameText
+              ? frameCounter.validReal++
+              : frameCounter.validFake++
+            )
+            : frameCounter.invalid++;
         });
       });
-      expect(framesValid + framesInvalid).toBe(8000036);
-      console.log([framesValid, framesInvalid]); // .toEqual([1, 0]);
-
-      // console.log(validFrameRawBytes.map(i => i.toString(16)).join(','));
-      // console.log(byteStream.map(i => i.toString(16)).join(','));
-      // for (let i = 0; i <= byteStream.length - fromConstants.FRAME_RAW_BYTES_LENGTH_MAX; i++) {
-      //   for (let j = fromConstants.FRAME_RAW_BYTES_LENGTH_MIN; j <= fromConstants.FRAME_RAW_BYTES_LENGTH_MAX; j++) {
-      //     // console.log(byteStream.slice(i, i + j));
-      //     const rawBytes = byteStream.slice(i, i + j);
-      //     // console.log('->', rawBytes.map(i => i.toString(10)).join(','));
-      //
-      //     dataFrame.setRawBytes(rawBytes);
-      //     dataFrame.isValid() ? framesValid++ : framesInvalid++;
-      //   }
-      // }
-      // console.log([framesValid, framesInvalid]); // .toEqual([1, 0]);
+      expect(frameCounter).toEqual({ invalid: 899, validFake: 0, validReal: 1 });
+      /*
+        10 000 000 random bytes + 10 valid frame bytes + 10 000 000 random bytes
+          - tests result A: { invalid: 159999691, validFake: 344, validReal: 1 }
+          - tests result B: { invalid: 159999734, validFake: 301, validReal: 1 }
+          - tests result C: { invalid: 159999716, validFake: 319, validReal: 1 }
+        It means that statistically every ~62 thousands random bytes there is one fake valid frame.
+        When transmission speed is 5 bytes per second then we should get a fake frame every ~3.5 hours.
+       */
     });
-    */
   });
 
   describe('setPayload', () => {
