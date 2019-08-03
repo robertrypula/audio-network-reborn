@@ -10,8 +10,6 @@
 
 Project is still in alpha state but you can check the latest versions here:
 
-[0.1.0-rc1](https://cdn.rypula.pl/audio-network-lite/v0.1.0-rc1/demo-browser.html)
-
 [All versions](https://cdn.rypula.pl/audio-network-lite/)
 
 ## Want to check this project in development mode?
