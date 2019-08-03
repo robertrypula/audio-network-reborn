@@ -2,6 +2,21 @@
 
 /*tslint:disable:no-bitwise*/
 
+export const getAllOneByteErrorsInPlace = (data: number[], callback: () => void, range = 256): void => {
+  for (let i = 0; i < data.length; i++) {
+    const byteReal = data[i];
+
+    for (let byteCorrupted = 0; byteCorrupted < range; byteCorrupted++) {
+      if (byteCorrupted === byteReal) {
+        continue;
+      }
+      data[i] = byteCorrupted;
+      callback();
+    }
+    data[i] = byteReal;
+  }
+};
+
 export const getBytesFromString = (text: string): number[] => {
   return text.split('').map((item) => item.charCodeAt(0));
 };
@@ -32,7 +47,7 @@ export const getFletcher16 = (data: number[]): number[] => {
    let sum0 = 0;
    let sum1 = 0;
 
-   for(let i = 0; i < data.length; i++) {
+   for (let i = 0; i < data.length; i++) {
       sum0 = (sum0 + data[i]) % 0xFF;
       sum1 = (sum1 + sum0) % 0xFF;
    }

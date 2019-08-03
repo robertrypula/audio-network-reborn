@@ -1,9 +1,37 @@
 import * as utils from './utils';
 
 describe('Utils', () => {
+  describe('getAllOneByteErrorsInPlace', () => {
+    it('should generate all possible byte streams with one byte error', () => {
+      const dataOriginal = [1, 2, 0];
+      const data = dataOriginal.slice(0);
+      const result: number[][] = [];
+
+      utils.getAllOneByteErrorsInPlace(data, () => result.push(data.slice(0)), 3);
+      expect(result).toEqual([[0, 2, 0], [2, 2, 0], [1, 0, 0], [1, 1, 0], [1, 2, 1], [1, 2, 2]]);
+      expect(data).toEqual(dataOriginal);
+    });
+
+    it('should generate proper amount of all possible byte streams with one byte error', () => {
+      const dataOriginal = [32, 34, 242];
+      const data = dataOriginal.slice(0);
+      let counter = 0;
+
+      utils.getAllOneByteErrorsInPlace(data, () => counter++);
+      expect(data).toEqual(dataOriginal);
+      expect(counter).toEqual(dataOriginal.length * 255);
+    });
+  });
+
   describe('getBytesFromString', () => {
     it('should return array with ASCII values for given string', () => {
       expect(utils.getBytesFromString('abc\n')).toEqual([0x61, 0x62, 0x63, 0x0A]);
+    });
+  });
+
+  describe('getFletcher8', () => {
+    it('should ...', () => {
+      expect(true).toBe(true);  // TODO implement
     });
   });
 
@@ -41,10 +69,14 @@ describe('Utils', () => {
     it('should return empty array when data length is below lengthMax', () => {
       const result: number[][] = [];
 
-      utils.getMovingWindowSubArrays(
-        [100, 200, 300, 400], 3, 5, (subArray) => result.push(subArray)
-      );
+      utils.getMovingWindowSubArrays([100, 200, 300, 400], 3, 5, (subArray) => result.push(subArray));
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getRandomInt', () => {
+    it('should ...', () => {
+      expect(true).toBe(true);  // TODO implement
     });
   });
 
