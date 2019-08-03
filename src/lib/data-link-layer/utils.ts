@@ -44,15 +44,15 @@ export const getFletcher8 = (data: number[]): number => {
 };
 
 export const getFletcher16 = (data: number[]): number[] => {
-   let sum0 = 0;
-   let sum1 = 0;
+  let sum0 = 0;
+  let sum1 = 0;
 
-   for (let i = 0; i < data.length; i++) {
-      sum0 = (sum0 + data[i]) % 0xFF;
-      sum1 = (sum1 + sum0) % 0xFF;
-   }
+  for (let i = 0; i < data.length; i++) {
+    sum0 = (sum0 + data[i]) % 0xFF;
+    sum1 = (sum1 + sum0) % 0xFF;
+  }
 
-   return [sum1, sum0];
+  return [sum1, sum0];
 };
 
 export const getMovingWindowSubArrays = (

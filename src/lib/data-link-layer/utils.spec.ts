@@ -38,9 +38,9 @@ describe('Utils', () => {
   describe('getFletcher16', () => {
     it('should return valid checksum', () => {
       const testCases = [
-        { input: 'abcde', output: [0xC8, 0xF0]},
-        { input: 'abcdef', output: [0x20, 0x57]},
-        { input: 'abcdefgh', output: [0x06, 0x27]}
+        { input: 'abcde', output: [0xC8, 0xF0] },
+        { input: 'abcdef', output: [0x20, 0x57] },
+        { input: 'abcdefgh', output: [0x06, 0x27] }
       ];
       testCases.forEach((testCase) =>
         expect(utils.getFletcher16(utils.getBytesFromString(testCase.input))).toEqual(testCase.output)
