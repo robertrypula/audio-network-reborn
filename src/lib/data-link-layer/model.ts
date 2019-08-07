@@ -2,7 +2,9 @@
 
 import { DataFrame } from './data-frame';
 
-export interface DataFramesLog {
+export interface DataFrameHistoryEntry {
   rawBytePosition: number;
   dataFrame: DataFrame;
 }
+
+export type DataFrameHistory = DataFrameHistoryEntry[];

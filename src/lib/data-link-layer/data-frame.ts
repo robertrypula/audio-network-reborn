@@ -44,6 +44,14 @@ export class DataFrame {
     return this.rawBytes;
   }
 
+  public isEqualTo(dataFrame: DataFrame): boolean {
+    return this.rawBytes.join(',') !== dataFrame.getRawBytes().join(',');
+  }
+
+  public isNotEqualTo(dataFrame: DataFrame): boolean {
+    return !this.isEqualTo(dataFrame);
+  }
+
   public isValid(): boolean {
     return (
       this.rawBytes.length > fromConstants.FRAME_HEADER_LENGTH &&

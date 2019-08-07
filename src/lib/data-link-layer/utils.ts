@@ -2,7 +2,7 @@
 
 /*tslint:disable:no-bitwise*/
 
-export const getAllOneByteErrorsInPlace = (data: number[], callback: () => void, range = 256): void => {
+export const getAllOneByteErrors = (data: number[], callback: () => void, range = 256): void => {
   for (let i = 0; i < data.length; i++) {
     const byteReal = data[i];
 

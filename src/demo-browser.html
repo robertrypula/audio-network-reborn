@@ -30,20 +30,10 @@
       <button onclick="send('tx-data')">Send</button>
     </div>
     <div class="section">
-      <b>Rx Data (0)</b>
+      <b>Rx Data</b>
     </div>
     <div class="section">
-      <span id="rx-data-0"></span>
-      <br/>
-      <span id="rx-frame-0" style="color: blue; font-weight: bold;"></span>
-    </div>
-    <div class="section">
-      <b>Rx Data (1)</b>
-    </div>
-    <div class="section">
-      <span id="rx-data-1"></span>
-      <br/>
-      <span id="rx-frame-1" style="color: blue; font-weight: bold;"></span>
+      <span id="rx-data"></span>
     </div>
     <div class="section">
       <button onclick="initializeRxInterval()">Receive</button>
@@ -102,8 +92,7 @@
         clearTxInterval();
         dataLinkLayer.physicalLayer.audioMonoIo.inputDisable();
         dataLinkLayer.physicalLayer.audioMonoIo.outputDisable();
-        document.getElementById('rx-data-0').innerHTML = '';
-        document.getElementById('rx-data-1').innerHTML = '';
+        document.getElementById('rx-data').innerHTML = '';
       }
     }
 
@@ -128,10 +117,11 @@
 
         dataLinkLayer.rxTimeTick();
         rxData = dataLinkLayer.getData();
-        document.getElementById('rx-data-0').innerHTML = rxData[0].join(', ');
-        document.getElementById('rx-data-1').innerHTML = rxData[1].join(', ');
-        document.getElementById('rx-frame-0').innerHTML = rxData[2].map(item => item.getPayload().join(', ')).join(' <br/> ');
-        document.getElementById('rx-frame-1').innerHTML = rxData[3].map(item => item.getPayload().join(', ')).join(' <br/> ');
+
+        if (rxData) {
+          document.getElementById('rx-data').innerHTML
+            = document.getElementById('rx-data').innerHTML + rxData.map(item => item.join(', ')).join('<br/>') + '<br/>';
+        }
       }, dataLinkLayer.physicalLayer.getDspConfig().timeTickMillisecondsRx);
     }
 

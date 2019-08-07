@@ -103,6 +103,18 @@ describe('DataFrame', () => {
     });
   });
 
+  describe('isEqualTo', () => {
+    it('should ...', () => {
+      expect(true).toBe(true);  // TODO implement
+    });
+  });
+
+  describe('isNotEqualTo', () => {
+    it('should ...', () => {
+      expect(true).toBe(true);  // TODO implement
+    });
+  });
+
   describe('isValid', () => {
     it('should detect errors', () => {
       const dataFrame = new DataFrame();
@@ -122,7 +134,7 @@ describe('DataFrame', () => {
 
       dataFrame.setPayload(payload);
       expect(dataFrame.isValid()).toBe(true);
-      utils.getAllOneByteErrorsInPlace(dataFrame.getRawBytes(), () => {
+      utils.getAllOneByteErrors(dataFrame.getRawBytes(), () => {
         dataFrame.isValid() ? framesValid++ : framesInvalid++;
       });
       expect(dataFrame.isValid()).toBe(true);

@@ -1,13 +1,13 @@
 import * as utils from './utils';
 
 describe('Utils', () => {
-  describe('getAllOneByteErrorsInPlace', () => {
+  describe('getAllOneByteErrors', () => {
     it('should generate all possible byte streams with one byte error', () => {
       const dataOriginal = [1, 2, 0];
       const data = dataOriginal.slice(0);
       const result: number[][] = [];
 
-      utils.getAllOneByteErrorsInPlace(data, () => result.push(data.slice(0)), 3);
+      utils.getAllOneByteErrors(data, () => result.push(data.slice(0)), 3);
       expect(result).toEqual([[0, 2, 0], [2, 2, 0], [1, 0, 0], [1, 1, 0], [1, 2, 1], [1, 2, 2]]);
       expect(data).toEqual(dataOriginal);
     });
@@ -17,7 +17,7 @@ describe('Utils', () => {
       const data = dataOriginal.slice(0);
       let counter = 0;
 
-      utils.getAllOneByteErrorsInPlace(data, () => counter++);
+      utils.getAllOneByteErrors(data, () => counter++);
       expect(data).toEqual(dataOriginal);
       expect(counter).toEqual(dataOriginal.length * 255);
     });
