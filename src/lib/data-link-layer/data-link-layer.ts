@@ -65,7 +65,6 @@ export class DataLinkLayer {
       // const equalFramesSecondStream = rxFrameHistorySecondStream.
       // filter((item) => item.rawBytePosition === this.rxRawBytesCounter - 1 && item.frame.isEqualTo(frame)).length;
 
-
       const lastEntryInSecondStream = rxFrameHistorySecondStream.length
         ? rxFrameHistorySecondStream[rxFrameHistorySecondStream.length - 1]
         : null;
