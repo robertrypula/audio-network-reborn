@@ -1,10 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataFrame } from './data-frame';
+import { Frame } from './frame';
 
-export interface DataFrameHistoryEntry {
+export interface FrameHistoryEntry {
   rawBytePosition: number;
-  dataFrame: DataFrame;
+  frame: Frame;
 }
 
-export type DataFrameHistory = DataFrameHistoryEntry[];
+export type FrameHistory = FrameHistoryEntry[];

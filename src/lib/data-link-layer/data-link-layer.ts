@@ -1,28 +1,28 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataFrame, DataFrameHistory, getAllOneByteErrors, getRightAlignedSubArrays, PhysicalLayer } from '..';
+import { FrameHistory, getRightAlignedSubArrays, PhysicalLayer } from '..';
 import { FRAME_RAW_BYTES_LENGTH_MAX, FRAME_RAW_BYTES_LENGTH_MIN } from './constants';
-import { DataFrameHistoryEntry } from './model';
+import { Frame } from './frame';
 
 export class DataLinkLayer {
   public readonly physicalLayer: PhysicalLayer;
 
-  protected rxDataFrameHistoryA: DataFrameHistory = [];
-  protected rxDataFrameHistoryB: DataFrameHistory = [];
-  protected rxDataFrames: DataFrame[];
+  protected rxFrameHistoryA: FrameHistory = [];
+  protected rxFrameHistoryB: FrameHistory = [];
+  protected rxFrames: Frame[];
   protected rxFrameRawBytesLengthMin = FRAME_RAW_BYTES_LENGTH_MIN;
   protected rxRawBytesA: number[] = [];
   protected rxRawBytesB: number[] = [];
   protected rxRawBytesCounter = 0;
-  protected txDataFrame: DataFrame;
+  protected txFrame: Frame;
 
   public constructor() {
     this.physicalLayer = new PhysicalLayer();
   }
 
   public getData(): number[][] | null {
-    return this.rxDataFrames.length
-      ? this.rxDataFrames.map((item) => item.getPayload())
+    return this.rxFrames.length
+      ? this.rxFrames.map((item) => item.getPayload())
       : null;
   }
 
@@ -35,7 +35,7 @@ export class DataLinkLayer {
     }
     rxRawBytes.push(this.physicalLayer.rx());
 
-    this.rxDataFrames = [];
+    this.rxFrames = [];
     getRightAlignedSubArrays(rxRawBytes, this.rxFrameRawBytesLengthMin, (rawBytes) => {
       this.tryToFindValidFrame(rawBytes);
       // TODO experiment with data correction in next versions
@@ -45,31 +45,31 @@ export class DataLinkLayer {
   }
 
   public setData(data: number[]): void {
-    this.txDataFrame = new DataFrame();
-    this.txDataFrame.setPayload(data);
+    this.txFrame = new Frame();
+    this.txFrame.setPayload(data);
   }
 
   public txTimeTick(): boolean {
-    return this.physicalLayer.tx(this.txDataFrame.getNextRawByte());
+    return this.physicalLayer.tx(this.txFrame.getNextRawByte());
   }
 
   protected tryToFindValidFrame(rawBytes: number[]): void {
     const isEven = this.rxRawBytesCounter % 2 === 0;
-    const rxDataFrameHistory = isEven ? this.rxDataFrameHistoryA : this.rxDataFrameHistoryB;
-    const rxDataFrameHistorySecondStream = isEven ? this.rxDataFrameHistoryB : this.rxDataFrameHistoryA;
-    const dataFrame = new DataFrame().setRawBytes(rawBytes);
+    const rxFrameHistory = isEven ? this.rxFrameHistoryA : this.rxFrameHistoryB;
+    const rxFrameHistorySecondStream = isEven ? this.rxFrameHistoryB : this.rxFrameHistoryA;
+    const frame = new Frame().setRawBytes(rawBytes);
 
-    if (dataFrame.isValid()) {
-      const lastEntryInSecondStream = rxDataFrameHistorySecondStream.length
-        ? rxDataFrameHistorySecondStream[rxDataFrameHistorySecondStream.length - 1]
+    if (frame.isValid()) {
+      const lastEntryInSecondStream = rxFrameHistorySecondStream.length
+        ? rxFrameHistorySecondStream[rxFrameHistorySecondStream.length - 1]
         : null;
       const wasFrameDetectedHalfStepBack = lastEntryInSecondStream
         ? lastEntryInSecondStream.rawBytePosition === this.rxRawBytesCounter - 1
         : false;
 
-      if (!wasFrameDetectedHalfStepBack || lastEntryInSecondStream.dataFrame.isNotEqualTo(dataFrame)) {
-        rxDataFrameHistory.push({ rawBytePosition: this.rxRawBytesCounter, dataFrame });
-        this.rxDataFrames.push(dataFrame);
+      if (!wasFrameDetectedHalfStepBack || lastEntryInSecondStream.frame.isNotEqualTo(frame)) {
+        rxFrameHistory.push({ rawBytePosition: this.rxRawBytesCounter, frame });
+        this.rxFrames.push(frame);
       }
     }
   }

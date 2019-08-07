@@ -1,19 +1,19 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import * as fromConstants from './constants';
-import { DataFrame } from './data-frame';
+import { Frame } from './frame';
 import * as utils from './utils';
 
 /*tslint:disable:no-bitwise*/
 
-describe('DataFrame', () => {
-  it('should properly validate initially failing data frame from real mobile/laptop transmission tests', () => {
+describe('Frame', () => {
+  it('should properly validate initially failing frame from real mobile/laptop transmission tests', () => {
     const payload = [0, 10, 20, 30, 40, 120, 250, 255];
-    const dataFrameA = new DataFrame().setPayload(payload);
-    const rawBytes = dataFrameA.getRawBytes().slice(0);
-    const dataFrameB = new DataFrame().setRawBytes(rawBytes);
-    const checksumCalculated = dataFrameA.getCalculatedChecksumFromPayload();
-    const checksumRaw = dataFrameA.getChecksumFromRawBytes();
+    const frameA = new Frame().setPayload(payload);
+    const rawBytes = frameA.getRawBytes().slice(0);
+    const frameB = new Frame().setRawBytes(rawBytes);
+    const checksumCalculated = frameA.getCalculatedChecksumFromPayload();
+    const checksumRaw = frameA.getChecksumFromRawBytes();
 
     expect(rawBytes).toEqual([245, 215, 0, 10, 20, 30, 40, 120, 250, 255]);
     expect(checksumCalculated === checksumRaw).toBe(true);
@@ -21,42 +21,42 @@ describe('DataFrame', () => {
       .toEqual(['10101', '11010111']);
     expect([(checksumRaw >>> 8).toString(2), (checksumRaw & 0xFF).toString(2)])
       .toEqual(['10101', '11010111']);
-    expect(dataFrameB.isValid()).toBe(true);
+    expect(frameB.isValid()).toBe(true);
   });
 
   describe('getCalculatedChecksumFromPayload', () => {
     it('should properly mask only checksum bits from the header', () => {
-      const dataFrame = new DataFrame();
+      const frame = new Frame();
       const fakeChecksum = [0xFF, 0xFF];
 
       spyOn(utils, 'getFletcher16').and.returnValue(fakeChecksum);
-      dataFrame.setRawBytes([0x01, 0x02, 0x03, 0x04]);
-      expect(dataFrame.getCalculatedChecksumFromPayload()).toBe((fakeChecksum[0] << 8 | fakeChecksum[1]) & 0x1FFF);
+      frame.setRawBytes([0x01, 0x02, 0x03, 0x04]);
+      expect(frame.getCalculatedChecksumFromPayload()).toBe((fakeChecksum[0] << 8 | fakeChecksum[1]) & 0x1FFF);
     });
 
     it('should properly mask only checksum bits from the header and return expected value', () => {
-      const dataFrame = new DataFrame();
+      const frame = new Frame();
       const fakeChecksum = [0x1A, 0xBC];
 
       spyOn(utils, 'getFletcher16').and.returnValue(fakeChecksum);
-      dataFrame.setRawBytes([0x01, 0x02, 0x03, 0x04]);
-      expect(dataFrame.getCalculatedChecksumFromPayload()).toBe(fakeChecksum[0] << 8 | fakeChecksum[1]);
+      frame.setRawBytes([0x01, 0x02, 0x03, 0x04]);
+      expect(frame.getCalculatedChecksumFromPayload()).toBe(fakeChecksum[0] << 8 | fakeChecksum[1]);
     });
   });
 
   describe('getChecksumFromRawBytes', () => {
     it('should properly return checksum from header with zeroed length', () => {
       const headerWithZeroedLength = [0x1A, 0xBC];
-      const dataFrame = new DataFrame().setRawBytes([...headerWithZeroedLength, 0x01, 0x02, 0x03]);
+      const frame = new Frame().setRawBytes([...headerWithZeroedLength, 0x01, 0x02, 0x03]);
 
-      expect(dataFrame.getChecksumFromRawBytes()).toBe(headerWithZeroedLength[0] << 8 | headerWithZeroedLength[1]);
+      expect(frame.getChecksumFromRawBytes()).toBe(headerWithZeroedLength[0] << 8 | headerWithZeroedLength[1]);
     });
 
     it('should properly mask checksum bits from header with all ones', () => {
       const headerWithZeroedLength = [0xFF, 0xFF];
-      const dataFrame = new DataFrame().setRawBytes([...headerWithZeroedLength, 0x01, 0x02, 0x03]);
+      const frame = new Frame().setRawBytes([...headerWithZeroedLength, 0x01, 0x02, 0x03]);
 
-      expect(dataFrame.getChecksumFromRawBytes())
+      expect(frame.getChecksumFromRawBytes())
         .toBe((headerWithZeroedLength[0] << 8 | headerWithZeroedLength[1]) & 0x1FFF);
     });
   });
@@ -69,10 +69,10 @@ describe('DataFrame', () => {
 
   describe('getLengthFromRawBytes', () => {
     it('should return correct length of the payload from raw bytes (header)', () => {
-      const dataFrame = new DataFrame();
+      const frame = new Frame();
       const payload = [10, 20, 30, 40];
 
-      expect(dataFrame.setPayload(payload).getLengthFromRawBytes()).toBe(payload.length);
+      expect(frame.setPayload(payload).getLengthFromRawBytes()).toBe(payload.length);
     });
   });
 
@@ -90,7 +90,7 @@ describe('DataFrame', () => {
 
   describe('getRawBytes', () => {
     it('should properly generate raw bytes (header + payload) for given payload', () => {
-      const dataFrame = new DataFrame();
+      const frame = new Frame();
       const payload = [0x06, 0x07, 0x08, 0x09, 0x0A];
       const fakeChecksum = [0x0A, 0x0B];
       const headerBytes = [
@@ -99,7 +99,7 @@ describe('DataFrame', () => {
       ];
 
       spyOn(utils, 'getFletcher16').and.returnValue(fakeChecksum);
-      expect(dataFrame.setPayload(payload).getRawBytes()).toEqual([...headerBytes, ...payload]);
+      expect(frame.setPayload(payload).getRawBytes()).toEqual([...headerBytes, ...payload]);
     });
   });
 
@@ -117,28 +117,28 @@ describe('DataFrame', () => {
 
   describe('isValid', () => {
     it('should detect errors', () => {
-      const dataFrame = new DataFrame();
+      const frame = new Frame();
       const payload = [0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD];
 
-      dataFrame.setPayload(payload);
-      expect(dataFrame.isValid()).toBe(true);
-      dataFrame.getRawBytes()[2]++;
-      expect(dataFrame.isValid()).toBe(false);
+      frame.setPayload(payload);
+      expect(frame.isValid()).toBe(true);
+      frame.getRawBytes()[2]++;
+      expect(frame.isValid()).toBe(false);
     });
 
     it('should detect errors when any of one byte is fully corrupted at given test payload', () => {
-      const dataFrame = new DataFrame();
+      const frame = new Frame();
       const payload = [0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD];
       let framesValid = 0;
       let framesInvalid = 0;
 
-      dataFrame.setPayload(payload);
-      expect(dataFrame.isValid()).toBe(true);
-      utils.getAllOneByteErrors(dataFrame.getRawBytes(), () => {
-        dataFrame.isValid() ? framesValid++ : framesInvalid++;
+      frame.setPayload(payload);
+      expect(frame.isValid()).toBe(true);
+      utils.getAllOneByteErrors(frame.getRawBytes(), () => {
+        frame.isValid() ? framesValid++ : framesInvalid++;
       });
-      expect(dataFrame.isValid()).toBe(true);
-      expect([framesValid, framesInvalid]).toEqual([0, 255 * dataFrame.getRawBytes().length]);
+      expect(frame.isValid()).toBe(true);
+      expect([framesValid, framesInvalid]).toEqual([0, 255 * frame.getRawBytes().length]);
     });
 
     it('should detect expected number of frames in long random byte stream', () => {
@@ -159,15 +159,15 @@ describe('DataFrame', () => {
       const frameText = 'abcdefgh';
       const byteStream = [
         ...(useStoredRandom ? storedRandomA : new Array(10e6).fill(0).map(() => utils.getRandomInt(0, 255))),
-        ...new DataFrame().setPayload(utils.getBytesFromString(frameText)).getRawBytes(),
+        ...new Frame().setPayload(utils.getBytesFromString(frameText)).getRawBytes(),
         ...(useStoredRandom ? storedRandomB : new Array(10e6).fill(0).map(() => utils.getRandomInt(0, 255)))
       ];
 
       utils.getMovingWindowSubArrays(byteStream, min, max, (subArray) => {
         utils.getRightAlignedSubArrays(subArray, min, (rawBytes) => {
-          const dataFrame = new DataFrame().setRawBytes(rawBytes);
-          dataFrame.isValid()
-            ? (utils.getStringFromBytes(dataFrame.getPayload()) === frameText
+          const frame = new Frame().setRawBytes(rawBytes);
+          frame.isValid()
+            ? (utils.getStringFromBytes(frame.getPayload()) === frameText
               ? frameCounter.validReal++
               : frameCounter.validFake++
             )

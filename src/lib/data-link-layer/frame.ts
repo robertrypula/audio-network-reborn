@@ -5,7 +5,7 @@ import { getFletcher16 } from './utils';
 
 /*tslint:disable:no-bitwise*/
 
-export class DataFrame {
+export class Frame {
   protected rawBytes: number[] = [];
   protected rawBytePosition: number = 0;
 
@@ -44,12 +44,12 @@ export class DataFrame {
     return this.rawBytes;
   }
 
-  public isEqualTo(dataFrame: DataFrame): boolean {
-    return this.rawBytes.join(',') !== dataFrame.getRawBytes().join(',');
+  public isEqualTo(frame: Frame): boolean {
+    return this.rawBytes.join(',') !== frame.getRawBytes().join(',');
   }
 
-  public isNotEqualTo(dataFrame: DataFrame): boolean {
-    return !this.isEqualTo(dataFrame);
+  public isNotEqualTo(frame: Frame): boolean {
+    return !this.isEqualTo(frame);
   }
 
   public isValid(): boolean {
@@ -60,7 +60,7 @@ export class DataFrame {
     );
   }
 
-  public setPayload(payload: number[]): DataFrame {
+  public setPayload(payload: number[]): Frame {
     const payloadLength = payload.length;
     let checksum: number[];
 
@@ -82,7 +82,7 @@ export class DataFrame {
     return this;
   }
 
-  public setRawBytes(rawBytes: number[]): DataFrame {
+  public setRawBytes(rawBytes: number[]): Frame {
     this.rawBytes = rawBytes;
     this.rawBytePosition = 0;
 
