@@ -5,6 +5,7 @@ export * from './version';
 export * from './application-layer/application-layer';
 export * from './data-link-layer/data-frame';
 export * from './data-link-layer/data-link-layer';
+export * from './data-link-layer/model';
 export * from './data-link-layer/utils';
 export * from './physical-layer/audio-mono-io/audio-mono-io-factory';
 export * from './physical-layer/audio-mono-io/audio-mono-io-stub';

@@ -2,6 +2,7 @@
 
 import { DataFrame, getRightAlignedSubArrays, PhysicalLayer } from '..';
 import { FRAME_RAW_BYTES_LENGTH_MAX, FRAME_RAW_BYTES_LENGTH_MIN } from './constants';
+import { DataFramesLog } from './model';
 
 export class DataLinkLayer {
   public readonly physicalLayer: PhysicalLayer;
@@ -10,30 +11,50 @@ export class DataLinkLayer {
   protected rxRawBytesCounter = 0;
   protected rxRawBytesA: number[] = [];
   protected rxRawBytesB: number[] = [];
-  protected rxDataFramesA: DataFrame[] = [];
-  protected rxDataFramesB: DataFrame[] = [];
+  protected rxDataFramesLogA: DataFramesLog[] = [];
+  protected rxDataFramesLogB: DataFramesLog[] = [];
 
   public constructor() {
     this.physicalLayer = new PhysicalLayer();
   }
 
   public getData(): any {
+    // TODO refactor those experiments and variable names
     const rxRawBytes = this.rxRawBytesCounter % 2 === 1 ? this.rxRawBytesA : this.rxRawBytesB;
-    const rxDataFrames = this.rxRawBytesCounter % 2 === 1 ? this.rxDataFramesA : this.rxDataFramesB;
+    const rxDataFramesLog = this.rxRawBytesCounter % 2 === 1 ? this.rxDataFramesLogA : this.rxDataFramesLogB;
 
     getRightAlignedSubArrays(rxRawBytes, FRAME_RAW_BYTES_LENGTH_MIN, (rawBytes) => {
       const dataFrame = new DataFrame().setRawBytes(rawBytes);
 
       if (dataFrame.isValid()) {
-        rxDataFrames.push(dataFrame);
+        const rxDataFramesLogSecondStream
+          = rxDataFramesLog === this.rxDataFramesLogA ? this.rxDataFramesLogB : this.rxDataFramesLogA;
+        const rxDataFramesLogSecondStreamLast = rxDataFramesLogSecondStream.length
+          ? rxDataFramesLogSecondStream[rxDataFramesLogSecondStream.length - 1]
+          : null;
+        const wasFrameDetectedHalfStepBack = rxDataFramesLogSecondStreamLast
+          ? rxDataFramesLogSecondStreamLast.rawBytePosition === this.rxRawBytesCounter - 1
+          : false;
+
+        if (wasFrameDetectedHalfStepBack) {
+          const isHalfStepBackFrameDifferentThanCurrentOne = wasFrameDetectedHalfStepBack
+            ? rxDataFramesLogSecondStreamLast.dataFrame.getRawBytes().join(',') !== dataFrame.getRawBytes().join(',')
+            : false;
+
+          if (isHalfStepBackFrameDifferentThanCurrentOne) {
+            rxDataFramesLog.push({ rawBytePosition: this.rxRawBytesCounter, dataFrame });
+          }
+        } else {
+          rxDataFramesLog.push({ rawBytePosition: this.rxRawBytesCounter, dataFrame });
+        }
       }
     });
 
     return [
       this.rxRawBytesA,
       this.rxRawBytesB,
-      this.rxDataFramesA,
-      this.rxDataFramesB
+      this.rxDataFramesLogA.map((item) => item.dataFrame),
+      this.rxDataFramesLogB.map((item) => item.dataFrame)
     ];
   }
 
