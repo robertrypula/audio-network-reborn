@@ -67,7 +67,7 @@
     function initializeTransmissionModeDropdown() {
       var html = AudioNetworkLite.getDspConfigList().map((dspConfig) => {
 
-        console.log(dspConfig);
+        // console.log(dspConfig);
         return '<option value="' + dspConfig.transmissionMode + '">' +
           byteRate(dspConfig.rawByteRate) + ' B/s' +
           ' | ' + kHz(dspConfig.band.begin) + '-' + kHz(dspConfig.band.end) + ' kHz' +

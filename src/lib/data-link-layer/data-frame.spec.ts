@@ -7,15 +7,57 @@ import * as utils from './utils';
 /*tslint:disable:no-bitwise*/
 
 describe('DataFrame', () => {
+  it('should properly validate initially failing data frame from real mobile/laptop transmission tests', () => {
+    const payload = [0, 10, 20, 30, 40, 120, 250, 255];
+    const dataFrameA = new DataFrame().setPayload(payload);
+    const rawBytes = dataFrameA.getRawBytes().slice(0);
+    const dataFrameB = new DataFrame().setRawBytes(rawBytes);
+    const checksumCalculated = dataFrameA.getCalculatedChecksumFromPayload();
+    const checksumRaw = dataFrameA.getChecksumFromRawBytes();
+
+    expect(rawBytes).toEqual([245, 215, 0, 10, 20, 30, 40, 120, 250, 255]);
+    expect(checksumCalculated === checksumRaw).toBe(true);
+    expect([(checksumCalculated >>> 8).toString(2), (checksumCalculated & 0xFF).toString(2)])
+      .toEqual(['10101', '11010111']);
+    expect([(checksumRaw >>> 8).toString(2), (checksumRaw & 0xFF).toString(2)])
+      .toEqual(['10101', '11010111']);
+    expect(dataFrameB.isValid()).toBe(true);
+  });
+
   describe('getCalculatedChecksumFromPayload', () => {
-    it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+    it('should properly mask only checksum bits from the header', () => {
+      const dataFrame = new DataFrame();
+      const fakeChecksum = [0xFF, 0xFF];
+
+      spyOn(utils, 'getFletcher16').and.returnValue(fakeChecksum);
+      dataFrame.setRawBytes([0x01, 0x02, 0x03, 0x04]);
+      expect(dataFrame.getCalculatedChecksumFromPayload()).toBe((fakeChecksum[0] << 8 | fakeChecksum[1]) & 0x1FFF);
+    });
+
+    it('should properly mask only checksum bits from the header and return expected value', () => {
+      const dataFrame = new DataFrame();
+      const fakeChecksum = [0x1A, 0xBC];
+
+      spyOn(utils, 'getFletcher16').and.returnValue(fakeChecksum);
+      dataFrame.setRawBytes([0x01, 0x02, 0x03, 0x04]);
+      expect(dataFrame.getCalculatedChecksumFromPayload()).toBe(fakeChecksum[0] << 8 | fakeChecksum[1]);
     });
   });
 
   describe('getChecksumFromRawBytes', () => {
-    it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+    it('should properly return checksum from header with zeroed length', () => {
+      const headerWithZeroedLength = [0x1A, 0xBC];
+      const dataFrame = new DataFrame().setRawBytes([...headerWithZeroedLength, 0x01, 0x02, 0x03]);
+
+      expect(dataFrame.getChecksumFromRawBytes()).toBe(headerWithZeroedLength[0] << 8 | headerWithZeroedLength[1]);
+    });
+
+    it('should properly mask checksum bits from header with all ones', () => {
+      const headerWithZeroedLength = [0xFF, 0xFF];
+      const dataFrame = new DataFrame().setRawBytes([...headerWithZeroedLength, 0x01, 0x02, 0x03]);
+
+      expect(dataFrame.getChecksumFromRawBytes())
+        .toBe((headerWithZeroedLength[0] << 8 | headerWithZeroedLength[1]) & 0x1FFF);
     });
   });
 

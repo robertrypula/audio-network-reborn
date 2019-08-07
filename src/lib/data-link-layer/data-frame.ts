@@ -12,7 +12,7 @@ export class DataFrame {
   public getCalculatedChecksumFromPayload(): number {
     const checksum = this.getCalculatedChecksumAsArrayFromPayload();
 
-    return (checksum[0] << 8) | checksum[1];
+    return ((checksum[0] << 8) | checksum[1]) & 0x1FFF;
   }
 
   public getChecksumFromRawBytes(): number {
@@ -67,8 +67,8 @@ export class DataFrame {
     this.rawBytePosition = 0;
 
     checksum = this.getCalculatedChecksumAsArrayFromPayload();
-    this.rawBytes[0] = checksum[0] & 0x1F;
-    this.rawBytes[0] = (((payloadLength - fromConstants.FRAME_PAYLOAD_LENGTH_OFFSET) & 0x07) << 5) | this.rawBytes[0];
+    this.rawBytes[0] =
+      (((payloadLength - fromConstants.FRAME_PAYLOAD_LENGTH_OFFSET) & 0x07) << 5) | (checksum[0] & 0x1F);
     this.rawBytes[1] = checksum[1];
 
     return this;
