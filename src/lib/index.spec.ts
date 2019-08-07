@@ -29,6 +29,6 @@ describe('Index', () => {
     expect(dataLinkLayer.txTimeTick()).toBe(false);
 
     dataLinkLayer.rxTimeTick();
-    expect(dataLinkLayer.getData()).toEqual([[0], [], [], []]);
+    expect(dataLinkLayer.getData()).toEqual(null);
   });
 });

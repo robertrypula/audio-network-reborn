@@ -50,11 +50,7 @@ export class DataLinkLayer {
   }
 
   public txTimeTick(): boolean {
-    const nextRawByte = this.txDataFrame.getNextRawByte();
-
-    this.physicalLayer.tx(nextRawByte);
-
-    return nextRawByte !== null;
+    return this.physicalLayer.tx(this.txDataFrame.getNextRawByte());
   }
 
   protected tryToFindValidFrame(rawBytes: number[]): void {

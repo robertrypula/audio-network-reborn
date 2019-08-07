@@ -40,11 +40,11 @@ export class PhysicalLayer {
     this.audioMonoIo.setFftSize(this.dspConfig.dspConfigInitial.fftSize);
   }
 
-  public tx(byte: number | null): void {
-    this.audioMonoIo.setPeriodicWave(
-      byte !== null && byte >= 0 && byte < BYTE_UNIQUE_VALUES
-        ? this.dspConfig.unifiedFrequencies[byte]
-        : SILENCE_FREQUENCY
-    );
+  public tx(byte: number | null): boolean {
+    const isValidByte = byte !== null && byte >= 0 && byte < BYTE_UNIQUE_VALUES;
+
+    this.audioMonoIo.setPeriodicWave(isValidByte ? this.dspConfig.unifiedFrequencies[byte] : SILENCE_FREQUENCY);
+
+    return isValidByte;
   }
 }
