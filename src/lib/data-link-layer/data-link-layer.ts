@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FrameHistory, getRightAlignedSubArrays, PhysicalLayer } from '..';
+import { FrameHistory, getAllOneByteErrors, getRightAlignedSubArrays, PhysicalLayer } from '..';
 import { FRAME_RAW_BYTES_LENGTH_MAX, FRAME_RAW_BYTES_LENGTH_MIN } from './constants';
 import { Frame } from './frame';
 
@@ -60,6 +60,12 @@ export class DataLinkLayer {
     const frame = new Frame().setRawBytes(rawBytes);
 
     if (frame.isValid()) {
+      // const equalFrames = rxFrameHistory
+      //   .filter((item) => item.rawBytePosition === this.rxRawBytesCounter && item.frame.isEqualTo(frame)).length;
+      // const equalFramesSecondStream = rxFrameHistorySecondStream.
+      // filter((item) => item.rawBytePosition === this.rxRawBytesCounter - 1 && item.frame.isEqualTo(frame)).length;
+
+
       const lastEntryInSecondStream = rxFrameHistorySecondStream.length
         ? rxFrameHistorySecondStream[rxFrameHistorySecondStream.length - 1]
         : null;
@@ -67,6 +73,9 @@ export class DataLinkLayer {
         ? lastEntryInSecondStream.rawBytePosition === this.rxRawBytesCounter - 1
         : false;
 
+      // console.log(equalFrames, equalFramesSecondStream, this.rxRawBytesCounter);
+
+      // if (equalFrames === 0 && equalFramesSecondStream === 0) {
       if (!wasFrameDetectedHalfStepBack || lastEntryInSecondStream.frame.isNotEqualTo(frame)) {
         rxFrameHistory.push({ rawBytePosition: this.rxRawBytesCounter, frame });
         this.rxFrames.push(frame);

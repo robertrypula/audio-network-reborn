@@ -45,7 +45,7 @@ export class Frame {
   }
 
   public isEqualTo(frame: Frame): boolean {
-    return this.rawBytes.join(',') !== frame.getRawBytes().join(',');
+    return this.rawBytes.join(',') === frame.getRawBytes().join(',');
   }
 
   public isNotEqualTo(frame: Frame): boolean {

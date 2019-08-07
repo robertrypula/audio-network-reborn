@@ -120,7 +120,7 @@
 
         if (rxData) {
           document.getElementById('rx-data').innerHTML
-            = document.getElementById('rx-data').innerHTML + rxData.map(item => item.join(', ')).join('<br/>') + '<br/>';
+            = document.getElementById('rx-data').innerHTML + rxData.map(item => item.join(', ')).join(' | ') + '<br/>';
         }
       }, dataLinkLayer.physicalLayer.getDspConfig().timeTickMillisecondsRx);
     }
