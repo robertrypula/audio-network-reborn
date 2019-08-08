@@ -114,14 +114,20 @@
       clearRxInterval();
       rxInterval = setInterval(() => {
         var rxData;
+        var rxDataErrorCorrected;
 
         dataLinkLayer.rxTimeTick();
         rxData = dataLinkLayer.getData();
+        rxDataErrorCorrected = dataLinkLayer.getDataErrorCorrected();
 
-        if (rxData) {
-          document.getElementById('rx-data').innerHTML
-            = document.getElementById('rx-data').innerHTML + rxData.map(item => item.join(', ')).join(' | ') + '<br/>';
+        if (rxData || rxDataErrorCorrected) {
+          document.getElementById('rx-data').innerHTML =
+            document.getElementById('rx-data').innerHTML +
+            (rxData ? rxData.map(item => item.join(', ')).join(' | ') : '[none valid] ') +
+            (rxDataErrorCorrected ? rxDataErrorCorrected.map(item => item.join(', ')).join(' | ') : '[none error corrected] ') +
+            '<br/>';
         }
+
       }, dataLinkLayer.physicalLayer.getDspConfig().timeTickMillisecondsRx);
     }
 

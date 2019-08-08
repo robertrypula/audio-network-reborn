@@ -3,8 +3,9 @@
 import { Frame } from './frame';
 
 export interface FrameHistoryEntry {
-  rawBytePosition: number;
+  errorCorrected: boolean;
   frame: Frame;
+  rawBytePosition: number;
 }
 
 export type FrameHistory = FrameHistoryEntry[];
