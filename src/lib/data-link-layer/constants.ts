@@ -1,8 +1,3 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-export const FRAME_HEADER_LENGTH = 2;
-export const FRAME_PAYLOAD_LENGTH_MAX = 8;
-export const FRAME_PAYLOAD_LENGTH_MIN = 1;
-export const FRAME_PAYLOAD_LENGTH_OFFSET = 1;
-export const FRAME_RAW_BYTES_LENGTH_MAX = FRAME_HEADER_LENGTH + FRAME_PAYLOAD_LENGTH_MAX;
-export const FRAME_RAW_BYTES_LENGTH_MIN = FRAME_HEADER_LENGTH + FRAME_PAYLOAD_LENGTH_MIN;
+export const DUMMY = 'dummy';  // TODO remove me

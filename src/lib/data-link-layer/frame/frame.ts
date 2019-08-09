@@ -1,33 +1,18 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import * as fromConstants from './constants';
-import { getFletcher16 } from './utils';
+import { frameModeToFrameConfigLookUp } from '../config';
+import { FrameConfigInterface, FrameMode } from '../model';
+import { getFletcher16 } from './checksum-algorithms';
 
 /*tslint:disable:no-bitwise*/
 
 export class Frame {
   protected rawBytes: number[] = [];
   protected rawBytePosition: number = 0;
+  protected readonly frameConfig: FrameConfigInterface;
 
-  public getCalculatedChecksumFromPayload(): number {
-    const checksum = this.getCalculatedChecksumAsArrayFromPayload();
-
-    return ((checksum[0] << 8) | checksum[1]) & 0x1FFF;
-  }
-
-  public getChecksumFromRawBytes(): number {
-    return this.rawBytes.length > fromConstants.FRAME_HEADER_LENGTH
-      ? ((this.rawBytes[0] << 8) | this.rawBytes[1]) & 0x1FFF
-      : null;
-  }
-  public getLengthFromPayload(): number {
-    return this.rawBytes.length - fromConstants.FRAME_HEADER_LENGTH;
-  }
-
-  public getLengthFromRawBytes(): number {
-    return this.rawBytes.length > fromConstants.FRAME_HEADER_LENGTH
-      ? ((this.rawBytes[0] >>> 5) & 0x07) + fromConstants.FRAME_PAYLOAD_LENGTH_OFFSET
-      : null;
+  public constructor(protected frameMode: FrameMode) {
+    this.frameConfig = frameModeToFrameConfigLookUp[frameMode];
   }
 
   public getNextRawByte(): number {
@@ -54,7 +39,7 @@ export class Frame {
 
   public isValid(): boolean {
     return (
-      this.rawBytes.length > fromConstants.FRAME_HEADER_LENGTH &&
+      this.rawBytes.length > this.frameConfig.headerLength &&
       this.getChecksumFromRawBytes() === this.getCalculatedChecksumFromPayload() &&
       this.getLengthFromRawBytes() === this.getLengthFromPayload()
     );
@@ -65,8 +50,8 @@ export class Frame {
     let checksum: number[];
 
     if (
-      payloadLength < fromConstants.FRAME_PAYLOAD_LENGTH_MIN ||
-      payloadLength > fromConstants.FRAME_PAYLOAD_LENGTH_MAX
+      payloadLength < this.frameConfig.payloadLengthMin ||
+      payloadLength > this.frameConfig.payloadLengthMax
     ) {
       throw new Error('Payload length out of range');
     }
@@ -76,7 +61,7 @@ export class Frame {
 
     checksum = this.getCalculatedChecksumAsArrayFromPayload();
     this.rawBytes[0] =
-      (((payloadLength - fromConstants.FRAME_PAYLOAD_LENGTH_OFFSET) & 0x07) << 5) | (checksum[0] & 0x1F);
+      (((payloadLength - this.frameConfig.payloadLengthOffset) & 0x07) << 5) | (checksum[0] & 0x1F);
     this.rawBytes[1] = checksum[1];
 
     return this;
@@ -91,5 +76,26 @@ export class Frame {
 
   protected getCalculatedChecksumAsArrayFromPayload(): number[] {
     return getFletcher16(this.getPayload());
+  }
+
+  protected getCalculatedChecksumFromPayload(): number {
+    const checksum = this.getCalculatedChecksumAsArrayFromPayload();
+
+    return ((checksum[0] << 8) | checksum[1]) & 0x1FFF;
+  }
+  protected getChecksumFromRawBytes(): number {
+    return this.rawBytes.length > this.frameConfig.headerLength
+      ? ((this.rawBytes[0] << 8) | this.rawBytes[1]) & 0x1FFF
+      : null;
+  }
+
+  protected getLengthFromPayload(): number {
+    return this.rawBytes.length - this.frameConfig.headerLength;
+  }
+
+  protected getLengthFromRawBytes(): number {
+    return this.rawBytes.length > this.frameConfig.headerLength
+      ? ((this.rawBytes[0] >>> 5) & 0x07) + this.frameConfig.payloadLengthOffset
+      : null;
   }
 }

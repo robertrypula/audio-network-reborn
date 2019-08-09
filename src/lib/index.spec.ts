@@ -4,16 +4,18 @@ import * as AudioNetworkLite from './index';
 import { AudioMonoIoCreateMode, audioMonoIoFactory, DataLinkLayer } from './index';
 
 describe('Index', () => {
-  it('should return version', () => {
-    expect(AudioNetworkLite.version).toBeTruthy();
-  });
+  describe('Info', () => {
+    it('should return version', () => {
+      expect(AudioNetworkLite.version).toBeTruthy();
+    });
 
-  it('should return author', () => {
-    expect(AudioNetworkLite.author).toBeTruthy();
-  });
+    it('should return author', () => {
+      expect(AudioNetworkLite.author).toBeTruthy();
+    });
 
-  it('should return githubUrl', () => {
-    expect(AudioNetworkLite.githubUrl).toBeTruthy();
+    it('should return githubUrl', () => {
+      expect(AudioNetworkLite.githubUrl).toBeTruthy();
+    });
   });
 
   it('should be dummy integration test that uses the lib code', () => {

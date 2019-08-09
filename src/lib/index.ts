@@ -1,10 +1,13 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-export * from './version';
+export * from './info';
 
 export * from './application-layer/application-layer';
+export * from './data-link-layer/config';
+export * from './data-link-layer/constants';
 export * from './data-link-layer/data-link-layer';
-export * from './data-link-layer/frame';
+export * from './data-link-layer/frame/checksum-algorithms';
+export * from './data-link-layer/frame/frame';
 export * from './data-link-layer/model';
 export * from './data-link-layer/utils';
 export * from './physical-layer/audio-mono-io/audio-mono-io-factory';

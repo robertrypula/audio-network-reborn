@@ -2,8 +2,8 @@
 
 import { AudioMonoIoInterface } from '../model';
 
-// tslint:disable:no-console
-// tslint:disable:no-unused-expression
+/*tslint:disable:no-console*/
+/*tslint:disable:no-unused-expression*/
 
 const CONSOLE = false;
 
