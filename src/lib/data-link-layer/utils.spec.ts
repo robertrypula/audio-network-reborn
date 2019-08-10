@@ -63,6 +63,18 @@ describe('Utils', () => {
     });
   });
 
+  describe('getRawBytesLengthMax', () => {
+    it('should ...', () => {
+      expect(true).toBe(true);  // TODO implement
+    });
+  });
+
+  describe('getRawBytesLengthMin', () => {
+    it('should ...', () => {
+      expect(true).toBe(true);  // TODO implement
+    });
+  });
+
   describe('getRightAlignedSubArrays', () => {
     it('should properly extract sub arrays', () => {
       const result: number[][] = [];

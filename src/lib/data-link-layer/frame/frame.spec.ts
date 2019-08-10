@@ -7,7 +7,7 @@ import { Frame } from './frame';
 
 /*tslint:disable:no-bitwise*/
 
-const frameMode = FrameMode.Header2BytesPayloadLengthBetween1And8;
+const frameMode = FrameMode.Header2BytesPayloadLengthBetween1And8BytesFletcher16;
 const frameConfig = frameModeToFrameConfigLookUp[frameMode];
 
 describe('Frame', () => {
@@ -29,7 +29,7 @@ describe('Frame', () => {
       const payload = [0x06, 0x07, 0x08, 0x09, 0x0A];
       const fakeChecksum = [0x0A, 0x0B];
       const headerBytes = [
-        (((payload.length - frameConfig.payloadLengthOffset) & 0x07) << 5) | (fakeChecksum[0] & 0x1F),
+        (((payload.length - frameConfig.headerPayloadLengthOffset) & 0x07) << 5) | (fakeChecksum[0] & 0x1F),
         fakeChecksum[1]
       ];
 

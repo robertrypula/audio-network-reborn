@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { FrameConfigInterface } from './model';
+
 export const getAllOneByteErrors = (data: number[], callback: () => void, range = 256): void => {
   for (let i = 0; i < data.length; i++) {
     const byteReal = data[i];
@@ -33,11 +35,24 @@ export const getMovingWindowSubArrays = (
   }
 };
 
-export const getRandomInt = (min: number, max: number): number => { // https://stackoverflow.com/a/1527820
+export const getRandomInt = (min: number, max: number): number => {
+  // https://stackoverflow.com/a/1527820
   min = Math.ceil(min);
   max = Math.floor(max);
 
   return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+export const getRawBytesLengthMax = (frameConfig: FrameConfigInterface): number => {
+  return frameConfig.headerPayloadLengthEnabled
+    ? frameConfig.headerLength + frameConfig.payloadLengthMax
+    : frameConfig.headerLength + frameConfig.payloadLength;
+};
+
+export const getRawBytesLengthMin = (frameConfig: FrameConfigInterface): number => {
+  return frameConfig.headerPayloadLengthEnabled
+    ? frameConfig.headerLength + frameConfig.payloadLengthMin
+    : frameConfig.headerLength + frameConfig.payloadLength;
 };
 
 export const getRightAlignedSubArrays = (

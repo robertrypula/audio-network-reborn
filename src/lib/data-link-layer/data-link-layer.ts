@@ -5,6 +5,8 @@ import {
   FrameHistory,
   FrameMode,
   getAllOneByteErrors,
+  getRawBytesLengthMax,
+  getRawBytesLengthMin,
   getRightAlignedSubArrays,
   PhysicalLayer
 } from '..';
@@ -24,37 +26,31 @@ export class DataLinkLayer {
   protected rxRawBytesCounter = 0;
   protected txFrame: Frame;
 
-  public constructor(
-    protected frameMode: FrameMode = FrameMode.Header2BytesPayloadLengthBetween1And8
-  ) {
+  public constructor(protected frameMode: FrameMode = FrameMode.Header2BytesPayloadLengthBetween1And8BytesFletcher16) {
     this.physicalLayer = new PhysicalLayer();
     this.frameConfig = frameModeToFrameConfigLookUp[frameMode];
   }
 
   public getData(): number[][] {
-    return this.rxFrames.length
-      ? this.rxFrames.map((item) => item.getPayload())
-      : null;
+    return this.rxFrames.length ? this.rxFrames.map(item => item.getPayload()) : null;
   }
 
   public getDataErrorCorrected(): number[][] {
-    return this.rxFramesErrorCorrected.length
-      ? this.rxFramesErrorCorrected.map((item) => item.getPayload())
-      : null;
+    return this.rxFramesErrorCorrected.length ? this.rxFramesErrorCorrected.map(item => item.getPayload()) : null;
   }
 
   public rxTimeTick(): void {
     const isEven = this.rxRawBytesCounter % 2 === 0;
     const rxRawBytes = isEven ? this.rxRawBytesA : this.rxRawBytesB;
 
-    if (rxRawBytes.length > this.frameConfig.rawBytesLengthMax) {
+    if (rxRawBytes.length > getRawBytesLengthMax(this.frameConfig)) {
       rxRawBytes.shift();
     }
     rxRawBytes.push(this.physicalLayer.rx());
 
     this.rxFrames = [];
     this.rxFramesErrorCorrected = [];
-    getRightAlignedSubArrays(rxRawBytes, this.frameConfig.rawBytesLengthMin, (rawBytes) => {
+    getRightAlignedSubArrays(rxRawBytes, getRawBytesLengthMin(this.frameConfig), rawBytes => {
       if (!this.tryToFindValidFrame(rawBytes)) {
         // getAllOneByteErrors(rawBytes, () => this.tryToFindValidFrame(rawBytes, true));
       }
@@ -78,14 +74,9 @@ export class DataLinkLayer {
     const frame = new Frame(this.frameMode).setRawBytes(rawBytes.slice(0));
 
     if (frame.isValid()) {
-      const equalFramesHalfStepBack = rxFrameHistoryHalfStepBack.
-        filter((item) => item.rawBytePosition >= this.rxRawBytesCounter - 1 && item.frame.isEqualTo(frame));
-
-      // console.log(
-      //   equalFramesHalfStepBack.map(
-      //     (item) => item.frame.getRawBytes().join(',') + ' ' + item.rawBytePosition
-      //   ).join(' | ')
-      // );
+      const equalFramesHalfStepBack = rxFrameHistoryHalfStepBack.filter(
+        item => item.rawBytePosition >= this.rxRawBytesCounter - 1 && item.frame.isEqualTo(frame)
+      );
 
       if (equalFramesHalfStepBack.length === 0) {
         rxFrameHistory.push({ errorCorrected, frame, rawBytePosition: this.rxRawBytesCounter });

@@ -2,7 +2,7 @@
 
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameConfigInterface, FrameMode } from '../model';
-import { getFletcher16 } from './checksum-algorithms';
+import { getChecksumFunction } from './checksum-algorithms';
 
 /*tslint:disable:no-bitwise*/
 
@@ -16,13 +16,11 @@ export class Frame {
   }
 
   public getNextRawByte(): number {
-    return this.rawBytePosition < this.rawBytes.length
-      ? this.rawBytes[this.rawBytePosition++]
-      : null;
+    return this.rawBytePosition < this.rawBytes.length ? this.rawBytes[this.rawBytePosition++] : null;
   }
 
   public getPayload(): number[] {
-    return this.rawBytes.slice(2);
+    return this.rawBytes.slice(this.frameConfig.headerLength);
   }
 
   public getRawBytes(): number[] {
@@ -39,30 +37,41 @@ export class Frame {
 
   public isValid(): boolean {
     return (
-      this.rawBytes.length > this.frameConfig.headerLength &&
-      this.getChecksumFromRawBytes() === this.getCalculatedChecksumFromPayload() &&
+      this.rawBytes.length >= this.frameConfig.headerLength &&
+      this.getChecksum(true).join(',') === this.getChecksum(false).join(',') &&
       this.getLengthFromRawBytes() === this.getLengthFromPayload()
     );
   }
 
   public setPayload(payload: number[]): Frame {
     const payloadLength = payload.length;
-    let checksum: number[];
+    const frameConfig = this.frameConfig;
+    let fullChecksum: number[];
 
     if (
-      payloadLength < this.frameConfig.payloadLengthMin ||
-      payloadLength > this.frameConfig.payloadLengthMax
+      frameConfig.headerPayloadLengthEnabled
+        ? payloadLength < frameConfig.payloadLengthMin || payloadLength > frameConfig.payloadLengthMax
+        : payloadLength !== frameConfig.payloadLength
     ) {
       throw new Error('Payload length out of range');
     }
 
-    this.rawBytes = [0, 0, ...payload];
+    this.rawBytes = [...new Array(frameConfig.headerLength).fill(0), ...payload];
     this.rawBytePosition = 0;
 
-    checksum = this.getCalculatedChecksumAsArrayFromPayload();
-    this.rawBytes[0] =
-      (((payloadLength - this.frameConfig.payloadLengthOffset) & 0x07) << 5) | (checksum[0] & 0x1F);
-    this.rawBytes[1] = checksum[1];
+    fullChecksum = this.getCalculatedFullChecksumAsArrayFromPayload();
+    for (let i = 0; i < frameConfig.headerLength; i++) {
+      const checksumByte = i < fullChecksum.length ? fullChecksum[i] : 0x00;
+      this.rawBytes[i] =
+        i === 0
+          ? frameConfig.headerPayloadLengthEnabled
+            ? (((payloadLength - frameConfig.headerPayloadLengthOffset) <<
+                frameConfig.headerFirstBytePayloadLengthBitShift) &
+                frameConfig.headerFirstBytePayloadLengthMask) |
+              (checksumByte & frameConfig.headerFirstByteChecksumMask)
+            : checksumByte
+          : checksumByte;
+    }
 
     return this;
   }
@@ -74,19 +83,20 @@ export class Frame {
     return this;
   }
 
-  protected getCalculatedChecksumAsArrayFromPayload(): number[] {
-    return getFletcher16(this.getPayload());
+  protected getCalculatedFullChecksumAsArrayFromPayload(): number[] {
+    return getChecksumFunction(this.frameConfig.checksumAlgorithm)(this.getPayload());
   }
 
-  protected getCalculatedChecksumFromPayload(): number {
-    const checksum = this.getCalculatedChecksumAsArrayFromPayload();
+  protected getChecksum(fromRawBytes: boolean): number[] {
+    const result = fromRawBytes
+      ? this.rawBytes.slice(0, this.frameConfig.headerLength)
+      : this.getCalculatedFullChecksumAsArrayFromPayload();
 
-    return ((checksum[0] << 8) | checksum[1]) & 0x1FFF;
-  }
-  protected getChecksumFromRawBytes(): number {
-    return this.rawBytes.length > this.frameConfig.headerLength
-      ? ((this.rawBytes[0] << 8) | this.rawBytes[1]) & 0x1FFF
-      : null;
+    if (this.frameConfig.headerPayloadLengthEnabled) {
+      result[0] = result[0] & this.frameConfig.headerFirstByteChecksumMask;
+    }
+
+    return result;
   }
 
   protected getLengthFromPayload(): number {
@@ -94,8 +104,12 @@ export class Frame {
   }
 
   protected getLengthFromRawBytes(): number {
-    return this.rawBytes.length > this.frameConfig.headerLength
-      ? ((this.rawBytes[0] >>> 5) & 0x07) + this.frameConfig.payloadLengthOffset
-      : null;
+    const frameConfig = this.frameConfig;
+
+    return this.frameConfig.headerPayloadLengthEnabled
+      ? ((this.rawBytes[0] & frameConfig.headerFirstBytePayloadLengthMask) >>>
+          frameConfig.headerFirstBytePayloadLengthBitShift) +
+          this.frameConfig.headerPayloadLengthOffset
+      : this.frameConfig.payloadLength;
   }
 }
