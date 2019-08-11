@@ -90,7 +90,7 @@ export class Frame {
   protected getChecksum(fromRawBytes: boolean): number[] {
     const result = fromRawBytes
       ? this.rawBytes.slice(0, this.frameConfig.headerLength)
-      : this.getCalculatedFullChecksumAsArrayFromPayload();
+      : this.getCalculatedFullChecksumAsArrayFromPayload().slice(0, this.frameConfig.headerLength);
 
     if (this.frameConfig.headerPayloadLengthEnabled) {
       result[0] = result[0] & this.frameConfig.headerFirstByteChecksumMask;

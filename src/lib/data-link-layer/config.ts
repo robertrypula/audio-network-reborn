@@ -15,6 +15,18 @@ export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
     payloadLengthMax: 8,
     payloadLengthMin: 1
   },
+  Header3BytesPayloadLengthBetween1And8BytesSha1: {
+    checksumAlgorithm: ChecksumAlgorithm.Sha1,
+    headerFirstByteChecksumMask: 0x1F,
+    headerFirstBytePayloadLengthBitShift: 5,
+    headerFirstBytePayloadLengthMask: 0xE0,
+    headerLength: 3,
+    headerPayloadLengthEnabled: true,
+    headerPayloadLengthOffset: 1,
+    payloadLength: null,
+    payloadLengthMax: 8,
+    payloadLengthMin: 1
+  },
   Header3BytesPayloadLengthFixedAt8BytesSha1: {
     checksumAlgorithm: ChecksumAlgorithm.Sha1,
     headerFirstByteChecksumMask: null,

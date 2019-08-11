@@ -26,7 +26,7 @@ export class DataLinkLayer {
   protected rxRawBytesCounter = 0;
   protected txFrame: Frame;
 
-  public constructor(protected frameMode: FrameMode = FrameMode.Header2BytesPayloadLengthBetween1And8BytesFletcher16) {
+  public constructor(protected frameMode: FrameMode = FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1) {
     this.physicalLayer = new PhysicalLayer();
     this.frameConfig = frameModeToFrameConfigLookUp[frameMode];
   }

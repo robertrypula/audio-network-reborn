@@ -28,6 +28,7 @@ describe('Index', () => {
     expect(dataLinkLayer.txTimeTick()).toBe(true);
     expect(dataLinkLayer.txTimeTick()).toBe(true);
     expect(dataLinkLayer.txTimeTick()).toBe(true);
+    expect(dataLinkLayer.txTimeTick()).toBe(true);
     expect(dataLinkLayer.txTimeTick()).toBe(false);
 
     dataLinkLayer.rxTimeTick();

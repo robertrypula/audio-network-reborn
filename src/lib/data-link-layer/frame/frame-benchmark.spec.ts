@@ -11,6 +11,16 @@ const frameConfig = frameModeToFrameConfigLookUp[frameMode];
 describe('FrameBenchmark', () => {
   it('should properly validate initially failing frame from real mobile/laptop transmission tests', () => {
     const payload = [0, 10, 20, 30, 40, 120, 250, 255];
+    const frameA = new Frame(FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1).setPayload(payload);
+    const rawBytes = frameA.getRawBytes().slice(0);
+    const frameB = new Frame(FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1).setRawBytes(rawBytes);
+
+    expect(rawBytes).toEqual([227, 115, 188, 0, 10, 20, 30, 40, 120, 250, 255]);
+    expect(frameB.isValid()).toBe(true);
+  });
+
+  it('should properly validate initially failing frame from real mobile/laptop transmission tests', () => {
+    const payload = [0, 10, 20, 30, 40, 120, 250, 255];
     const frameA = new Frame(frameMode).setPayload(payload);
     const rawBytes = frameA.getRawBytes().slice(0);
     const frameB = new Frame(frameMode).setRawBytes(rawBytes);

@@ -33,6 +33,7 @@ export interface FrameHistoryEntryInterface {
 
 export enum FrameMode {
   Header2BytesPayloadLengthBetween1And8BytesFletcher16 = 'Header2BytesPayloadLengthBetween1And8BytesFletcher16',
+  Header3BytesPayloadLengthBetween1And8BytesSha1 = 'Header3BytesPayloadLengthBetween1And8BytesSha1',
   Header3BytesPayloadLengthFixedAt8BytesSha1 = 'Header3BytesPayloadLengthFixedAt8BytesSha1'
 }
 
