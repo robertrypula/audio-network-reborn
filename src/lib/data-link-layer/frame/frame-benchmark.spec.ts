@@ -62,7 +62,7 @@ describe('FrameBenchmark', () => {
     const frameText = 'abcdefgh';
     const byteStream = [
       ...(useStoredRandom ? storedRandomA : new Array(10e6).fill(0).map(() => fromUtils.getRandomInt(0, 255))),
-      ...new Frame(frameMode).setPayload(fromUtils.getBytesFromString(frameText)).getRawBytes(),
+      ...new Frame(frameMode).setPayload(fromUtils.getBytesFromText(frameText)).getRawBytes(),
       ...(useStoredRandom ? storedRandomB : new Array(10e6).fill(0).map(() => fromUtils.getRandomInt(0, 255)))
     ];
 
@@ -70,7 +70,7 @@ describe('FrameBenchmark', () => {
       fromUtils.getRightAlignedSubArrays(subArray, min, (rawBytes) => {
         const frame = new Frame(frameMode).setRawBytes(rawBytes);
         frame.isValid()
-          ? (fromUtils.getStringFromBytes(frame.getPayload()) === frameText
+          ? (fromUtils.getTextFromBytes(frame.getPayload()) === frameText
             ? frameCounter.validReal++
             : frameCounter.validFake++
           )

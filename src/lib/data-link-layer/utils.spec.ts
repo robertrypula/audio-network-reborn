@@ -25,9 +25,21 @@ describe('Utils', () => {
     });
   });
 
-  describe('getBytesFromString', () => {
+  describe('getBytesFromHex', () => {
     it('should return array of char codes limited to range 0 - 255 from given string', () => {
-      expect(utils.getBytesFromString('abc\n')).toEqual([0x61, 0x62, 0x63, 0x0A]);
+      expect(utils.getBytesFromHex('ab cd   \n ef43')).toEqual([0xab, 0xcd, 0xef, 0x43]);
+    });
+  });
+
+  describe('getBytesFromText', () => {
+    it('should return array of char codes limited to range 0 - 255 from given string', () => {
+      expect(utils.getBytesFromText('abc\n')).toEqual([0x61, 0x62, 0x63, 0x0A]);
+    });
+  });
+
+  describe('getHexFromBytes', () => {
+    it('should return string with hex values from given bytes array', () => {
+      expect(utils.getHexFromBytes([0x01, 0xFF, 0x43, 0x23, 0x100, 0xAB])).toEqual('01 ff 43 23 00 ab');
     });
   });
 
@@ -42,10 +54,10 @@ describe('Utils', () => {
         [100, 200, 300],
         [100, 200, 300, 400],
         [100, 200, 300, 400, 500],
-        /* */[200, 300, 400, 500, 600],
-        /*      */[300, 400, 500, 600, 700],
-        /*           */[400, 500, 600, 700, 800],
-        /*                */[500, 600, 700, 800, 900]
+        /**/ [200, 300, 400, 500, 600],
+        /*     */ [300, 400, 500, 600, 700],
+        /*          */ [400, 500, 600, 700, 800],
+        /*               */ [500, 600, 700, 800, 900]
       ]);
     });
 
@@ -96,9 +108,9 @@ describe('Utils', () => {
     });
   });
 
-  describe('getStringFromBytes', () => {
+  describe('getTextFromBytes', () => {
     it('should return string from given array of bytes with unicode char codes limited to range 0-255', () => {
-      expect(utils.getStringFromBytes([0x61, 0x62, 0x63, 0x0A])).toEqual('abc\n');
+      expect(utils.getTextFromBytes([0x61, 0x62, 0x63, 0x0A])).toEqual('abc\n');
     });
   });
 });

@@ -18,7 +18,7 @@ describe('ChecksumAlgorithms', () => {
         { input: 'abcdefgh', output: [0x06, 0x27] }
       ];
       testCases.forEach((testCase) =>
-        expect(checksumAlgorithms.getFletcher16(utils.getBytesFromString(testCase.input))).toEqual(testCase.output)
+        expect(checksumAlgorithms.getFletcher16(utils.getBytesFromText(testCase.input))).toEqual(testCase.output)
       );
     });
   });
@@ -57,7 +57,7 @@ describe('ChecksumAlgorithms', () => {
         }
       ];
       testCases.forEach((testCase) =>
-        expect(checksumAlgorithms.getSha1(utils.getBytesFromString(testCase.input))).toEqual(testCase.output)
+        expect(checksumAlgorithms.getSha1(utils.getBytesFromText(testCase.input))).toEqual(testCase.output)
       );
     });
   });

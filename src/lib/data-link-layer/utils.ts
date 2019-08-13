@@ -2,6 +2,8 @@
 
 import { FrameConfigInterface } from './model';
 
+/*tslint:disable:no-bitwise*/
+
 export const getAllOneByteErrors = (data: number[], callback: () => void, range = 256): void => {
   for (let i = 0; i < data.length; i++) {
     const byteReal = data[i];
@@ -17,8 +19,16 @@ export const getAllOneByteErrors = (data: number[], callback: () => void, range 
   }
 };
 
-export const getBytesFromString = (text: string): number[] => {
+export const getBytesFromHex = (hex: string): number[] => {
+  return [];
+};
+
+export const getBytesFromText = (text: string): number[] => {
   return text.split('').map((item) => item.charCodeAt(0) % 256);
+};
+
+export const getHexFromBytes = (bytes: number[]): string => {
+  return bytes.map((byte) => ((byte & 0xFF) < 16 ? '0' : '') + (byte & 0xFF).toString(16)).join(' ');
 };
 
 export const getMovingWindowSubArrays = (
@@ -63,6 +73,6 @@ export const getRightAlignedSubArrays = (
   }
 };
 
-export const getStringFromBytes = (bytes: number[]): string => {
+export const getTextFromBytes = (bytes: number[]): string => {
   return bytes.map((i) => String.fromCharCode(i)).join('');
 };
