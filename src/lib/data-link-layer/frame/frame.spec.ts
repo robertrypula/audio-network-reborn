@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { getBytesFromHex } from '../..';
 import * as fromCheckAlgorithms from '../../shared/check-algorithms';
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameMode } from '../model';
@@ -26,8 +27,8 @@ describe('Frame', () => {
   describe('getRawBytes', () => {
     it('should properly generate raw bytes (header + payload) for given payload', () => {
       const frame = new Frame(frameMode);
-      const payload = [0x06, 0x07, 0x08, 0x09, 0x0A];
-      const fakeChecksum = [0x0A, 0x0B];
+      const payload = getBytesFromHex('06 07 08 09 0a');
+      const fakeChecksum = getBytesFromHex('0a 0b');
       const headerBytes = [
         (((payload.length - frameConfig.headerPayloadLengthOffset) & 0x07) << 5) | (fakeChecksum[0] & 0x1F),
         fakeChecksum[1]
@@ -53,7 +54,7 @@ describe('Frame', () => {
   describe('isValid', () => {
     it('should detect errors', () => {
       const frame = new Frame(frameMode);
-      const payload = [0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD];
+      const payload = getBytesFromHex('f6 f7 f8 f9 fa fb fc fd');
 
       frame.setPayload(payload);
       expect(frame.isValid()).toBe(true);

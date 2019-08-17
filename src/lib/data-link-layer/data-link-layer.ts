@@ -4,7 +4,6 @@ import {
   FrameConfigInterface,
   FrameHistory,
   FrameMode,
-  getAllOneByteErrors,
   getRawBytesLengthMax,
   getRawBytesLengthMin,
   getRightAlignedSubArrays,

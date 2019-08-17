@@ -1,64 +1,61 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { getFletcher16, getSha1 } from './check-algorithms';
-import { getBytesFromText } from './utils';
+import { CheckAlgorithmImplementation } from './model';
+import { getBytesFromText, getHexFromBytes } from './utils';
+
+interface TestCaseInterface {
+  input: string;
+  output: string;
+}
 
 describe('CheckAlgorithms', () => {
+  const runTestCases = (checkAlgorithmImplementation: CheckAlgorithmImplementation, testCases: TestCaseInterface[]) => {
+    testCases.forEach(testCase =>
+      expect(getHexFromBytes(checkAlgorithmImplementation(getBytesFromText(testCase.input)))).toEqual(testCase.output)
+    );
+  };
+
   describe('getFletcher8', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement or remove Fletcher8 from the code
+      expect(true).toBe(true); // TODO implement or remove Fletcher8 from the code
     });
   });
 
   describe('getFletcher16', () => {
-    it('should return valid value', () => {
-      const testCases = [
-        { input: 'abcde', output: [0xC8, 0xF0] },
-        { input: 'abcdef', output: [0x20, 0x57] },
-        { input: 'abcdefgh', output: [0x06, 0x27] }
-      ];
-      testCases.forEach((testCase) =>
-        expect(getFletcher16(getBytesFromText(testCase.input))).toEqual(testCase.output)
-      );
+    it('should pass all test cases', () => {
+      // Fletcher-16 test vectors taken from https://en.wikipedia.org/wiki/Fletcher%27s_checksum
+      runTestCases(getFletcher16, [
+        { input: 'abcde', output: 'c8 f0' },
+        { input: 'abcdef', output: '20 57' },
+        { input: 'abcdefgh', output: '06 27' }
+      ]);
     });
   });
 
   describe('getSha1', () => {
-    it('should return valid value', () => {
-      const testCases = [
+    it('should pass all test cases', () => {
+      // SHA-1 test vectors taken from https://www.di-mgt.com.au/sha_testvectors.html
+      runTestCases(getSha1, [
         {
           input: '',
-          output: [
-            0xDA, 0x39, 0xA3, 0xEE, 0x5E, 0x6B, 0x4B, 0x0D, 0x32, 0x55,
-            0xBF, 0xEF, 0x95, 0x60, 0x18, 0x90, 0xAF, 0xD8, 0x07, 0x09
-          ]
+          output: 'da 39 a3 ee 5e 6b 4b 0d 32 55 bf ef 95 60 18 90 af d8 07 09'
         },
         {
           input: 'abc',
-          output: [
-            0xA9, 0x99, 0x3E, 0x36, 0x47, 0x06, 0x81, 0x6A, 0xBA, 0x3E,
-            0x25, 0x71, 0x78, 0x50, 0xC2, 0x6C, 0x9C, 0xD0, 0xD8, 0x9D
-          ]
+          output: 'a9 99 3e 36 47 06 81 6a ba 3e 25 71 78 50 c2 6c 9c d0 d8 9d'
         },
         {
           input: 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq',
-          output: [
-            0x84, 0x98, 0x3E, 0x44, 0x1C, 0x3B, 0xD2, 0x6E, 0xBA, 0xAE,
-            0x4A, 0xA1, 0xF9, 0x51, 0x29, 0xE5, 0xE5, 0x46, 0x70, 0xF1
-          ]
+          output: '84 98 3e 44 1c 3b d2 6e ba ae 4a a1 f9 51 29 e5 e5 46 70 f1'
         },
         {
-          input: 'abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnh' +
-            'ijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu',
-          output: [
-            0xA4, 0x9B, 0x24, 0x46, 0xA0, 0x2C, 0x64, 0x5B, 0xF4, 0x19,
-            0xF9, 0x95, 0xB6, 0x70, 0x91, 0x25, 0x3A, 0x04, 0xA2, 0x59
-          ]
+          input:
+            'abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmn' +
+            'hijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu',
+          output: 'a4 9b 24 46 a0 2c 64 5b f4 19 f9 95 b6 70 91 25 3a 04 a2 59'
         }
-      ];
-      testCases.forEach((testCase) =>
-        expect(getSha1(getBytesFromText(testCase.input))).toEqual(testCase.output)
-      );
+      ]);
     });
   });
 });

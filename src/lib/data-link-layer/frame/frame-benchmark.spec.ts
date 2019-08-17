@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import * as fromSharedUtils from '../../shared/utils';
+import { getBytesFromHex, getBytesFromText, getRandomBytes, getTextFromBytes } from '../..';
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameMode } from '../model';
 import * as fromDataLinkLayerUtils from '../utils';
@@ -32,7 +32,7 @@ describe('FrameBenchmark', () => {
 
   it('should detect errors when any of one byte is fully corrupted at given test payload', () => {
     const frame = new Frame(frameMode);
-    const payload = [0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD];
+    const payload = getBytesFromHex('f6 f7 f8 f9 fa fb fc fd');
     let framesValid = 0;
     let framesInvalid = 0;
 
@@ -47,31 +47,29 @@ describe('FrameBenchmark', () => {
 
   it('should detect expected number of frames in long random byte stream', () => {
     const useStoredRandom = true;
-    const storedRandomA = [
-      0x40, 0x1D, 0xFD, 0xF3, 0x87, 0x15, 0x2A, 0xD7, 0x3C, 0x45, 0xB6, 0x3C, 0x45, 0x55, 0x10, 0x96, 0x7A, 0xCB,
-      0x5C, 0x9A, 0x36, 0x82, 0xD1, 0xF7, 0x87, 0x89, 0x9E, 0xA4, 0xBE, 0xBA, 0xDF, 0xD4, 0xBD, 0x97, 0xBA, 0x44,
-      0x60, 0x07, 0xAE, 0x7A, 0x40, 0xF2, 0x7A, 0x51, 0x5B, 0x4B, 0xFF, 0x64, 0x67, 0x60, 0x66, 0x6C, 0x65, 0x24
-    ];
-    const storedRandomB = [
-      0x3D, 0xBF, 0x80, 0x37, 0xD8, 0x24, 0x05, 0x2E, 0x26, 0xE7, 0xD5, 0x57, 0xA3, 0x06, 0xA3, 0xA8, 0x75, 0xC4,
-      0x60, 0xA5, 0x4B, 0x3D, 0x18, 0x13, 0xD0, 0xD4, 0xC0, 0x7E, 0x2C, 0x10, 0xEB, 0xD6, 0x80, 0x17, 0xC6, 0xDD,
-      0x67, 0x3E, 0x71, 0x0E, 0xC3, 0xDF, 0x76, 0xF6, 0x2A, 0xD9, 0xAF, 0x2A, 0x1D, 0xA9, 0x46, 0xE3, 0x7F, 0x38
-    ];
+    const storedRandomA = getBytesFromHex(`
+      40 1d fd f3 87 15 2a d7 3c 45 b6 3c 45 55 10 96 7a cb 5c 9a 36 82 d1 f7 87 89 9e
+      a4 be ba df d4 bd 97 ba 44 60 07 ae 7a 40 f2 7a 51 5b 4b ff 64 67 60 66 6c 65 24
+    `);
+    const storedRandomB = getBytesFromHex(`
+      3d bf 80 37 d8 24 05 2e 26 e7 d5 57 a3 06 a3 a8 75 c4 60 a5 4b 3d 18 13 d0 d4 c0
+      7e 2c 10 eb d6 80 17 c6 dd 67 3e 71 0e c3 df 76 f6 2a d9 af 2a 1d a9 46 e3 7f 38
+    `);
     const min = fromDataLinkLayerUtils.getRawBytesLengthMin(frameConfig);
     const max = fromDataLinkLayerUtils.getRawBytesLengthMax(frameConfig);
     const frameCounter = { validFake: 0, validReal: 0, invalid: 0 };
     const frameText = 'abcdefgh';
     const byteStream = [
-      ...(useStoredRandom ? storedRandomA : new Array(10e6).fill(0).map(() => fromSharedUtils.getRandomInt(0, 255))),
-      ...new Frame(frameMode).setPayload(fromSharedUtils.getBytesFromText(frameText)).getRawBytes(),
-      ...(useStoredRandom ? storedRandomB : new Array(10e6).fill(0).map(() => fromSharedUtils.getRandomInt(0, 255)))
+      ...(useStoredRandom ? storedRandomA : getRandomBytes(10e6)),
+      ...new Frame(frameMode).setPayload(getBytesFromText(frameText)).getRawBytes(),
+      ...(useStoredRandom ? storedRandomB : getRandomBytes(10e6))
     ];
 
     fromDataLinkLayerUtils.getMovingWindowSubArrays(byteStream, min, max, (subArray) => {
       fromDataLinkLayerUtils.getRightAlignedSubArrays(subArray, min, (rawBytes) => {
         const frame = new Frame(frameMode).setRawBytes(rawBytes);
         frame.isValid()
-          ? (fromSharedUtils.getTextFromBytes(frame.getPayload()) === frameText
+          ? (getTextFromBytes(frame.getPayload()) === frameText
             ? frameCounter.validReal++
             : frameCounter.validFake++
           )

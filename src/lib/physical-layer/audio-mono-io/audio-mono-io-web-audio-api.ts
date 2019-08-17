@@ -88,14 +88,19 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
         this.microphoneRealNode.connect(node);
       })
       .catch((error) => {
-        // console.error(error);
+        throw new Error(error);
       });
   }
 
-  protected inputEnable(): void {
+  protected handleSuspendedState(): void {
     if (this.audioContext.state === 'suspended') {
-      this.audioContext.resume();
+      // TODO think more about this promise
+      this.audioContext.resume().then();
     }
+  }
+
+  protected inputEnable(): void {
+    this.handleSuspendedState();
 
     if (!this.analyserNode) {
       this.analyserNode = this.audioContext.createAnalyser();
@@ -109,9 +114,7 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
   }
 
   protected outputEnable(): void {
-    if (this.audioContext.state === 'suspended') {
-      this.audioContext.resume();
-    }
+    this.handleSuspendedState();
 
     if (!this.oscillatorNode) {
       this.oscillatorNode = this.audioContext.createOscillator();

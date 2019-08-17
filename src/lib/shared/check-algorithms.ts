@@ -75,7 +75,9 @@ export const getSha1: CheckAlgorithmImplementation = (bytes: number[]): number[]
       words.push((bytes[bytesLength - 2] << 24) | (bytes[bytesLength - 1] << 16) | 0x08000);
       break;
     case 3:
-      words.push((bytes[bytesLength - 3] << 24) | (bytes[bytesLength - 2] << 16) | (bytes[bytesLength - 1] << 8) | 0x80);
+      words.push(
+        (bytes[bytesLength - 3] << 24) | (bytes[bytesLength - 2] << 16) | (bytes[bytesLength - 1] << 8) | 0x80
+      );
       break;
   }
 
