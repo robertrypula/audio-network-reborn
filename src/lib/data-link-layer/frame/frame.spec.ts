@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import * as checksumAlgorithms from '../../shared/check-algorithms';
+import * as fromCheckAlgorithms from '../../shared/check-algorithms';
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameMode } from '../model';
 import { Frame } from './frame';
@@ -33,7 +33,7 @@ describe('Frame', () => {
         fakeChecksum[1]
       ];
 
-      spyOn(checksumAlgorithms, 'getFletcher16').and.returnValue(fakeChecksum);
+      spyOn(fromCheckAlgorithms, 'getFletcher16').and.returnValue(fakeChecksum);
       expect(frame.setPayload(payload).getRawBytes()).toEqual([...headerBytes, ...payload]);
     });
   });

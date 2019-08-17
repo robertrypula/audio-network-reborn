@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import * as utils from './utils';
-import * as checksumAlgorithms from './check-algorithms';
+import { getFletcher16, getSha1 } from './check-algorithms';
+import { getBytesFromText } from './utils';
 
 describe('CheckAlgorithms', () => {
   describe('getFletcher8', () => {
@@ -18,7 +18,7 @@ describe('CheckAlgorithms', () => {
         { input: 'abcdefgh', output: [0x06, 0x27] }
       ];
       testCases.forEach((testCase) =>
-        expect(checksumAlgorithms.getFletcher16(utils.getBytesFromText(testCase.input))).toEqual(testCase.output)
+        expect(getFletcher16(getBytesFromText(testCase.input))).toEqual(testCase.output)
       );
     });
   });
@@ -57,7 +57,7 @@ describe('CheckAlgorithms', () => {
         }
       ];
       testCases.forEach((testCase) =>
-        expect(checksumAlgorithms.getSha1(utils.getBytesFromText(testCase.input))).toEqual(testCase.output)
+        expect(getSha1(getBytesFromText(testCase.input))).toEqual(testCase.output)
       );
     });
   });

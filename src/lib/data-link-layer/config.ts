@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { CheckAlgorithm } from '..';
+import { CheckAlgorithm } from '../shared/model';
 import { FrameModeToFrameConfigLookUp } from './model';
 
 export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {

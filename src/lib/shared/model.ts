@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-export type CheckAlgorithmImplementation = (data: number[]) => number[];
+export type CheckAlgorithmImplementation = (bytes: number[]) => number[];
 
 export enum CheckAlgorithm {
   Fletcher08 = 'Fletcher08',
