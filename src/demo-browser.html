@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Audio Network Lite</title>
     <style>
-      select, option, .monospace {
+      select,
+      option {
         font-family: monospace;
       }
       .section {
         padding-bottom: 15px;
       }
     </style>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body onload="main()">
-
     <div class="section">
       <select id="transmission-mode" onchange="onTransmissionModeChange(this.value)"></select>
     </div>
@@ -49,34 +49,48 @@
         if (!dataLinkLayer) {
           // AudioNetworkLite.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkLite.AudioMonoIoCreateMode.Stub;
           dataLinkLayer = new AudioNetworkLite.DataLinkLayer();
-          document.getElementById('sample-rate').innerHTML =
-            (dataLinkLayer.physicalLayer.audioMonoIo.getSampleRate() / 1000).toFixed(1);
+          document.getElementById('sample-rate').innerHTML = (
+            dataLinkLayer.physicalLayer.audioMonoIo.getSampleRate() / 1000
+          ).toFixed(1);
         }
       }
 
       function initializeTransmissionModeDropdown() {
-        var html = AudioNetworkLite.getDspConfigList().map((dspConfig) => {
-
-          // console.log(dspConfig);
-          return '<option value="' + dspConfig.transmissionMode + '">' +
-            byteRate(dspConfig.rawByteRate) + ' B/s' +
-            ' | ' + kHz(dspConfig.band.begin) + '-' + kHz(dspConfig.band.end) + ' kHz' +
-            ' (' + (dspConfig.band.bandwidth / 1000).toFixed(1) + ' kHz' + ')' +
-            // ' | ' + dspConfig.transmissionMode +
-            '</option>';
-        }).join('\n');
+        var html = AudioNetworkLite.getDspConfigList()
+          .map(dspConfig => {
+            // console.log(dspConfig);
+            return (
+              '<option value="' +
+              dspConfig.transmissionMode +
+              '">' +
+              byteRate(dspConfig.rawByteRate) +
+              ' B/s' +
+              ' | ' +
+              kHz(dspConfig.band.begin) +
+              '-' +
+              kHz(dspConfig.band.end) +
+              ' kHz' +
+              ' (' +
+              (dspConfig.band.bandwidth / 1000).toFixed(1) +
+              ' kHz' +
+              ')' +
+              // ' | ' + dspConfig.transmissionMode +
+              '</option>'
+            );
+          })
+          .join('\n');
         document.getElementById('transmission-mode').innerHTML =
           '<option value="">--- Select Transmission Mode ---</option>\n' + html;
       }
 
       function kHz(value) {
         const s = (value / 1000).toFixed(1);
-        return s.indexOf('.') ===  1 ? '&nbsp;' + s : s;
+        return s.indexOf('.') === 1 ? '&nbsp;' + s : s;
       }
 
       function byteRate(value) {
         const s = value.toFixed(1);
-        return s.indexOf('.') ===  1 ? '&nbsp;' + s : s;
+        return s.indexOf('.') === 1 ? '&nbsp;' + s : s;
       }
 
       function onTransmissionModeChange(transmissionMode) {
@@ -123,11 +137,13 @@
           if (rxData || rxDataErrorCorrected) {
             document.getElementById('rx-data').innerHTML =
               document.getElementById('rx-data').innerHTML +
-              (rxData ? rxData.map(item => item.join(', ')).join(' | ') : '[none valid] ') +
-              (rxDataErrorCorrected ? rxDataErrorCorrected.map(item => item.join(', ')).join(' | ') : '[none error corrected] ') +
-              '<br/>';
+              (rxData ? rxData.map(item => item.join(', ')).join(' | ') : '[no valid frames] ') +
+              ' <i>' +
+              (rxDataErrorCorrected
+                ? rxDataErrorCorrected.map(item => item.join(', ')).join(' | ')
+                : '[no frames from error correction] ') +
+              '</i><br/>';
           }
-
         }, dataLinkLayer.physicalLayer.getDspConfig().timeTickMillisecondsRx);
       }
 
@@ -141,16 +157,16 @@
       }
 
       function send(id) {
-        var tx = document.getElementById(id).value
-          .split(' ')
-          .filter((item) => item.trim() !== '')
+        var tx = document
+          .getElementById(id)
+          .value.split(' ')
+          .filter(item => item.trim() !== '')
           .map(item => parseInt(item));
 
         dataLinkLayer.setData(tx);
         dataLinkLayer.txTimeTick();
         initializeTxInterval();
       }
-
     </script>
     <!-- you can access distribution version via: <script src="https://unpkg.com/audio-network-lite"></script> -->
   </body>
