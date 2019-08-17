@@ -41,6 +41,7 @@ export interface DspConfigInitialInterface {
 }
 
 export enum TransmissionMode {
+  // NOTE: names picked in a way that they sort alphabetically from fast to slow
   ExtraordinaryBandFast = 'ExtraordinaryBandFast',
   ExtraordinaryBandSlow = 'ExtraordinaryBandSlow',
   FatBandFastAudibleLower = 'FatBandFastAudibleLower',

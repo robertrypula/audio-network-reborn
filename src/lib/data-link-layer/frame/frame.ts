@@ -2,7 +2,7 @@
 
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameConfigInterface, FrameMode } from '../model';
-import { getChecksumFunction } from './checksum-algorithms';
+import { getCheckFunction } from './checksum-algorithms';
 
 /*tslint:disable:no-bitwise*/
 
@@ -84,7 +84,7 @@ export class Frame {
   }
 
   protected getCalculatedFullChecksumAsArrayFromPayload(): number[] {
-    return getChecksumFunction(this.frameConfig.checksumAlgorithm)(this.getPayload());
+    return getCheckFunction(this.frameConfig.checkAlgorithm)(this.getPayload());
   }
 
   protected getChecksum(fromRawBytes: boolean): number[] {

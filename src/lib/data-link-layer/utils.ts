@@ -20,7 +20,7 @@ export const getAllOneByteErrors = (data: number[], callback: () => void, range 
 };
 
 export const getBytesFromHex = (hex: string): number[] => {
-  return [];
+  return []; // TODO implement
 };
 
 export const getBytesFromText = (text: string): number[] => {

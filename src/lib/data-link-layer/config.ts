@@ -1,10 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { ChecksumAlgorithm, FrameModeToFrameConfigLookUp } from './model';
+import { CheckAlgorithm, FrameModeToFrameConfigLookUp } from './model';
 
 export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
   Header2BytesPayloadLengthBetween1And8BytesFletcher16: {
-    checksumAlgorithm: ChecksumAlgorithm.Fletcher16,
+    checkAlgorithm: CheckAlgorithm.Fletcher16,
     headerFirstByteChecksumMask: 0x1F,
     headerFirstBytePayloadLengthBitShift: 5,
     headerFirstBytePayloadLengthMask: 0xE0,
@@ -16,7 +16,7 @@ export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
     payloadLengthMin: 1
   },
   Header3BytesPayloadLengthBetween1And8BytesSha1: {
-    checksumAlgorithm: ChecksumAlgorithm.Sha1,
+    checkAlgorithm: CheckAlgorithm.Sha1,
     headerFirstByteChecksumMask: 0x1F,
     headerFirstBytePayloadLengthBitShift: 5,
     headerFirstBytePayloadLengthMask: 0xE0,
@@ -28,7 +28,7 @@ export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
     payloadLengthMin: 1
   },
   Header3BytesPayloadLengthFixedAt8BytesSha1: {
-    checksumAlgorithm: ChecksumAlgorithm.Sha1,
+    checkAlgorithm: CheckAlgorithm.Sha1,
     headerFirstByteChecksumMask: null,
     headerFirstBytePayloadLengthBitShift: null,
     headerFirstBytePayloadLengthMask: null,

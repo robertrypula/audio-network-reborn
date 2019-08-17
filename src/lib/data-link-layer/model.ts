@@ -2,16 +2,16 @@
 
 import { Frame } from './frame/frame';
 
-export type ChecksumFunction = (data: number[]) => number[];
+export type CheckFunction = (data: number[]) => number[];
 
-export enum ChecksumAlgorithm {
+export enum CheckAlgorithm {
   Fletcher08 = 'Fletcher08',
   Fletcher16 = 'Fletcher16',
   Sha1 = 'Sha1'
 }
 
 export interface FrameConfigInterface {
-  checksumAlgorithm: ChecksumAlgorithm;
+  checkAlgorithm: CheckAlgorithm;
   headerFirstByteChecksumMask: number;
   headerFirstBytePayloadLengthBitShift: number;
   headerFirstBytePayloadLengthMask: number;

@@ -11,7 +11,7 @@ describe('ChecksumAlgorithms', () => {
   });
 
   describe('getFletcher16', () => {
-    it('should return valid checksum', () => {
+    it('should return valid value', () => {
       const testCases = [
         { input: 'abcde', output: [0xC8, 0xF0] },
         { input: 'abcdef', output: [0x20, 0x57] },
@@ -24,7 +24,7 @@ describe('ChecksumAlgorithms', () => {
   });
 
   describe('getSha1', () => {
-    it('should return valid checksum', () => {
+    it('should return valid value', () => {
       const testCases = [
         {
           input: '',
