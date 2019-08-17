@@ -4,6 +4,13 @@ import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameMode } from '../model';
 import * as fromUtils from '../../shared/utils';
 import { Frame } from './frame';
+import {
+  getAllOneByteErrors,
+  getMovingWindowSubArrays,
+  getRawBytesLengthMax,
+  getRawBytesLengthMin,
+  getRightAlignedSubArrays
+} from '../utils';
 
 const frameMode = FrameMode.Header2BytesPayloadLengthBetween1And8BytesFletcher16;
 const frameConfig = frameModeToFrameConfigLookUp[frameMode];
@@ -37,7 +44,7 @@ describe('FrameBenchmark', () => {
 
     frame.setPayload(payload);
     expect(frame.isValid()).toBe(true);
-    fromUtils.getAllOneByteErrors(frame.getRawBytes(), () => {
+    getAllOneByteErrors(frame.getRawBytes(), () => {
       frame.isValid() ? framesValid++ : framesInvalid++;
     });
     expect(frame.isValid()).toBe(true);
@@ -56,8 +63,8 @@ describe('FrameBenchmark', () => {
       0x60, 0xA5, 0x4B, 0x3D, 0x18, 0x13, 0xD0, 0xD4, 0xC0, 0x7E, 0x2C, 0x10, 0xEB, 0xD6, 0x80, 0x17, 0xC6, 0xDD,
       0x67, 0x3E, 0x71, 0x0E, 0xC3, 0xDF, 0x76, 0xF6, 0x2A, 0xD9, 0xAF, 0x2A, 0x1D, 0xA9, 0x46, 0xE3, 0x7F, 0x38
     ];
-    const min = fromUtils.getRawBytesLengthMin(frameConfig);
-    const max = fromUtils.getRawBytesLengthMax(frameConfig);
+    const min = getRawBytesLengthMin(frameConfig);
+    const max = getRawBytesLengthMax(frameConfig);
     const frameCounter = { validFake: 0, validReal: 0, invalid: 0 };
     const frameText = 'abcdefgh';
     const byteStream = [
@@ -66,8 +73,8 @@ describe('FrameBenchmark', () => {
       ...(useStoredRandom ? storedRandomB : new Array(10e6).fill(0).map(() => fromUtils.getRandomInt(0, 255)))
     ];
 
-    fromUtils.getMovingWindowSubArrays(byteStream, min, max, (subArray) => {
-      fromUtils.getRightAlignedSubArrays(subArray, min, (rawBytes) => {
+    getMovingWindowSubArrays(byteStream, min, max, (subArray) => {
+      getRightAlignedSubArrays(subArray, min, (rawBytes) => {
         const frame = new Frame(frameMode).setRawBytes(rawBytes);
         frame.isValid()
           ? (fromUtils.getTextFromBytes(frame.getPayload()) === frameText

@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { getCheckAlgorithmImplementation } from '../..';
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameConfigInterface, FrameMode } from '../model';
-import { getCheckAlgorithmImplementation } from '../../shared/check-algorithms';
 
 /*tslint:disable:no-bitwise*/
 
