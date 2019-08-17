@@ -27,15 +27,19 @@ export * from './visualization/spectrogram/utils';
 export * from './visualization/visualizers';
 
 /*
-TODO:
+TODO (code):
   + move check-function to shared
   + move utils to shared
   + implement to hex methods
   + get random array
-  - run prettier on entire project
+  + run prettier on entire project
   - rename checksum to FCS (Frame Check Sequence)
-  - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
-  - add bytes scrambling to the data link layer frame
   - re-implement frame-benchmark.spec.ts to really show how different frame config works
+  - add bytes scrambling to the data link layer frame
   - migrate CRC32 implementation from https://github.com/kvz/locutus/blob/master/src/php/strings/crc32.js
+  - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
+
+TODO (package):
+  - find alternative for coveralls
+  - refactor imports to absolute paths
  */

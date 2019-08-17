@@ -7,3 +7,8 @@ export enum CheckAlgorithm {
   Fletcher16 = 'Fletcher16',
   Sha1 = 'Sha1'
 }
+
+export interface TestCaseInterface {
+  in: string;
+  out: string;
+}
