@@ -23,7 +23,7 @@ export * from './shared/model';
 export * from './shared/utils';
 export * from './visualization/simple-canvas/simple-canvas';
 export * from './visualization/spectrogram/spectrogram';
-export * from './visualization/spectrogram/spectrogram-utils';
+export * from './visualization/spectrogram/utils';
 export * from './visualization/visualizers';
 
 /*

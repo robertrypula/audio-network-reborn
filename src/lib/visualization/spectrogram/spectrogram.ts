@@ -4,7 +4,7 @@
 
 /*tslint:disable*/
 
-// import * as spectrogramUtils from './spectrogram-utils';
+// import * as fromUtils from './utils';
 
 /*
 const INDEX_MARKER_DISABLED = false;
@@ -43,7 +43,7 @@ export class Spectrogram {
 
     public add = function (frequencyData, indexMin, indexMax, frequencySpacing, indexMarker, rowMarker) {
       var
-        key = spectrogramUtils.getKey(frequencyData, indexMin, indexMax, frequencySpacing),
+        key = fromUtils.getKey(frequencyData, indexMin, indexMax, frequencySpacing),
         reinitializationNeeded = key !== this.$$keyLast,
         leftColumnMode,
         data,
@@ -147,7 +147,7 @@ export class Spectrogram {
 
     protected insertRow = function (leftColumnMode, data, indexMarker) {
       var
-        row = spectrogramUtils.getRow(),
+        row = fromUtils.getRow(),
         isHeader = leftColumnMode === LEFT_COLUMN_MODE_HEADER,
         cssClass = '',
         color = 'transparent',
@@ -159,13 +159,13 @@ export class Spectrogram {
 
       switch (leftColumnMode) {
         case LEFT_COLUMN_MODE_COLOR_LIGHT:
-          color = spectrogramUtils.getColor(DECIBEL_FOR_COLOR_LIGHT);
+          color = fromUtils.getColor(DECIBEL_FOR_COLOR_LIGHT);
           break;
         case LEFT_COLUMN_MODE_COLOR_DARK:
-          color = spectrogramUtils.getColor(DECIBEL_FOR_COLOR_DARK);
+          color = fromUtils.getColor(DECIBEL_FOR_COLOR_DARK);
           break;
       }
-      cell = spectrogramUtils.getCell(cssClass, color, title);
+      cell = fromUtils.getCell(cssClass, color, title);
       row.appendChild(cell);
 
       for (i = this.$$indexMin; i <= this.$$indexMax; i++) {
@@ -174,12 +174,12 @@ export class Spectrogram {
           throw ARRAY_INDEX_OUT_OF_RANGE_EXCEPTION;
         }
         cssClass = indexMarker === i ? 's-cell-mark' : '';
-        color = spectrogramUtils.getColor(decibel);
+        color = fromUtils.getColor(decibel);
         title = '[' + i + '] ' + (i * this.$$frequencySpacing).toFixed(2) + ' Hz';
         if (!isHeader) {
           title += ', ' + decibel.toFixed(1) + ' dB';
         }
-        cell = spectrogramUtils.getCell(cssClass, color, title);
+        cell = fromUtils.getCell(cssClass, color, title);
         row.appendChild(cell);
       }
 
