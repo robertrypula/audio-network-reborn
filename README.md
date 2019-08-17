@@ -1,10 +1,11 @@
 # Audio Network Lite
 
 [![npm version](https://badge.fury.io/js/audio-network-lite.svg)](https://badge.fury.io/js/audio-network-lite)
-[![Build Status](https://travis-ci.org/robertrypula/audio-network-lite.svg?branch=master)](https://travis-ci.org/robertrypula/audio-network-lite)
-[![Coverage Status](https://coveralls.io/repos/github/robertrypula/audio-network-lite/badge.svg?branch=master)](https://coveralls.io/github/robertrypula/audio-network-lite?branch=master)
+[![build status](https://travis-ci.org/robertrypula/audio-network-lite.svg?branch=master)](https://travis-ci.org/robertrypula/audio-network-lite)
+[![coverage status](https://coveralls.io/repos/github/robertrypula/audio-network-lite/badge.svg?branch=master)](https://coveralls.io/github/robertrypula/audio-network-lite?branch=master)
 [![dependencies Status](https://david-dm.org/robertrypula/audio-network-lite/status.svg)](https://david-dm.org/robertrypula/audio-network-lite)
 [![devDependencies Status](https://david-dm.org/robertrypula/audio-network-lite/dev-status.svg)](https://david-dm.org/robertrypula/audio-network-lite?type=dev)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-round)](https://github.com/prettier/prettier)
 
 ## Live demo
 
@@ -21,13 +22,13 @@ git clone https://github.com/robertrypula/audio-network-lite.git
 cd audio-network-lite
 npm install
 
-npm run dev-browser
+npm run start
 ```
 
 You can also work directly in the terminal - just run
 
 ```
-npm run dev-node
+npm run start:node
 ```
 
 ## Licence
