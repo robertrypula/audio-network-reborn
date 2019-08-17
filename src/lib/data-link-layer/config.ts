@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { CheckAlgorithm, FrameModeToFrameConfigLookUp } from './model';
+import { CheckAlgorithm } from '..';
+import { FrameModeToFrameConfigLookUp } from './model';
 
 export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
   Header2BytesPayloadLengthBetween1And8BytesFletcher16: {

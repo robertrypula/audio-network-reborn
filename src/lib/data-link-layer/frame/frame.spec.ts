@@ -2,7 +2,7 @@
 
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameMode } from '../model';
-import * as checksumAlgorithms from './checksum-algorithms';
+import * as checksumAlgorithms from '../../shared/check-algorithms';
 import { Frame } from './frame';
 
 /*tslint:disable:no-bitwise*/

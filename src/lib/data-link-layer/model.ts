@@ -1,14 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { CheckAlgorithm } from '..';
 import { Frame } from './frame/frame';
-
-export type CheckFunction = (data: number[]) => number[];
-
-export enum CheckAlgorithm {
-  Fletcher08 = 'Fletcher08',
-  Fletcher16 = 'Fletcher16',
-  Sha1 = 'Sha1'
-}
 
 export interface FrameConfigInterface {
   checkAlgorithm: CheckAlgorithm;

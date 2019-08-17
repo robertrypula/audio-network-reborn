@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FrameConfigInterface } from './model';
+import { FrameConfigInterface } from '../data-link-layer/model';
 
 /*tslint:disable:no-bitwise*/
 

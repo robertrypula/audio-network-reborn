@@ -1,12 +1,12 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import * as utils from '../utils';
-import * as checksumAlgorithms from './checksum-algorithms';
+import * as utils from './utils';
+import * as checksumAlgorithms from './check-algorithms';
 
-describe('ChecksumAlgorithms', () => {
+describe('CheckAlgorithms', () => {
   describe('getFletcher8', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+      expect(true).toBe(true);  // TODO implement or remove Fletcher8 from the code
     });
   });
 

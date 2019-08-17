@@ -2,7 +2,7 @@
 
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameMode } from '../model';
-import * as fromUtils from '../utils';
+import * as fromUtils from '../../shared/utils';
 import { Frame } from './frame';
 
 const frameMode = FrameMode.Header2BytesPayloadLengthBetween1And8BytesFletcher16;

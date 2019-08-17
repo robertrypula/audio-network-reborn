@@ -1,10 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { CheckAlgorithm, CheckFunction } from '../model';
+import { CheckAlgorithm, CheckAlgorithmImplementation } from './model';
 
 /*tslint:disable:no-bitwise*/
 
-export const getCheckFunction = (checkAlgorithm: CheckAlgorithm): CheckFunction => {
+export const getCheckAlgorithmImplementation = (checkAlgorithm: CheckAlgorithm): CheckAlgorithmImplementation => {
   switch (checkAlgorithm) {
     case CheckAlgorithm.Fletcher08:
       return getFletcher08;
@@ -17,7 +17,7 @@ export const getCheckFunction = (checkAlgorithm: CheckAlgorithm): CheckFunction 
   }
 };
 
-export const getFletcher08: CheckFunction = (data: number[]): number[] => {
+export const getFletcher08: CheckAlgorithmImplementation = (data: number[]): number[] => {
   let byte: number;
   let byteNumber: number;
   let halfOfByte: number;
@@ -37,7 +37,7 @@ export const getFletcher08: CheckFunction = (data: number[]): number[] => {
   return [(sum1 << 4) | sum0];
 };
 
-export const getFletcher16: CheckFunction = (data: number[]): number[] => {
+export const getFletcher16: CheckAlgorithmImplementation = (data: number[]): number[] => {
   let sum0 = 0;
   let sum1 = 0;
 
@@ -49,7 +49,7 @@ export const getFletcher16: CheckFunction = (data: number[]): number[] => {
   return [sum1, sum0];
 };
 
-export const getSha1: CheckFunction = (data: number[]): number[] => {
+export const getSha1: CheckAlgorithmImplementation = (data: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation taken from:
   // https://github.com/kvz/locutus/blob/master/src/php/strings/sha1.js
   const dataLength = data.length;
@@ -95,6 +95,7 @@ export const getSha1: CheckFunction = (data: number[]): number[] => {
     let C = H2;
     let D = H3;
     let E = H4;
+    let temp: number;
 
     for (let j = 0; j < 16; j++) {
       W[j] = words[i + j];
@@ -105,7 +106,7 @@ export const getSha1: CheckFunction = (data: number[]): number[] => {
     }
 
     for (let j = 0; j <= 19; j++) {
-      const temp = (rotLeft(A, 5) + ((B & C) | (~B & D)) + E + W[j] + 0x5a827999) & 0x0ffffffff;
+      temp = (rotLeft(A, 5) + ((B & C) | (~B & D)) + E + W[j] + 0x5a827999) & 0x0ffffffff;
       E = D;
       D = C;
       C = rotLeft(B, 30);
@@ -114,7 +115,7 @@ export const getSha1: CheckFunction = (data: number[]): number[] => {
     }
 
     for (let j = 20; j <= 39; j++) {
-      const temp = (rotLeft(A, 5) + (B ^ C ^ D) + E + W[j] + 0x6ed9eba1) & 0x0ffffffff;
+      temp = (rotLeft(A, 5) + (B ^ C ^ D) + E + W[j] + 0x6ed9eba1) & 0x0ffffffff;
       E = D;
       D = C;
       C = rotLeft(B, 30);
@@ -123,7 +124,7 @@ export const getSha1: CheckFunction = (data: number[]): number[] => {
     }
 
     for (let j = 40; j <= 59; j++) {
-      const temp = (rotLeft(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[j] + 0x8f1bbcdc) & 0x0ffffffff;
+      temp = (rotLeft(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[j] + 0x8f1bbcdc) & 0x0ffffffff;
       E = D;
       D = C;
       C = rotLeft(B, 30);
@@ -132,7 +133,7 @@ export const getSha1: CheckFunction = (data: number[]): number[] => {
     }
 
     for (let j = 60; j <= 79; j++) {
-      const temp = (rotLeft(A, 5) + (B ^ C ^ D) + E + W[j] + 0xca62c1d6) & 0x0ffffffff;
+      temp = (rotLeft(A, 5) + (B ^ C ^ D) + E + W[j] + 0xca62c1d6) & 0x0ffffffff;
       E = D;
       D = C;
       C = rotLeft(B, 30);
