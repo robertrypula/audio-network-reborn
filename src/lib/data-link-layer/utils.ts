@@ -18,7 +18,10 @@ export const getAllOneByteErrors = (data: number[], callback: () => void, range 
 };
 
 export const getMovingWindowSubArrays = (
-  data: number[], lengthMinFromLeft: number, lengthMax: number, callback: (subArray: number[]) => void
+  data: number[],
+  lengthMinFromLeft: number,
+  lengthMax: number,
+  callback: (subArray: number[]) => void
 ): void => {
   if (data.length < lengthMax) {
     return;
@@ -44,7 +47,9 @@ export const getRawBytesLengthMin = (frameConfig: FrameConfigInterface): number 
 };
 
 export const getRightAlignedSubArrays = (
-  data: number[], lengthMin: number, callback: (subArray: number[]) => void
+  data: number[],
+  lengthMin: number,
+  callback: (subArray: number[]) => void
 ): void => {
   for (let i = 0; i < data.length - lengthMin + 1; i++) {
     callback(data.slice(i));

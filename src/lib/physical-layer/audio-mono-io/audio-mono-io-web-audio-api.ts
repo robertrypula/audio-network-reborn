@@ -29,7 +29,7 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
     let data: Float32Array;
 
     this.inputEnable();
-    data = new Float32Array(this.analyserNode.frequencyBinCount);   // same as: 0.5 * fftSize
+    data = new Float32Array(this.analyserNode.frequencyBinCount); // same as: 0.5 * fftSize
     this.analyserNode.getFloatFrequencyData(data);
 
     return data;
@@ -87,7 +87,7 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
         this.microphoneRealNode = this.audioContext.createMediaStreamSource(mediaStream);
         this.microphoneRealNode.connect(node);
       })
-      .catch((error) => {
+      .catch(error => {
         throw new Error(error);
       });
   }

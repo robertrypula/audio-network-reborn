@@ -29,8 +29,8 @@ describe('Utils', () => {
     it('should properly extract sub arrays', () => {
       const result: number[][] = [];
 
-      fromUtils.getMovingWindowSubArrays(
-        [100, 200, 300, 400, 500, 600, 700, 800, 900], 3, 5, (subArray) => result.push(subArray)
+      fromUtils.getMovingWindowSubArrays([100, 200, 300, 400, 500, 600, 700, 800, 900], 3, 5, subArray =>
+        result.push(subArray)
       );
       expect(result).toEqual([
         [100, 200, 300],
@@ -46,20 +46,20 @@ describe('Utils', () => {
     it('should return empty array when data length is below lengthMax', () => {
       const result: number[][] = [];
 
-      fromUtils.getMovingWindowSubArrays([100, 200, 300, 400], 3, 5, (subArray) => result.push(subArray));
+      fromUtils.getMovingWindowSubArrays([100, 200, 300, 400], 3, 5, subArray => result.push(subArray));
       expect(result).toEqual([]);
     });
   });
 
   describe('getRawBytesLengthMax', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+      expect(true).toBe(true); // TODO implement
     });
   });
 
   describe('getRawBytesLengthMin', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+      expect(true).toBe(true); // TODO implement
     });
   });
 
@@ -67,7 +67,7 @@ describe('Utils', () => {
     it('should properly extract sub arrays', () => {
       const result: number[][] = [];
 
-      fromUtils.getRightAlignedSubArrays([100, 200, 300, 400, 500, 600], 3, (subArray) => result.push(subArray));
+      fromUtils.getRightAlignedSubArrays([100, 200, 300, 400, 500, 600], 3, subArray => result.push(subArray));
       expect(result).toEqual([
         [100, 200, 300, 400, 500, 600],
         /**/ [200, 300, 400, 500, 600],
@@ -79,7 +79,7 @@ describe('Utils', () => {
     it('should return none when source arrays is smaller than minLength parameter', () => {
       const result: number[][] = [];
 
-      fromUtils.getRightAlignedSubArrays([100], 3, (subArray) => result.push(subArray));
+      fromUtils.getRightAlignedSubArrays([100], 3, subArray => result.push(subArray));
       expect(result).toEqual([]);
     });
   });

@@ -6,9 +6,9 @@ import { FrameModeToFrameConfigLookUp } from './model';
 export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
   Header2BytesPayloadLengthBetween1And8BytesFletcher16: {
     checkAlgorithm: CheckAlgorithm.Fletcher16,
-    headerFirstByteChecksumMask: 0x1F,
+    headerFirstByteChecksumMask: 0x1f,
     headerFirstBytePayloadLengthBitShift: 5,
-    headerFirstBytePayloadLengthMask: 0xE0,
+    headerFirstBytePayloadLengthMask: 0xe0,
     headerLength: 2,
     headerPayloadLengthEnabled: true,
     headerPayloadLengthOffset: 1,
@@ -18,9 +18,9 @@ export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
   },
   Header3BytesPayloadLengthBetween1And8BytesSha1: {
     checkAlgorithm: CheckAlgorithm.Sha1,
-    headerFirstByteChecksumMask: 0x1F,
+    headerFirstByteChecksumMask: 0x1f,
     headerFirstBytePayloadLengthBitShift: 5,
-    headerFirstBytePayloadLengthMask: 0xE0,
+    headerFirstBytePayloadLengthMask: 0xe0,
     headerLength: 3,
     headerPayloadLengthEnabled: true,
     headerPayloadLengthOffset: 1,

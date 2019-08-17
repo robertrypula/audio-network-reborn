@@ -65,5 +65,5 @@ export enum TransmissionMode {
 }
 
 export type TransmissionModeToDspConfigInitialLookUp = {
-  [key in keyof typeof TransmissionMode]: DspConfigInitialInterface
+  [key in keyof typeof TransmissionMode]: DspConfigInitialInterface;
 };

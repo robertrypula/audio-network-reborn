@@ -14,13 +14,13 @@ const frameConfig = frameModeToFrameConfigLookUp[frameMode];
 describe('Frame', () => {
   describe('getNextRawByte', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+      expect(true).toBe(true); // TODO implement
     });
   });
 
   describe('getPayload', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+      expect(true).toBe(true); // TODO implement
     });
   });
 
@@ -30,7 +30,7 @@ describe('Frame', () => {
       const payload = getBytesFromHex('06 07 08 09 0a');
       const fakeChecksum = getBytesFromHex('0a 0b');
       const headerBytes = [
-        (((payload.length - frameConfig.headerPayloadLengthOffset) & 0x07) << 5) | (fakeChecksum[0] & 0x1F),
+        (((payload.length - frameConfig.headerPayloadLengthOffset) & 0x07) << 5) | (fakeChecksum[0] & 0x1f),
         fakeChecksum[1]
       ];
 
@@ -41,13 +41,13 @@ describe('Frame', () => {
 
   describe('isEqualTo', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+      expect(true).toBe(true); // TODO implement
     });
   });
 
   describe('isNotEqualTo', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+      expect(true).toBe(true); // TODO implement
     });
   });
 
@@ -65,13 +65,13 @@ describe('Frame', () => {
 
   describe('setPayload', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+      expect(true).toBe(true); // TODO implement
     });
   });
 
   describe('setRawBytes', () => {
     it('should ...', () => {
-      expect(true).toBe(true);  // TODO implement
+      expect(true).toBe(true); // TODO implement
     });
   });
 });

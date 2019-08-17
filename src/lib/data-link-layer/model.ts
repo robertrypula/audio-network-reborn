@@ -31,5 +31,5 @@ export enum FrameMode {
 }
 
 export type FrameModeToFrameConfigLookUp = {
-  [key in keyof typeof FrameMode]: FrameConfigInterface
+  [key in keyof typeof FrameMode]: FrameConfigInterface;
 };

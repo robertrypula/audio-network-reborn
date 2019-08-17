@@ -21,7 +21,9 @@ export const visualizeUnifiedFrequencies = (
 ): void => {
   const frequencyBinsCount = 0.5 * fftSize;
   const simpleCanvas = new SimpleCanvas(
-    canvasElementId, (Math.max(...sampleRates)) / NYQUIST_TWICE + 50, sampleRates.length * binSpacing
+    canvasElementId,
+    Math.max(...sampleRates) / NYQUIST_TWICE + 50,
+    sampleRates.length * binSpacing
   );
 
   sampleRates.forEach((sampleRate, index) => {
@@ -30,14 +32,14 @@ export const visualizeUnifiedFrequencies = (
     for (let bin = 0; bin < frequencyBinsCount; bin++) {
       simpleCanvas.line(
         bin * resolution,
-        index * binSpacing + (binHeight / 3),
+        index * binSpacing + binHeight / 3,
         bin * resolution,
-        index * binSpacing + (binHeight * 2 / 3)
+        index * binSpacing + (binHeight * 2) / 3
       );
       simpleCanvas.rectangle(
         (bin - 0.5) * resolution,
         index * binSpacing,
-        ((bin + 0.5) * resolution) - 1,
+        (bin + 0.5) * resolution - 1,
         index * binSpacing + binHeight
       );
     }

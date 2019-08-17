@@ -36,11 +36,11 @@ export const getBytesFromHex = (hex: string): number[] => {
 };
 
 export const getBytesFromText = (text: string): number[] => {
-  return text.split('').map((item) => item.charCodeAt(0) % 256);
+  return text.split('').map(item => item.charCodeAt(0) % 256);
 };
 
 export const getHexFromBytes = (bytes: number[], joinWith = ' '): string => {
-  return bytes.map((byte) => ((byte & 0xFF) < 16 ? '0' : '') + (byte & 0xFF).toString(16)).join(joinWith);
+  return bytes.map(byte => ((byte & 0xff) < 16 ? '0' : '') + (byte & 0xff).toString(16)).join(joinWith);
 };
 
 export const getRandomBytes = (length: number): number[] => {
@@ -56,5 +56,5 @@ export const getRandomInt = (min: number, max: number): number => {
 };
 
 export const getTextFromBytes = (bytes: number[]): string => {
-  return bytes.map((i) => String.fromCharCode(i)).join('');
+  return bytes.map(i => String.fromCharCode(i)).join('');
 };

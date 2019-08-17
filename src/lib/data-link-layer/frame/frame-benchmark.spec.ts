@@ -65,14 +65,13 @@ describe('FrameBenchmark', () => {
       ...(useStoredRandom ? storedRandomB : getRandomBytes(10e6))
     ];
 
-    fromDataLinkLayerUtils.getMovingWindowSubArrays(byteStream, min, max, (subArray) => {
-      fromDataLinkLayerUtils.getRightAlignedSubArrays(subArray, min, (rawBytes) => {
+    fromDataLinkLayerUtils.getMovingWindowSubArrays(byteStream, min, max, subArray => {
+      fromDataLinkLayerUtils.getRightAlignedSubArrays(subArray, min, rawBytes => {
         const frame = new Frame(frameMode).setRawBytes(rawBytes);
         frame.isValid()
-          ? (getTextFromBytes(frame.getPayload()) === frameText
+          ? getTextFromBytes(frame.getPayload()) === frameText
             ? frameCounter.validReal++
             : frameCounter.validFake++
-          )
           : frameCounter.invalid++;
       });
     });

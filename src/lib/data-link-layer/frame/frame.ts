@@ -66,9 +66,9 @@ export class Frame {
         i === 0
           ? frameConfig.headerPayloadLengthEnabled
             ? (((payloadLength - frameConfig.headerPayloadLengthOffset) <<
-              frameConfig.headerFirstBytePayloadLengthBitShift) &
-              frameConfig.headerFirstBytePayloadLengthMask) |
-            (checksumByte & frameConfig.headerFirstByteChecksumMask)
+                frameConfig.headerFirstBytePayloadLengthBitShift) &
+                frameConfig.headerFirstBytePayloadLengthMask) |
+              (checksumByte & frameConfig.headerFirstByteChecksumMask)
             : checksumByte
           : checksumByte;
     }
@@ -108,8 +108,8 @@ export class Frame {
 
     return this.frameConfig.headerPayloadLengthEnabled
       ? ((this.rawBytes[0] & frameConfig.headerFirstBytePayloadLengthMask) >>>
-        frameConfig.headerFirstBytePayloadLengthBitShift) +
-      this.frameConfig.headerPayloadLengthOffset
+          frameConfig.headerFirstBytePayloadLengthBitShift) +
+          this.frameConfig.headerPayloadLengthOffset
       : this.frameConfig.payloadLength;
   }
 }
