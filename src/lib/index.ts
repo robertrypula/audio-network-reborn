@@ -34,7 +34,7 @@ TODO (code):
   + get random array
   + run prettier on entire project
   + rename checksum to FCS (Frame Check Sequence)
-  - re-implement frame-benchmark.spec.ts to really show how different frame config works
+  - re-implement frame-modes-benchmark.spec.ts to really show how different frame config works
   - add bytes scrambling to the data link layer frame
   - migrate CRC32 implementation from https://github.com/kvz/locutus/blob/master/src/php/strings/crc32.js
     or even better, try CRC24:
@@ -43,6 +43,7 @@ TODO (code):
     - https://github.com/alexgorbatchev/node-crc/blob/master/lib/es6/crc24.js
     - https://stackoverflow.com/questions/18638900/javascript-crc32
   - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
+  - experiment with a bit higher safeMarginFactor to produce rawByteRates like: 3, 4, 6, 8, 12, 16, 20/24?, 24/32?
 
 TODO (package):
   - find alternative for coveralls
