@@ -16,7 +16,7 @@ import {
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameMode } from '../model';
 import { Frame } from './frame';
-import { mocked1024RandomBytesA, mocked1024RandomBytesB } from "./frame-modes-benchmark.spec-data";
+import { mocked1024RandomBytesA, mocked1024RandomBytesB } from './frame-modes-benchmark.spec-data';
 
 describe('FrameModesBenchmark', () => {
   describe('Integrity', () => {
