@@ -11,12 +11,6 @@ describe('CheckAlgorithms', () => {
     );
   };
 
-  describe('getFletcher8', () => {
-    it('should ...', () => {
-      expect(true).toBe(true); // TODO implement or remove Fletcher8 from the code
-    });
-  });
-
   describe('getFletcher16', () => {
     it('should pass all test cases', () => {
       // Fletcher-16 test vectors taken from https://en.wikipedia.org/wiki/Fletcher%27s_checksum

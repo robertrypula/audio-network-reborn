@@ -6,8 +6,6 @@ import { CheckAlgorithm, CheckAlgorithmImplementation } from './model';
 
 export const getCheckAlgorithmImplementation = (checkAlgorithm: CheckAlgorithm): CheckAlgorithmImplementation => {
   switch (checkAlgorithm) {
-    case CheckAlgorithm.Fletcher08:
-      return getFletcher08;
     case CheckAlgorithm.Fletcher16:
       return getFletcher16;
     case CheckAlgorithm.Sha1:
@@ -15,23 +13,6 @@ export const getCheckAlgorithmImplementation = (checkAlgorithm: CheckAlgorithm):
     default:
       throw new Error('Invalid check algorithm');
   }
-};
-
-export const getFletcher08: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
-  let sum0 = 0;
-  let sum1 = 0;
-
-  for (let i = 0, iMax = 2 * bytes.length; i < iMax; i++) {
-    const isLeftHalfOfByte = i % 2 === 0;
-    const byteNumber = i >>> 1;
-    const byte = bytes[byteNumber];
-    const halfOfByte = isLeftHalfOfByte ? (byte & 0xf0) >>> 4 : byte & 0x0f;
-
-    sum0 = (sum0 + halfOfByte) % 0x0f;
-    sum1 = (sum1 + sum0) % 0x0f;
-  }
-
-  return [(sum1 << 4) | sum0];
 };
 
 export const getFletcher16: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
