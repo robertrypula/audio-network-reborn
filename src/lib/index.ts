@@ -33,7 +33,7 @@ TODO (code):
   + implement to hex methods
   + get random array
   + run prettier on entire project
-  - rename checksum to FCS (Frame Check Sequence)
+  + rename checksum to FCS (Frame Check Sequence)
   - re-implement frame-benchmark.spec.ts to really show how different frame config works
   - add bytes scrambling to the data link layer frame
   - migrate CRC32 implementation from https://github.com/kvz/locutus/blob/master/src/php/strings/crc32.js

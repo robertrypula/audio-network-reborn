@@ -5,13 +5,13 @@ import { Frame } from './frame/frame';
 
 export interface FrameConfigInterface {
   checkAlgorithm: CheckAlgorithm;
-  headerFirstByteChecksumMask: number;
+  headerFirstByteCheckSequenceMask: number;
   headerFirstBytePayloadLengthBitShift: number;
   headerFirstBytePayloadLengthMask: number;
   headerLength: number;
   headerPayloadLengthEnabled: boolean;
   headerPayloadLengthOffset: number;
-  payloadLength: number;
+  payloadLengthFixed: number;
   payloadLengthMax: number;
   payloadLengthMin: number;
 }

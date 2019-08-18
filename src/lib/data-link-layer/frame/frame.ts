@@ -28,7 +28,7 @@ export class Frame {
   }
 
   public isEqualTo(frame: Frame): boolean {
-    return this.rawBytes.join(',') === frame.getRawBytes().join(',');
+    return this.rawBytes.join(',') === frame.rawBytes.join(',');
   }
 
   public isNotEqualTo(frame: Frame): boolean {
@@ -38,20 +38,20 @@ export class Frame {
   public isValid(): boolean {
     return (
       this.rawBytes.length >= this.frameConfig.headerLength &&
-      this.getChecksum(true).join(',') === this.getChecksum(false).join(',') &&
+      this.getCheckSequence(true).join(',') === this.getCheckSequence(false).join(',') &&
       this.getLengthFromRawBytes() === this.getLengthFromPayload()
     );
   }
 
   public setPayload(payload: number[]): Frame {
-    const payloadLength = payload.length;
     const frameConfig = this.frameConfig;
-    let fullChecksum: number[];
+    const payloadLength = payload.length;
+    let fullCheckSequence: number[];
 
     if (
       frameConfig.headerPayloadLengthEnabled
         ? payloadLength < frameConfig.payloadLengthMin || payloadLength > frameConfig.payloadLengthMax
-        : payloadLength !== frameConfig.payloadLength
+        : payloadLength !== frameConfig.payloadLengthFixed
     ) {
       throw new Error('Payload length out of range');
     }
@@ -59,18 +59,16 @@ export class Frame {
     this.rawBytes = [...new Array(frameConfig.headerLength).fill(0), ...payload];
     this.rawBytePosition = 0;
 
-    fullChecksum = this.getCalculatedFullChecksumAsArrayFromPayload();
+    fullCheckSequence = this.getFullCheckSequenceFromPayload();
     for (let i = 0; i < frameConfig.headerLength; i++) {
-      const checksumByte = i < fullChecksum.length ? fullChecksum[i] : 0x00;
+      const checkSequenceByte = i < fullCheckSequence.length ? fullCheckSequence[i] : 0x00;
       this.rawBytes[i] =
-        i === 0
-          ? frameConfig.headerPayloadLengthEnabled
-            ? (((payloadLength - frameConfig.headerPayloadLengthOffset) <<
-                frameConfig.headerFirstBytePayloadLengthBitShift) &
-                frameConfig.headerFirstBytePayloadLengthMask) |
-              (checksumByte & frameConfig.headerFirstByteChecksumMask)
-            : checksumByte
-          : checksumByte;
+        i === 0 && frameConfig.headerPayloadLengthEnabled
+          ? (((payloadLength - frameConfig.headerPayloadLengthOffset) <<
+              frameConfig.headerFirstBytePayloadLengthBitShift) &
+              frameConfig.headerFirstBytePayloadLengthMask) |
+            (checkSequenceByte & frameConfig.headerFirstByteCheckSequenceMask)
+          : checkSequenceByte;
     }
 
     return this;
@@ -83,17 +81,17 @@ export class Frame {
     return this;
   }
 
-  protected getCalculatedFullChecksumAsArrayFromPayload(): number[] {
+  protected getFullCheckSequenceFromPayload(): number[] {
     return getCheckAlgorithmImplementation(this.frameConfig.checkAlgorithm)(this.getPayload());
   }
 
-  protected getChecksum(fromRawBytes: boolean): number[] {
+  protected getCheckSequence(fromRawBytes: boolean): number[] {
     const result = fromRawBytes
       ? this.rawBytes.slice(0, this.frameConfig.headerLength)
-      : this.getCalculatedFullChecksumAsArrayFromPayload().slice(0, this.frameConfig.headerLength);
+      : this.getFullCheckSequenceFromPayload().slice(0, this.frameConfig.headerLength);
 
     if (this.frameConfig.headerPayloadLengthEnabled) {
-      result[0] = result[0] & this.frameConfig.headerFirstByteChecksumMask;
+      result[0] = result[0] & this.frameConfig.headerFirstByteCheckSequenceMask;
     }
 
     return result;
@@ -110,6 +108,6 @@ export class Frame {
       ? ((this.rawBytes[0] & frameConfig.headerFirstBytePayloadLengthMask) >>>
           frameConfig.headerFirstBytePayloadLengthBitShift) +
           this.frameConfig.headerPayloadLengthOffset
-      : this.frameConfig.payloadLength;
+      : this.frameConfig.payloadLengthFixed;
   }
 }

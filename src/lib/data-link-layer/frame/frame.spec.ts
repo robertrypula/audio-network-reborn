@@ -28,13 +28,13 @@ describe('Frame', () => {
     it('should properly generate raw bytes (header + payload) for given payload', () => {
       const frame = new Frame(frameMode);
       const payload = getBytesFromHex('06 07 08 09 0a');
-      const fakeChecksum = getBytesFromHex('0a 0b');
+      const fakeCheckSequence = getBytesFromHex('0a 0b');
       const headerBytes = [
-        (((payload.length - frameConfig.headerPayloadLengthOffset) & 0x07) << 5) | (fakeChecksum[0] & 0x1f),
-        fakeChecksum[1]
+        (((payload.length - frameConfig.headerPayloadLengthOffset) & 0x07) << 5) | (fakeCheckSequence[0] & 0x1f),
+        fakeCheckSequence[1]
       ];
 
-      spyOn(fromCheckAlgorithms, 'getFletcher16').and.returnValue(fakeChecksum);
+      spyOn(fromCheckAlgorithms, 'getFletcher16').and.returnValue(fakeCheckSequence);
       expect(frame.setPayload(payload).getRawBytes()).toEqual([...headerBytes, ...payload]);
     });
   });

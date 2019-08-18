@@ -37,13 +37,13 @@ export const getMovingWindowSubArrays = (
 export const getRawBytesLengthMax = (frameConfig: FrameConfigInterface): number => {
   return frameConfig.headerPayloadLengthEnabled
     ? frameConfig.headerLength + frameConfig.payloadLengthMax
-    : frameConfig.headerLength + frameConfig.payloadLength;
+    : frameConfig.headerLength + frameConfig.payloadLengthFixed;
 };
 
 export const getRawBytesLengthMin = (frameConfig: FrameConfigInterface): number => {
   return frameConfig.headerPayloadLengthEnabled
     ? frameConfig.headerLength + frameConfig.payloadLengthMin
-    : frameConfig.headerLength + frameConfig.payloadLength;
+    : frameConfig.headerLength + frameConfig.payloadLengthFixed;
 };
 
 export const getRightAlignedSubArrays = (
