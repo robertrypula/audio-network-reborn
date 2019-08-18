@@ -26,7 +26,7 @@ describe('Frame', () => {
 
   describe('getRawBytes', () => {
     it('should properly generate raw bytes (header + payload) for given payload', () => {
-      const frame = new Frame(frameMode);
+      const frame = new Frame(frameConfig);
       const payload = getBytesFromHex('06 07 08 09 0a');
       const fakeCheckSequence = getBytesFromHex('0a 0b');
       const headerBytes = [
@@ -53,7 +53,7 @@ describe('Frame', () => {
 
   describe('isValid', () => {
     it('should detect errors', () => {
-      const frame = new Frame(frameMode);
+      const frame = new Frame(frameConfig);
       const payload = getBytesFromHex('f6 f7 f8 f9 fa fb fc fd');
 
       frame.setPayload(payload);

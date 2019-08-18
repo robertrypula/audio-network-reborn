@@ -15,7 +15,6 @@ import { Frame } from './frame/frame';
 export class DataLinkLayer {
   public readonly physicalLayer: PhysicalLayer;
 
-  protected frameConfig: FrameConfigInterface;
   protected rxFrameHistoryA: FrameHistory = [];
   protected rxFrameHistoryB: FrameHistory = [];
   protected rxFrames: Frame[];
@@ -25,9 +24,12 @@ export class DataLinkLayer {
   protected rxRawBytesCounter = 0;
   protected txFrame: Frame;
 
-  public constructor(protected frameMode: FrameMode = FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1) {
+  public constructor(
+    protected readonly frameConfig: FrameConfigInterface = frameModeToFrameConfigLookUp[
+      FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1
+    ]
+  ) {
     this.physicalLayer = new PhysicalLayer();
-    this.frameConfig = frameModeToFrameConfigLookUp[frameMode];
   }
 
   public getData(): number[][] {
@@ -61,7 +63,7 @@ export class DataLinkLayer {
   }
 
   public setData(data: number[]): void {
-    this.txFrame = new Frame(this.frameMode);
+    this.txFrame = new Frame(this.frameConfig);
     this.txFrame.setPayload(data);
   }
 
@@ -73,7 +75,7 @@ export class DataLinkLayer {
     const isEven = this.rxRawBytesCounter % 2 === 0;
     const rxFrameHistory = isEven ? this.rxFrameHistoryA : this.rxFrameHistoryB;
     const rxFrameHistoryHalfStepBack = isEven ? this.rxFrameHistoryB : this.rxFrameHistoryA;
-    const frame = new Frame(this.frameMode).setRawBytes(rawBytes.slice(0)); // TODO rename to frameCandidate?
+    const frame = new Frame(this.frameConfig).setRawBytes(rawBytes.slice(0)); // TODO rename to frameCandidate?
 
     if (frame.isValid()) {
       const equalFramesHalfStepBack = rxFrameHistoryHalfStepBack.filter(

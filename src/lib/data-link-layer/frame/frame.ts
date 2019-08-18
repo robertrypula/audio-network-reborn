@@ -1,19 +1,15 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { getCheckAlgorithmImplementation } from '../..';
-import { frameModeToFrameConfigLookUp } from '../config';
-import { FrameConfigInterface, FrameMode } from '../model';
+import { FrameConfigInterface } from '../model';
 
 /*tslint:disable:no-bitwise*/
 
 export class Frame {
   protected rawBytes: number[] = [];
   protected rawBytePosition: number = 0;
-  protected readonly frameConfig: FrameConfigInterface;
 
-  public constructor(protected frameMode: FrameMode) {
-    this.frameConfig = frameModeToFrameConfigLookUp[frameMode];
-  }
+  public constructor(protected readonly frameConfig: FrameConfigInterface) {}
 
   public getNextRawByte(): number {
     return this.rawBytePosition < this.rawBytes.length ? this.rawBytes[this.rawBytePosition++] : null;

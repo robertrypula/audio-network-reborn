@@ -21,10 +21,11 @@ import { mocked1024RandomBytesA, mocked1024RandomBytesB } from './frame-modes-be
 describe('FrameModesBenchmark', () => {
   describe('Integrity', () => {
     const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseIntegrityInterface[]) => {
+      const frameConfig = frameModeToFrameConfigLookUp[frameMode];
       testCases.forEach(testCase => {
-        const frameA = new Frame(frameMode).setPayload(getBytesFromHex(testCase.payload));
+        const frameA = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
         const rawBytes = frameA.getRawBytes().slice(0);
-        const frameB = new Frame(frameMode).setRawBytes(rawBytes);
+        const frameB = new Frame(frameConfig).setRawBytes(rawBytes);
 
         expect({ isValid: frameB.isValid(), rawBytes: getHexFromBytes(rawBytes) }).toEqual({
           isValid: true,
@@ -83,8 +84,9 @@ describe('FrameModesBenchmark', () => {
     const getInvalid = (payloadLength: number, frameMode: FrameMode) =>
       (frameModeToFrameConfigLookUp[frameMode].headerLength + payloadLength) * 255;
     const runOneByteErrorTestCases = (frameMode: FrameMode, testCases: TestCaseFrameCounterWithPayloadInterface[]) => {
+      const frameConfig = frameModeToFrameConfigLookUp[frameMode];
       testCases.forEach(testCase => {
-        const frame = new Frame(frameMode).setPayload(getBytesFromHex(testCase.payload));
+        const frame = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
         const frameCounter: FrameCounterInterface = { invalid: 0, valid: 0, validFake: 0 };
         const rawBytes = frame.getRawBytes();
 
@@ -157,7 +159,7 @@ describe('FrameModesBenchmark', () => {
       const max = getRawBytesLengthMax(frameConfig);
 
       testCases.forEach(testCase => {
-        const frame = new Frame(frameMode).setPayload(getBytesFromHex(testCase.payload));
+        const frame = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
         const frameCounter: FrameCounterInterface = { invalid: 0, total: 0, valid: 0, validFake: 0 };
         const byteStream = [
           ...(localRun ? getRandomBytes(Math.ceil(localRunRandomBytesLength / 2)) : mocked1024RandomBytesA.slice(0)),
@@ -167,7 +169,7 @@ describe('FrameModesBenchmark', () => {
 
         movingWindowSubArrays(byteStream, min, max, subArray => {
           rightAlignedSubArrays(subArray, min, rawBytes => {
-            const frameCandidate = new Frame(frameMode).setRawBytes(rawBytes);
+            const frameCandidate = new Frame(frameConfig).setRawBytes(rawBytes);
             frameCounter.total++;
             frameCandidate.isValid()
               ? frameCandidate.isEqualTo(frame)

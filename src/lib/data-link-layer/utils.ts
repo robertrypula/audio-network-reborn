@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { Frame } from './frame/frame';
 import { FrameConfigInterface } from './model';
 
 export const allOneItemErrors = (data: number[], callback: () => void, range = 256): void => {
@@ -15,6 +16,27 @@ export const allOneItemErrors = (data: number[], callback: () => void, range = 2
     }
     data[i] = itemReal;
   }
+};
+
+export const findFrameCandidates = (
+  bytes: number[],
+  scramble: number[],
+  frameConfig: FrameConfigInterface,
+  errorCorrectionEnabled: boolean,
+  callback: (frameCandidate: Frame, isErrorCorrected: boolean) => void
+): void => {
+  const rawBytesLengthMin = getRawBytesLengthMin(frameConfig);
+
+  scrambledSubArrays(bytes, scramble, false, rawBytesScrambled => {
+    rightAlignedSubArrays(rawBytesScrambled, rawBytesLengthMin, rawBytes => {
+      callback(new Frame(frameConfig).setRawBytes(rawBytes), false);
+      if (errorCorrectionEnabled) {
+        allOneItemErrors(rawBytes, () => {
+          callback(new Frame(frameConfig).setRawBytes(rawBytes), true);
+        });
+      }
+    });
+  });
 };
 
 export const getRawBytesLengthMax = (frameConfig: FrameConfigInterface): number => {
@@ -51,7 +73,7 @@ export const rightAlignedSubArrays = (
   lengthMin: number,
   callback: (subArray: number[]) => void
 ): void => {
-  for (let i = 0; i < data.length - lengthMin + 1; i++) {
+  for (let i = 0, iMax = data.length - lengthMin + 1; i < iMax; i++) {
     callback(data.slice(i));
   }
 };
@@ -66,8 +88,8 @@ export const scrambledSubArrays = (
   for (let i = 0; i < scramble.length; i++) {
     const subArray = data.slice(0);
     for (let j = 0; j < data.length; j++) {
-      const scrambleValue = (add ? 1 : -1) * scramble[(i + j) % scramble.length];
-      subArray[j] += scrambleValue % range;
+      const scrambleValue = (add ? 1 : -1) * (scramble[(i + j) % scramble.length] % range);
+      subArray[j] = (subArray[j] + scrambleValue + range) % range;
     }
     callback(subArray);
   }

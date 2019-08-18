@@ -50,6 +50,8 @@ TODO (code):
     - implement clone method at frame
   - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
   - experiment with a bit higher safeMarginFactor to produce rawByteRates like: 3, 4, 6, 8, 12, 16, 20/24?, 24/32?
+  - physical layer constructor should get configs rather than modes !!!!!!!!!!!!!!!!!!!
+    in current implementation it is not possible use custom config - client needs to rely on hardcoded modes
 
 TODO (code, less important):
   - implement Buffer class and replace code near rxRawBytes.shift(); at DataLinkLayer class
