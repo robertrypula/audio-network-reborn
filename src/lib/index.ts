@@ -44,7 +44,7 @@ TODO (code):
   - extent frame modes with CRC frame modes
   - extend frame-modes-benchmark with CRC frame modes
   - add bytes scrambling to the data link layer frame
-  - implement wrapper for all methods (getRightAlignedSubArrays, getScrambledSubArrays?, getAllOneByteErrors)
+  - implement wrapper for all methods (rightAlignedSubArrays, scrambledSubArrays?, allOneItemErrors)
     that find frameCandidate in byte stream slice
     - IMPORTANT do not copy rawBytes at every iteration - copy it only when isValid returns true
     - implement clone method at frame

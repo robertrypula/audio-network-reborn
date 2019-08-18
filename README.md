@@ -20,15 +20,15 @@ In order to do that just run commands below.
 ```
 git clone https://github.com/robertrypula/audio-network-lite.git
 cd audio-network-lite
-npm install
+yarn
 
-npm run start
+yarn start
 ```
 
 You can also work directly in the terminal - just run
 
 ```
-npm run start:node
+yarn start:node
 ```
 
 ## Licence

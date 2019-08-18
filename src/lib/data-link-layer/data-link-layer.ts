@@ -6,8 +6,8 @@ import {
   FrameMode,
   getRawBytesLengthMax,
   getRawBytesLengthMin,
-  getRightAlignedSubArrays,
-  PhysicalLayer
+  PhysicalLayer,
+  rightAlignedSubArrays
 } from '..';
 import { frameModeToFrameConfigLookUp } from './config';
 import { Frame } from './frame/frame';
@@ -50,9 +50,9 @@ export class DataLinkLayer {
     this.rxFrames = [];
     this.rxFramesErrorCorrected = [];
     // const start = new Date().getTime();    TODO remove me
-    getRightAlignedSubArrays(rxRawBytes, getRawBytesLengthMin(this.frameConfig), rawBytes => {
+    rightAlignedSubArrays(rxRawBytes, getRawBytesLengthMin(this.frameConfig), rawBytes => {
       if (!this.tryToFindValidFrame(rawBytes)) {
-        // getAllOneByteErrors(rawBytes, () => this.tryToFindValidFrame(rawBytes, true));
+        // allOneItemErrors(rawBytes, () => this.tryToFindValidFrame(rawBytes, true));
       }
     });
     // const end = new Date().getTime();    TODO remove me

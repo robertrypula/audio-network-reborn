@@ -1,15 +1,15 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import {
+  allOneItemErrors,
   FrameCounterInterface,
-  getAllOneByteErrors,
   getBytesFromHex,
   getHexFromBytes,
-  getMovingWindowSubArrays,
   getRandomBytes,
   getRawBytesLengthMax,
   getRawBytesLengthMin,
-  getRightAlignedSubArrays,
+  movingWindowSubArrays,
+  rightAlignedSubArrays,
   TestCaseFrameCounterWithPayloadInterface,
   TestCaseIntegrityInterface
 } from '../..';
@@ -89,7 +89,7 @@ describe('FrameModesBenchmark', () => {
         const rawBytes = frame.getRawBytes();
 
         frame.isValid() ? frameCounter.valid++ : frameCounter.invalid++;
-        getAllOneByteErrors(rawBytes, () => (frame.isValid() ? frameCounter.validFake++ : frameCounter.invalid++));
+        allOneItemErrors(rawBytes, () => (frame.isValid() ? frameCounter.validFake++ : frameCounter.invalid++));
         frame.isValid() ? frameCounter.valid++ : frameCounter.invalid++;
         expect(frameCounter).toEqual(testCase.frameCounter);
       });
@@ -165,8 +165,8 @@ describe('FrameModesBenchmark', () => {
           ...(localRun ? getRandomBytes(Math.ceil(localRunRandomBytesLength / 2)) : mocked1024RandomBytesB.slice(0))
         ];
 
-        getMovingWindowSubArrays(byteStream, min, max, subArray => {
-          getRightAlignedSubArrays(subArray, min, rawBytes => {
+        movingWindowSubArrays(byteStream, min, max, subArray => {
+          rightAlignedSubArrays(subArray, min, rawBytes => {
             const frameCandidate = new Frame(frameMode).setRawBytes(rawBytes);
             frameCounter.total++;
             frameCandidate.isValid()
@@ -194,16 +194,20 @@ describe('FrameModesBenchmark', () => {
       */
     });
 
+    /*
     it('should work with 3 bytes of header, 1-8 bytes of payload and SHA-1 check sequence', () => {
       runDetectionTestCases(FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1, [
         { frameCounter: { invalid: 16419, total: 16420, valid: 1, validFake: 0 }, payload: '00 0a 14 1e 28 78 fa ff' }
       ]);
     });
+    */
 
+    /*
     it('should work with 3 bytes of header, fixed 8 bytes of payload and SHA-1 check sequence', () => {
       runDetectionTestCases(FrameMode.Header3BytesPayloadLengthFixedAt8BytesSha1, [
         { frameCounter: { invalid: 2048, total: 2049, valid: 1, validFake: 0 }, payload: '00 0a 14 1e 28 78 fa ff' }
       ]);
     });
+    */
   });
 });

@@ -6,13 +6,13 @@
   "author": "Robert Rypuła",
   "license": "MIT",
   "scripts": {
-    "build": "npm run clean && npm run lint && npm run prettier && npm run test:coverage && webpack --env.PRODUCTION && rimraf dist/demo-node.d.ts",
+    "build": "yarn clean && yarn lint && yarn prettier && yarn test:coverage && webpack --env.PRODUCTION && rimraf dist/demo-node.d.ts",
     "clean": "rimraf dist && rimraf coverage",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "npm-check": "npm-check --skip-unused -u",
     "prettier": "prettier src/**/*.{ts,html} -c",
-    "start": "npm run clean && webpack-dev-server --env.DEVELOPMENT --open",
-    "start:node": "npm run clean && webpack --env.DEVELOPMENT && rimraf dist/demo-node.d.ts && node dist/demo-node.js",
+    "start": "yarn clean && webpack-dev-server --env.DEVELOPMENT --open",
+    "start:node": "yarn clean && webpack --env.DEVELOPMENT && rimraf dist/demo-node.d.ts && node dist/demo-node.js",
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:report-coverage": "cat ./coverage/lcov.info | coveralls"
