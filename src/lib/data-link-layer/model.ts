@@ -16,6 +16,13 @@ export interface FrameConfigInterface {
   payloadLengthMin: number;
 }
 
+export interface FrameCounterInterface {
+  invalid?: number;
+  total?: number;
+  valid?: number;
+  validFake?: number;
+}
+
 export type FrameHistory = FrameHistoryEntryInterface[];
 
 export interface FrameHistoryEntryInterface {
@@ -34,7 +41,12 @@ export type FrameModeToFrameConfigLookUp = {
   [key in keyof typeof FrameMode]: FrameConfigInterface;
 };
 
-export interface IntegrityTestCaseInterface {
+export interface TestCaseFrameCounterWithPayloadInterface {
+  frameCounter: FrameCounterInterface;
+  payload: string;
+}
+
+export interface TestCaseIntegrityInterface {
   payload: string;
   expectedRawBytes: string;
 }

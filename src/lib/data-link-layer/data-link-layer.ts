@@ -73,7 +73,7 @@ export class DataLinkLayer {
     const isEven = this.rxRawBytesCounter % 2 === 0;
     const rxFrameHistory = isEven ? this.rxFrameHistoryA : this.rxFrameHistoryB;
     const rxFrameHistoryHalfStepBack = isEven ? this.rxFrameHistoryB : this.rxFrameHistoryA;
-    const frame = new Frame(this.frameMode).setRawBytes(rawBytes.slice(0));
+    const frame = new Frame(this.frameMode).setRawBytes(rawBytes.slice(0)); // TODO rename to frameCandidate?
 
     if (frame.isValid()) {
       const equalFramesHalfStepBack = rxFrameHistoryHalfStepBack.filter(
