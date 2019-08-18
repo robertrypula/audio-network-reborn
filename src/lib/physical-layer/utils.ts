@@ -58,7 +58,9 @@ export const getLongestFftWindowTime = (config: DspConfigInitialInterface): numb
 };
 
 export const getTimeTickMillisecondsRx = (config: DspConfigInitialInterface): number => {
-  return Math.ceil(MILLISECONDS_IN_SECOND * config.safeMarginFactor * getLongestFftWindowTime(config));
+  // NOTE: division by NYQUIST_TWICE at 'RX' and multiplication by NYQUIST_TWICE at 'TX' done on purpose
+  // in order to keep both values in 3 digits after dot and still have strict relation: 2rx = tx
+  return Math.ceil(MILLISECONDS_IN_SECOND * config.safeMarginFactor * getLongestFftWindowTime(config) / NYQUIST_TWICE);
 };
 
 export const getUnifiedFrequencies = (

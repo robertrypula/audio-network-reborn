@@ -14,41 +14,61 @@ export const FREQUENCY_END_UPPER = FREQUENCY_16_0_KHZ - FREQUENCY_MARGIN;
 export const FREQUENCY_END_INAUDIBLE = FREQUENCY_19_5_KHZ - FREQUENCY_MARGIN;
 
 /*
-  8192 - 186 ms -  6 Hz -  1.5 kHz   -  5.2 FFT/s     -  2.60 B/s
-  4096 -  93 ms - 12 Hz -  3.0 kHz   - 10.5 FFT/s     -  5.25 B/s
-  2048 -  46 ms - 22 Hz -  6.0 kHz   - 20.0 FFT/s     - 10.00 B/s
-  1024 -  23 ms - 43 Hz - 12.0 kHz   - 40.0 FFT/s     - 20.00 B/s
+  Bands that avoids 8 kHz and 16 kHz:
 
-  3000 -  6000  | 3 kHz
-  1000 -  7000  | 6 kHz
-  9000 - 15000  | 6 kHz
- 16500 - 19500  | 3 kHz
+     3000 -  6000  | 3 kHz
+     1000 -  7000  | 6 kHz
+     9000 - 15000  | 6 kHz
+    16500 - 19500  | 3 kHz
 
-                  ############
-      ############
-       -----       -----
-             -----       -----
-      012345012345012345012345
-   ---------   ---------
-         ---------   ---------
-                  ############
-      ############
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  SAFE_MARGIN_FACTOR_FAST (~1.3 in example below):
+  `           `           `           `           `           `   getTimeTickMillisecondsRx intervals
+  '                       '                       '               getTimeTickMillisecondsTx intervals
+              ..................      ..................          fftWindowTime #1
+  ..................      ..................                      fftWindowTime #2
+
+  SAFE_MARGIN_FACTOR_SLOW (~2.2 in example below):
+  `                  `                  `                  `                  `   getTimeTickMillisecondsRx intervals
+  '                                     '                                     '   getTimeTickMillisecondsTx intervals
+                     ..................                    ..................     fftWindowTime #1
+  ..................                    ..................                        fftWindowTime #2
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Simplified formula to understand the relation between parameters:
+
+    getTimeTickMillisecondsTx = safeMarginFactor * fftWindowTime
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Theoretical limits (safeMarginFactor = 1, supported sample rates 48 kHz and 44.1 kHz):
+
+    +-----------------+-----------+-----------------+-------------+---------------+
+    |    band name    |  fftSize  |  fftWindowTime  |  bandwidth  |  rawByteRate  |
+    +-----------------+-----------+-----------------+-------------+---------------+
+    |  Extraordinary  |    1024   |      23.2 ms    |   12.0 kHz  |    43.1 B/s   |
+    |  Fat            |    2048   |      46.4 ms    |    6.0 kHz  |    21.5 B/s   |
+    |  Normal         |    4096   |      92.9 ms    |    3.0 kHz  |    10.8 B/s   |
+    |  Slim           |    8192   |     185.8 ms    |    1.5 kHz  |     5.4 B/s   |
+    +-----------------+-----------+-----------------+-------------+---------------+
 */
 
-const SAFE_MARGIN_FACTOR_FAST = 0.672;
-const SAFE_MARGIN_FACTOR_SLOW = 1.075;
+const SAFE_MARGIN_FACTOR_FAST = 1.344;
+const SAFE_MARGIN_FACTOR_SLOW = 2.150;
 
 export const transmissionModeToDspConfigInitialLookUp: TransmissionModeToDspConfigInitialLookUp = {
   // Extraordinary band ~ 12.0 kHz
   ExtraordinaryBandFast: {
     fftSize: 1024,
     frequencyEnd: FREQUENCY_END_INAUDIBLE,
-    safeMarginFactor: 0.85
+    safeMarginFactor: 1.700
   },
   ExtraordinaryBandSlow: {
     fftSize: 1024,
     frequencyEnd: FREQUENCY_END_INAUDIBLE,
-    safeMarginFactor: 1.12
+    safeMarginFactor: 2.24
   },
 
   // Fat band ~ 6.0 kHz
