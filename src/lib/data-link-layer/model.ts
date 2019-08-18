@@ -33,3 +33,8 @@ export enum FrameMode {
 export type FrameModeToFrameConfigLookUp = {
   [key in keyof typeof FrameMode]: FrameConfigInterface;
 };
+
+export interface IntegrityTestCaseInterface {
+  payload: string;
+  expectedRawBytes: string;
+}

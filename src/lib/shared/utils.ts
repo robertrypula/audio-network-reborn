@@ -44,6 +44,7 @@ export const getHexFromBytes = (bytes: number[], joinWith = ' '): string => {
 };
 
 export const getRandomBytes = (length: number): number[] => {
+  // https://stackoverflow.com/questions/1295584
   return new Array(length).fill(0).map(() => getRandomInt(0, 255));
 };
 

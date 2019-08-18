@@ -56,14 +56,14 @@ export const FREQUENCY_END_INAUDIBLE = FREQUENCY_19_5_KHZ - FREQUENCY_MARGIN;
 */
 
 const SAFE_MARGIN_FACTOR_FAST = 1.344;
-const SAFE_MARGIN_FACTOR_SLOW = 2.150;
+const SAFE_MARGIN_FACTOR_SLOW = 2.15;
 
 export const transmissionModeToDspConfigInitialLookUp: TransmissionModeToDspConfigInitialLookUp = {
   // Extraordinary band ~ 12.0 kHz
   ExtraordinaryBandFast: {
     fftSize: 1024,
     frequencyEnd: FREQUENCY_END_INAUDIBLE,
-    safeMarginFactor: 1.700
+    safeMarginFactor: 1.7
   },
   ExtraordinaryBandSlow: {
     fftSize: 1024,

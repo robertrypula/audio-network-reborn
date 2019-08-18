@@ -37,6 +37,11 @@ TODO (code):
   - re-implement frame-benchmark.spec.ts to really show how different frame config works
   - add bytes scrambling to the data link layer frame
   - migrate CRC32 implementation from https://github.com/kvz/locutus/blob/master/src/php/strings/crc32.js
+    or even better, try CRC24:
+    - https://github.com/latysheff/node-polycrc/blob/master/polycrc.js#L155
+    - https://dev.flarecast.eu/stash/projects/SAND/repos/swagger-ui/browse/node_modules/crc/lib/crc24.js
+    - https://github.com/alexgorbatchev/node-crc/blob/master/lib/es6/crc24.js
+    - https://stackoverflow.com/questions/18638900/javascript-crc32
   - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
 
 TODO (package):
