@@ -19,12 +19,13 @@ export * from './physical-layer/model';
 export * from './physical-layer/physical-layer';
 export * from './physical-layer/utils';
 export * from './shared/check-algorithms/check-algorithms';
+export * from './shared/fixed-size-buffer';
 export * from './shared/model';
 export * from './shared/utils';
-export * from './visualization/simple-canvas/simple-canvas';
-export * from './visualization/spectrogram/spectrogram';
-export * from './visualization/spectrogram/utils';
-export * from './visualization/visualizers';
+// export * from './visualization/simple-canvas/simple-canvas';
+// export * from './visualization/spectrogram/spectrogram';
+// export * from './visualization/spectrogram/utils';
+// export * from './visualization/visualizers';
 
 /*
 TODO (code):
@@ -34,8 +35,6 @@ TODO (code):
 
 TODO (code, less important):
   - experiment with a bit higher safeMarginFactor to produce rawByteRates like: 3, 4, 6, 8, 12, 16, 20/24?, 24/32?
-  - implement Buffer class and replace code near rxRawBytes.shift(); at DataLinkLayer class
-  - remove movingWindowSubArrays and use Buffer in all spec
   - implement cloneArray method in shared utils and replace all occurrences of 'slice(0)'
 
 TODO (package):

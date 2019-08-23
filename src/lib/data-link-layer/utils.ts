@@ -37,23 +37,6 @@ export const findFrameCandidates = (
   });
 };
 
-export const movingWindowSubArrays = (
-  data: number[],
-  lengthMinFromLeft: number,
-  lengthMax: number,
-  callback: (subArray: number[]) => void
-): void => {
-  if (data.length < lengthMax) {
-    return;
-  }
-
-  for (let i = -lengthMax + lengthMinFromLeft, iMax = data.length - lengthMax; i <= iMax; i++) {
-    const start = Math.max(0, i);
-    const end = Math.min(i + lengthMax, data.length);
-    callback(data.slice(start, end));
-  }
-};
-
 export const rightAlignedSubArrays = (
   data: number[],
   lengthMin: number,

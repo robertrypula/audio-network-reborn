@@ -39,13 +39,18 @@ export const getBytesFromText = (text: string): number[] => {
   return text.split('').map(item => item.charCodeAt(0) % 256);
 };
 
+export const getFilledArray = (length: number, fillWith = 0): number[] => {
+  // https://stackoverflow.com/questions/1295584
+  return new Array(length).fill(fillWith);
+};
+
 export const getHexFromBytes = (bytes: number[], joinWith = ' '): string => {
   return bytes.map(byte => ((byte & 0xff) < 16 ? '0' : '') + (byte & 0xff).toString(16)).join(joinWith);
 };
 
 export const getRandomBytes = (length: number): number[] => {
   // https://stackoverflow.com/questions/1295584
-  return new Array(length).fill(0).map(() => getRandomInt(0, 255));
+  return getFilledArray(length).map(() => getRandomInt(0, 255));
 };
 
 export const getRandomInt = (min: number, max: number): number => {

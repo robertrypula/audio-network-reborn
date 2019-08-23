@@ -66,32 +66,6 @@ describe('Utils', () => {
     });
   });
 
-  describe('movingWindowSubArrays', () => {
-    it('should properly extract sub arrays', () => {
-      const result: number[][] = [];
-
-      fromUtils.movingWindowSubArrays([100, 200, 300, 400, 500, 600, 700, 800, 900], 3, 5, subArray =>
-        result.push(subArray)
-      );
-      expect(result).toEqual([
-        [100, 200, 300],
-        [100, 200, 300, 400],
-        [100, 200, 300, 400, 500],
-        /**/ [200, 300, 400, 500, 600],
-        /*     */ [300, 400, 500, 600, 700],
-        /*          */ [400, 500, 600, 700, 800],
-        /*               */ [500, 600, 700, 800, 900]
-      ]);
-    });
-
-    it('should return empty array when data length is below lengthMax', () => {
-      const result: number[][] = [];
-
-      fromUtils.movingWindowSubArrays([100, 200, 300, 400], 3, 5, subArray => result.push(subArray));
-      expect(result).toEqual([]);
-    });
-  });
-
   describe('rightAlignedSubArrays', () => {
     it('should properly extract sub arrays', () => {
       const result: number[][] = [];

@@ -25,6 +25,12 @@ describe('Utils', () => {
     });
   });
 
+  describe('getFilledArray', () => {
+    it('should return pre-filled array with proper length', () => {
+      expect(fromUtils.getFilledArray(3, 32)).toEqual([32, 32, 32]);
+    });
+  });
+
   describe('getHexFromBytes', () => {
     it('should return string with hex values from given bytes array', () => {
       expect(fromUtils.getHexFromBytes([0x01, 0xff, 0x43, 0x23, 0x100, 0xab])).toEqual('01 ff 43 23 00 ab');

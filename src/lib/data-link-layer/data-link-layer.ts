@@ -2,6 +2,7 @@
 
 import {
   findFrameCandidates,
+  FixedSizeBuffer,
   FrameConfigInterface,
   FrameHistory,
   FrameMode,
@@ -19,8 +20,8 @@ export class DataLinkLayer {
   protected rxFrameHistoryB: FrameHistory = [];
   protected rxFrames: Frame[];
   protected rxFramesErrorCorrected: Frame[];
-  protected rxRawBytesA: number[] = [];
-  protected rxRawBytesB: number[] = [];
+  protected rxRawBytesA: FixedSizeBuffer<number>;
+  protected rxRawBytesB: FixedSizeBuffer<number>;
   protected rxRawBytesCounter = 0;
   protected scramble: number[] = SCRAMBLE_SEQUENCE();
   protected txFrame: Frame;
@@ -31,6 +32,8 @@ export class DataLinkLayer {
       FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24
     ]
   ) {
+    this.rxRawBytesA = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLengthMax);
+    this.rxRawBytesB = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLengthMax);
     this.physicalLayer = new PhysicalLayer();
   }
 
@@ -48,15 +51,12 @@ export class DataLinkLayer {
     const start = new Date().getTime(); // TODO remove me
     let validFramesCounter = 0; // TODO remove me
 
-    if (rxRawBytes.length > this.frameConfig.rawBytesLengthMax) {
-      rxRawBytes.shift();
-    }
-    rxRawBytes.push(this.physicalLayer.rx());
+    rxRawBytes.insert(this.physicalLayer.rx());
 
     this.rxFrames = [];
     this.rxFramesErrorCorrected = [];
 
-    findFrameCandidates(rxRawBytes, this.scramble, this.frameConfig, false, (frameCandidate, isErrorCorrected) => {
+    findFrameCandidates(rxRawBytes.data, this.scramble, this.frameConfig, false, (frameCandidate, isErrorCorrected) => {
       if (this.tryToFindValidFrame(frameCandidate, isErrorCorrected)) {
         validFramesCounter++; // TODO remove me
       }

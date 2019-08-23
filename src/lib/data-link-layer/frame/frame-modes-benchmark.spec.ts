@@ -2,11 +2,11 @@
 
 import {
   findFrameCandidates,
+  FixedSizeBuffer,
   FrameCounterInterface,
   getBytesFromHex,
   getHexFromBytes,
   getRandomBytes,
-  movingWindowSubArrays,
   SCRAMBLE_SEQUENCE,
   scrambleArray,
   TestCaseFrameCounterWithPayloadInterface,
@@ -95,9 +95,9 @@ describe('FrameModesBenchmark', () => {
   });
 
   describe('Frame detection in long random stream', () => {
-    const localRun = false;
-    const localRunRandomBytesLength = 1000 * 1e3;
-    const localRunRandomBytesLengthHalf = Math.ceil(localRunRandomBytesLength / 2);
+    const localExperiments = false;
+    const randomBytesLength = 1000 * 1e3;
+    const randomBytesLengthHalf = Math.ceil(randomBytesLength / 2);
     const scramble = SCRAMBLE_SEQUENCE();
     const runDetectionTestCases = (
       frameMode: FrameMode,
@@ -108,6 +108,7 @@ describe('FrameModesBenchmark', () => {
 
       testCases.forEach(testCase => {
         const start = new Date().getTime();
+        const buffer = new FixedSizeBuffer<number>(frameConfig.rawBytesLengthMax, frameConfig.rawBytesLengthMin);
         const frameCounter: FrameCounterInterface = {
           errorCorrectedInvalid: 0,
           errorCorrectedValid: 0,
@@ -116,7 +117,7 @@ describe('FrameModesBenchmark', () => {
           valid: 0,
           validFake: 0
         };
-        let byteStream = localRun ? getRandomBytes(localRunRandomBytesLengthHalf) : mocked512RandomBytesA.slice(0);
+        let byteStream = localExperiments ? getRandomBytes(randomBytesLengthHalf) : mocked512RandomBytesA.slice(0);
         let frameNotScrambled: Frame;
 
         if (testCase.payload) {
@@ -127,12 +128,16 @@ describe('FrameModesBenchmark', () => {
           byteStream = byteStream.concat(frame.getRawBytes());
         }
         byteStream = byteStream.concat(
-          localRun ? getRandomBytes(localRunRandomBytesLengthHalf) : mocked512RandomBytesB.slice(0)
+          localExperiments ? getRandomBytes(randomBytesLengthHalf) : mocked512RandomBytesB.slice(0)
         );
 
-        movingWindowSubArrays(byteStream, frameConfig.rawBytesLengthMin, frameConfig.rawBytesLengthMax, rawBytes => {
+        for (let i = 0; i < byteStream.length; i++) {
+          buffer.insert(byteStream[i]);
+          if (buffer.isBelowMinimalLength()) {
+            continue;
+          }
           findFrameCandidates(
-            rawBytes,
+            buffer.data,
             scramble,
             frameConfig,
             errorCorrectionEnabled,
@@ -152,9 +157,9 @@ describe('FrameModesBenchmark', () => {
               }
             }
           );
-        });
+        }
 
-        if (localRun) {
+        if (localExperiments) {
           expect({
             byteStreamLength: byteStream.length,
             errorCorrectedInvalidFrameEvery: byteStream.length / frameCounter.errorCorrectedInvalid,
