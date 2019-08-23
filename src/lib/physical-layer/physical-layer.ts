@@ -26,18 +26,16 @@ export class PhysicalLayer {
   }
 
   public rx(): number {
-    const fftResult = new FftResult(this.audioMonoIo.getFrequencyDomainData(), this.audioMonoIo.getSampleRate());
-
-    return fftResult.pick(this.dspConfig.unifiedBinIndexes).getLoudestBinIndex();
+    return new FftResult(this.audioMonoIo.getFrequencyDomainData(), this.audioMonoIo.getSampleRate())
+      .pick(this.dspConfig.unifiedBinIndexes)
+      .getLoudestBinIndex();
   }
 
   public setTransmissionMode(transmissionMode: TransmissionMode): void {
-    if (this.dspConfig && transmissionMode === this.dspConfig.transmissionMode) {
-      return;
+    if (!this.dspConfig || transmissionMode !== this.dspConfig.transmissionMode) {
+      this.dspConfig = getDspConfig(transmissionMode, this.audioMonoIo.getSampleRate());
+      this.audioMonoIo.setFftSize(this.dspConfig.dspConfigInitial.fftSize);
     }
-
-    this.dspConfig = getDspConfig(transmissionMode, this.audioMonoIo.getSampleRate());
-    this.audioMonoIo.setFftSize(this.dspConfig.dspConfigInitial.fftSize);
   }
 
   public tx(byte: number | null): boolean {

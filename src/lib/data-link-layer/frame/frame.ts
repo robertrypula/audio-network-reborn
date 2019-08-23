@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { getCheckAlgorithmImplementation } from '../..';
+import { getCheckAlgorithmImplementation, getFilledArray } from '../..';
 import { FrameConfigInterface } from '../model';
 
 /*tslint:disable:no-bitwise*/
@@ -61,7 +61,7 @@ export class Frame {
       throw new Error('Payload length out of range');
     }
 
-    this.rawBytes = [...new Array(frameConfig.headerLength).fill(0), ...payload];
+    this.rawBytes = [...getFilledArray(frameConfig.headerLength), ...payload];
     this.rawBytePosition = 0;
 
     fullCheckSequence = this.getFullCheckSequenceFromPayload();

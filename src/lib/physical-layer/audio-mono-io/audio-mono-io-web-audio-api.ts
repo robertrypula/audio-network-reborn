@@ -93,10 +93,7 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
   }
 
   protected handleSuspendedState(): void {
-    if (this.audioContext.state === 'suspended') {
-      // TODO think more about this promise
-      this.audioContext.resume().then();
-    }
+    this.audioContext.state === 'suspended' && this.audioContext.resume().then(); // TODO think more about this promise
   }
 
   protected inputEnable(): void {

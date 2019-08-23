@@ -28,11 +28,8 @@ export const findFrameCandidates = (
   scrambledSubArrays(bytes, scramble, false, rawBytesScrambled => {
     rightAlignedSubArrays(rawBytesScrambled, frameConfig.rawBytesLengthMin, rawBytes => {
       callback(new Frame(frameConfig).setRawBytes(rawBytes), false);
-      if (errorCorrectionEnabled) {
-        allOneItemErrors(rawBytes, () => {
-          callback(new Frame(frameConfig).setRawBytes(rawBytes), true);
-        });
-      }
+      errorCorrectionEnabled &&
+        allOneItemErrors(rawBytes, () => callback(new Frame(frameConfig).setRawBytes(rawBytes), true));
     });
   });
 };
