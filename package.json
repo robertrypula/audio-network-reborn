@@ -1,6 +1,6 @@
 {
   "name": "audio-network-lite",
-  "version": "0.0.0",
+  "version": "0.1.0-rc14",
   "description": "",
   "keywords": [],
   "author": "Robert Rypuła",
@@ -28,28 +28,6 @@
   },
   "bugs": {
     "url": "https://github.com/robertrypula/audio-network-lite/issues"
-  },
-  "jest": {
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/src/lib/web-examples/"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "testEnvironment": "node"
-  },
-  "prettier": {
-    "singleQuote": true
   },
   "devDependencies": {
     "@types/jest": "^24.0.17",

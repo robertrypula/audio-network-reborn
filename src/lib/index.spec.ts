@@ -22,7 +22,7 @@ describe('Index', () => {
     audioMonoIoFactory.audioMonoIoCreateMode = AudioMonoIoCreateMode.Stub;
     const dataLinkLayer = new DataLinkLayer();
 
-    dataLinkLayer.setData([1, 2, 3]);
+    dataLinkLayer.setTxBytes([1, 2, 3]);
     expect(dataLinkLayer.txTimeTick()).toBe(true);
     expect(dataLinkLayer.txTimeTick()).toBe(true);
     expect(dataLinkLayer.txTimeTick()).toBe(true);
@@ -32,6 +32,6 @@ describe('Index', () => {
     expect(dataLinkLayer.txTimeTick()).toBe(false);
 
     dataLinkLayer.rxTimeTick();
-    expect(dataLinkLayer.getData()).toEqual(null);
+    expect(dataLinkLayer.getRxBytesCollection()).toEqual(null);
   });
 });

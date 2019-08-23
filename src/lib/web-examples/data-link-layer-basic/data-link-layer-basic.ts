@@ -41,12 +41,12 @@ export class DataLinkLayerBasicWebExample {
   }
 
   public transmit(): void {
-    const tx = (document.getElementById('tx-data') as HTMLInputElement).value
+    const txBytes = (document.getElementById('tx-data') as HTMLInputElement).value
       .split(' ')
       .filter(item => item.trim() !== '')
       .map(item => parseInt(item, 10));
 
-    this.dataLinkLayer.setData(tx);
+    this.dataLinkLayer.setTxBytes(txBytes);
     this.dataLinkLayer.txTimeTick();
     this.initializeTxInterval();
   }
@@ -77,22 +77,16 @@ export class DataLinkLayerBasicWebExample {
   protected initializeRxInterval(): void {
     this.clearRxInterval();
     this.rxInterval = setInterval(() => {
-      let rxData: number[][];
-      let rxDataErrorCorrected: number[][];
+      let rxBytesCollection: number[][];
 
       this.dataLinkLayer.rxTimeTick();
-      rxData = this.dataLinkLayer.getData();
-      rxDataErrorCorrected = this.dataLinkLayer.getDataErrorCorrected();
+      rxBytesCollection = this.dataLinkLayer.getRxBytesCollection();
 
-      if (rxData || rxDataErrorCorrected) {
+      if (rxBytesCollection) {
         document.getElementById('rx-data').innerHTML =
           document.getElementById('rx-data').innerHTML +
-          (rxData ? rxData.map(item => item.join(', ')).join(' | ') : '[no valid frames] ') +
-          ' <i>' +
-          (rxDataErrorCorrected
-            ? rxDataErrorCorrected.map(item => item.join(', ')).join(' | ')
-            : '[no frames from error correction] ') +
-          '</i><br/>';
+          rxBytesCollection.map(rxBytes => rxBytes.join(' ')).join(' | ') +
+          '<br/>';
       }
     }, this.dataLinkLayer.physicalLayer.getDspConfig().timeTickMillisecondsRx);
   }

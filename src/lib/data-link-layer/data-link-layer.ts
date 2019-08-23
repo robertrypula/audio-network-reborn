@@ -16,6 +16,7 @@ import { Frame } from './frame/frame';
 export class DataLinkLayer {
   public readonly physicalLayer: PhysicalLayer;
 
+  protected readonly rxErrorCorrectionEnabled = false; // keep false, current 'brute-force' solution is just bad... :)
   protected rxFrameHistoryA: FrameHistory = [];
   protected rxFrameHistoryB: FrameHistory = [];
   protected rxFrames: Frame[];
@@ -32,47 +33,46 @@ export class DataLinkLayer {
       FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24
     ]
   ) {
+    this.physicalLayer = new PhysicalLayer();
     this.rxRawBytesA = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLengthMax);
     this.rxRawBytesB = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLengthMax);
-    this.physicalLayer = new PhysicalLayer();
   }
 
-  public getData(): number[][] {
+  public getRxBytesCollection(): number[][] {
     return this.rxFrames.length ? this.rxFrames.map(item => item.getPayload()) : null;
   }
 
-  public getDataErrorCorrected(): number[][] {
+  public getRxBytesErrorCorrectedCollection(): number[][] {
     return this.rxFramesErrorCorrected.length ? this.rxFramesErrorCorrected.map(item => item.getPayload()) : null;
   }
 
   public rxTimeTick(): void {
     const isEven = this.rxRawBytesCounter % 2 === 0;
     const rxRawBytes = isEven ? this.rxRawBytesA : this.rxRawBytesB;
-    const start = new Date().getTime(); // TODO remove me
+    // const start = new Date().getTime(); // TODO remove me
     let validFramesCounter = 0; // TODO remove me
 
     rxRawBytes.insert(this.physicalLayer.rx());
-
     this.rxFrames = [];
     this.rxFramesErrorCorrected = [];
 
-    findFrameCandidates(rxRawBytes.data, this.scramble, this.frameConfig, false, (frameCandidate, isErrorCorrected) => {
-      if (this.tryToFindValidFrame(frameCandidate, isErrorCorrected)) {
-        validFramesCounter++; // TODO remove me
+    findFrameCandidates(
+      rxRawBytes.data,
+      this.scramble,
+      this.frameConfig,
+      this.rxErrorCorrectionEnabled,
+      (frameCandidate, isErrorCorrected) => {
+        this.tryToFindValidFrame(frameCandidate, isErrorCorrected) && validFramesCounter++;
       }
-    });
-    if (validFramesCounter) {
-      // TODO remove me
-      /*tslint:disable-next-line:no-console*/
-      console.log(new Date().getTime() - start);
-    }
-
+    );
+    /*tslint:disable-next-line:no-console*/
+    // validFramesCounter && console.log(new Date().getTime() - start); // TODO remove me
     this.rxRawBytesCounter++;
   }
 
-  public setData(data: number[]): void {
+  public setTxBytes(bytes: number[]): void {
     this.txFrame = new Frame(this.frameConfig);
-    this.txFrame.setPayload(data);
+    this.txFrame.setPayload(bytes);
     scrambleArray(this.txFrame.getRawBytes(), this.scramble, this.txRawBytesCounter, true);
     this.txRawBytesCounter += this.txFrame.getRawBytes().length;
   }
@@ -95,9 +95,11 @@ export class DataLinkLayer {
       if (equalFramesHalfStepBack.length === 0) {
         rxFrameHistory.push({ frame, isErrorCorrected, rawBytePosition: this.rxRawBytesCounter });
         isErrorCorrected ? this.rxFramesErrorCorrected.push(frame) : this.rxFrames.push(frame);
+
         return true;
       }
     }
+
     return false;
   }
 }

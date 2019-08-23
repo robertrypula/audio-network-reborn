@@ -77,7 +77,8 @@ function fillProd(config) {
     [`${packageName}-v${version}`]: './src/lib/index.ts'
   };
 
-  config.devtool = 'source-map';
+  // TODO think if source maps will be ever needed on production, if no delete this line:
+  // config.devtool = 'source-map';
 
   config.plugins.push(
     new CopyWebpackPlugin(

@@ -32,11 +32,12 @@ export * from './web-examples/data-link-layer-basic/data-link-layer-basic';
 TODO #1:
   + move example to lib (web-examples directory)
   - finalize example: enter sends the message, text and hex mode, history show sent and received frames
-  - rename methods at Data Link class: setTxBytes, getRxBytes
-  - move configs outside package.json: jest, prettier
-  - source map in prod? NO!!
+  + rename methods at Data Link class: setTxBytes, getRxBytes
+  + move configs outside package.json: jest, prettier
+  + source map in prod? NO!!
   - PhysicalLayer class should have rxTimeTick and txTimeTick methods, DataLinkLayer class should
     have mandatory parameters in txTimeTick rxTimeTick that is passed to PhysicalLayer
+  + comment console logs!!
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:
