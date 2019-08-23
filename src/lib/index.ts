@@ -18,7 +18,7 @@ export * from './physical-layer/fft-result';
 export * from './physical-layer/model';
 export * from './physical-layer/physical-layer';
 export * from './physical-layer/utils';
-export * from './shared/check-algorithms';
+export * from './shared/check-algorithms/check-algorithms';
 export * from './shared/model';
 export * from './shared/utils';
 export * from './visualization/simple-canvas/simple-canvas';

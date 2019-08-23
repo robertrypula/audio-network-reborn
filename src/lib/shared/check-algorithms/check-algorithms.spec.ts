@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { getCrc08, getCrc16, getCrc24, getCrc32, getFletcher16, getSha1 } from './check-algorithms';
-import { CheckAlgorithmImplementation, TestCaseInterface } from './model';
-import { getBytesFromText, getHexFromBytes } from './utils';
+import { CheckAlgorithm, CheckAlgorithmImplementation, TestCaseInterface } from '../model';
+import { getBytesFromText, getHexFromBytes } from '../utils';
+import { getCheckAlgorithmImplementation } from './check-algorithms';
 
 describe('CheckAlgorithms', () => {
   const runTestCases = (checkAlgorithmImplementation: CheckAlgorithmImplementation, testCases: TestCaseInterface[]) => {
@@ -14,7 +14,7 @@ describe('CheckAlgorithms', () => {
   describe('getCrc08', () => {
     it('should pass all test cases', () => {
       // Verified at: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html (CRC8)
-      runTestCases(getCrc08, [
+      runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Crc08), [
         { in: 'abcde', out: '52' },
         { in: 'abcdef', out: '8c' },
         { in: 'abcdefgh', out: 'cb' },
@@ -26,7 +26,7 @@ describe('CheckAlgorithms', () => {
   describe('getCrc16', () => {
     it('should pass all test cases', () => {
       // Verified at: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html (CRC16_ARC)
-      runTestCases(getCrc16, [
+      runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Crc16), [
         { in: 'abcde', out: '85 b8' },
         { in: 'abcdef', out: '58 05' },
         { in: 'abcdefgh', out: '74 29' },
@@ -38,7 +38,7 @@ describe('CheckAlgorithms', () => {
   describe('getCrc24', () => {
     it('should pass all test cases', () => {
       // Verified by npm package: https://www.npmjs.com/package/polycrc
-      runTestCases(getCrc24, [
+      runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Crc24), [
         { in: 'abcde', out: 'd7 49 3c' },
         { in: 'abcdef', out: '35 a8 3f' },
         { in: 'abcdefgh', out: 'e8 6c c1' },
@@ -50,7 +50,7 @@ describe('CheckAlgorithms', () => {
   describe('getCrc32', () => {
     it('should pass all test cases', () => {
       // Verified at: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html (CRC32)
-      runTestCases(getCrc32, [
+      runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Crc32), [
         { in: 'abcde', out: '85 87 d8 65' },
         { in: 'abcdef', out: '4b 8e 39 ef' },
         { in: 'abcdefgh', out: 'ae ef 2a 50' },
@@ -62,7 +62,7 @@ describe('CheckAlgorithms', () => {
   describe('getFletcher16', () => {
     it('should pass all test cases', () => {
       // Fletcher-16 test vectors taken from https://en.wikipedia.org/wiki/Fletcher%27s_checksum
-      runTestCases(getFletcher16, [
+      runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Fletcher16), [
         { in: 'abcde', out: 'c8 f0' },
         { in: 'abcdef', out: '20 57' },
         { in: 'abcdefgh', out: '06 27' }
@@ -73,7 +73,7 @@ describe('CheckAlgorithms', () => {
   describe('getSha1', () => {
     it('should pass all test cases', () => {
       // SHA-1 test vectors taken from https://www.di-mgt.com.au/sha_testvectors.html
-      runTestCases(getSha1, [
+      runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Sha1), [
         {
           in: '',
           out: 'da 39 a3 ee 5e 6b 4b 0d 32 55 bf ef 95 60 18 90 af d8 07 09'
