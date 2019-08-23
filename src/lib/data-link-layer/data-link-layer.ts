@@ -5,7 +5,6 @@ import {
   FrameConfigInterface,
   FrameHistory,
   FrameMode,
-  getRawBytesLengthMax,
   PhysicalLayer,
   SCRAMBLE_SEQUENCE,
   scrambleArray
@@ -49,7 +48,7 @@ export class DataLinkLayer {
     const start = new Date().getTime(); // TODO remove me
     let validFramesCounter = 0; // TODO remove me
 
-    if (rxRawBytes.length > getRawBytesLengthMax(this.frameConfig)) {
+    if (rxRawBytes.length > this.frameConfig.rawBytesLengthMax) {
       rxRawBytes.shift();
     }
     rxRawBytes.push(this.physicalLayer.rx());

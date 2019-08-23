@@ -3,7 +3,7 @@
 import { frameModeToFrameConfigLookUp } from './config';
 import { FrameMode } from './model';
 import * as fromUtils from './utils';
-import { findFrameCandidates, getRawBytesLengthMin } from './utils';
+import { findFrameCandidates } from './utils';
 
 describe('Utils', () => {
   describe('allOneItemErrors', () => {
@@ -31,12 +31,11 @@ describe('Utils', () => {
   describe('findFrameCandidates', () => {
     it('should find all possible frame candidates', () => {
       const frameConfig = frameModeToFrameConfigLookUp[FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1];
-      const lengthMin = getRawBytesLengthMin(frameConfig);
       const bytes = [32, 34, 242, 43, 65, 32, 65, 43, 13, 174, 52];
       const scramble = [20, 60];
       const counter = { errorCorrected: 0, nonErrorCorrected: 0 };
-      const nonErrorCorrected = scramble.length * (bytes.length - lengthMin + 1);
-      const errorCorrected = nonErrorCorrected * 0.5 * (bytes.length + lengthMin) * 255;
+      const nonErrorCorrected = scramble.length * (bytes.length - frameConfig.rawBytesLengthMin + 1);
+      const errorCorrected = nonErrorCorrected * 0.5 * (bytes.length + frameConfig.rawBytesLengthMin) * 255;
       const nonErrorCorrectedRawBytes: number[][] = [];
 
       // 3 bytes of header: { errorCorrected: 30600, nonErrorCorrected: 16 }
@@ -67,18 +66,6 @@ describe('Utils', () => {
         [5, 23, 209, 154, 248],
         [23, 209, 154, 248]
       ]);
-    });
-  });
-
-  describe('getRawBytesLengthMax', () => {
-    it('should ...', () => {
-      expect(true).toBe(true); // TODO implement
-    });
-  });
-
-  describe('getRawBytesLengthMin', () => {
-    it('should ...', () => {
-      expect(true).toBe(true); // TODO implement
     });
   });
 

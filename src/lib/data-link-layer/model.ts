@@ -14,7 +14,11 @@ export interface FrameConfigInterface {
   payloadLengthFixed: number;
   payloadLengthMax: number;
   payloadLengthMin: number;
+  rawBytesLengthMax: number;
+  rawBytesLengthMin: number;
 }
+
+export type FrameConfigWithoutCheckAlgorithm = Omit<FrameConfigInterface, 'checkAlgorithm'>;
 
 export interface FrameCounterInterface {
   errorCorrectedInvalid?: number;

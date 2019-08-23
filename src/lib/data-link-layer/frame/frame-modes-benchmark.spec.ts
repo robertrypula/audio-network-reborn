@@ -7,8 +7,6 @@ import {
   getBytesFromHex,
   getHexFromBytes,
   getRandomBytes,
-  getRawBytesLengthMax,
-  getRawBytesLengthMin,
   movingWindowSubArrays,
   SCRAMBLE_SEQUENCE,
   scrambleArray,
@@ -163,8 +161,6 @@ describe('FrameModesBenchmark', () => {
       testCases: TestCaseFrameCounterWithPayloadInterface[]
     ) => {
       const frameConfig = frameModeToFrameConfigLookUp[frameMode];
-      const min = getRawBytesLengthMin(frameConfig);
-      const max = getRawBytesLengthMax(frameConfig);
 
       testCases.forEach(testCase => {
         const start = new Date().getTime();
@@ -190,7 +186,7 @@ describe('FrameModesBenchmark', () => {
           localRun ? getRandomBytes(localRunRandomBytesLengthHalf) : mocked512RandomBytesB.slice(0)
         );
 
-        movingWindowSubArrays(byteStream, min, max, rawBytes => {
+        movingWindowSubArrays(byteStream, frameConfig.rawBytesLengthMin, frameConfig.rawBytesLengthMax, rawBytes => {
           findFrameCandidates(
             rawBytes,
             scramble,

@@ -25,10 +25,8 @@ export const findFrameCandidates = (
   errorCorrectionEnabled: boolean,
   callback: (frameCandidate: Frame, isErrorCorrected: boolean) => void
 ): void => {
-  const rawBytesLengthMin = getRawBytesLengthMin(frameConfig);
-
   scrambledSubArrays(bytes, scramble, false, rawBytesScrambled => {
-    rightAlignedSubArrays(rawBytesScrambled, rawBytesLengthMin, rawBytes => {
+    rightAlignedSubArrays(rawBytesScrambled, frameConfig.rawBytesLengthMin, rawBytes => {
       callback(new Frame(frameConfig).setRawBytes(rawBytes), false);
       if (errorCorrectionEnabled) {
         allOneItemErrors(rawBytes, () => {
@@ -37,18 +35,6 @@ export const findFrameCandidates = (
       }
     });
   });
-};
-
-export const getRawBytesLengthMax = (frameConfig: FrameConfigInterface): number => {
-  return frameConfig.headerPayloadLengthEnabled
-    ? frameConfig.headerLength + frameConfig.payloadLengthMax
-    : frameConfig.headerLength + frameConfig.payloadLengthFixed;
-};
-
-export const getRawBytesLengthMin = (frameConfig: FrameConfigInterface): number => {
-  return frameConfig.headerPayloadLengthEnabled
-    ? frameConfig.headerLength + frameConfig.payloadLengthMin
-    : frameConfig.headerLength + frameConfig.payloadLengthFixed;
 };
 
 export const movingWindowSubArrays = (
