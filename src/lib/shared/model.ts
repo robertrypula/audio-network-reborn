@@ -3,6 +3,10 @@
 export type CheckAlgorithmImplementation = (bytes: number[]) => number[];
 
 export enum CheckAlgorithm {
+  Crc08 = 'Crc08',
+  Crc16 = 'Crc16',
+  Crc24 = 'Crc24',
+  Crc32 = 'Crc32',
   Fletcher16 = 'Fletcher16',
   Sha1 = 'Sha1'
 }

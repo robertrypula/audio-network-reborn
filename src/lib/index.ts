@@ -35,13 +35,13 @@ TODO (code):
   + run prettier on entire project
   + rename checksum to FCS (Frame Check Sequence)
   + re-implement frame-modes-benchmark.spec.ts to really show how different frame config works
-  - migrate CRC32 implementation from https://github.com/kvz/locutus/blob/master/src/php/strings/crc32.js
+  + migrate CRC32 implementation from https://github.com/kvz/locutus/blob/master/src/php/strings/crc32.js
     or even better, try CRC24:
-    - https://github.com/latysheff/node-polycrc/blob/master/polycrc.js#L155
-    - https://dev.flarecast.eu/stash/projects/SAND/repos/swagger-ui/browse/node_modules/crc/lib/crc24.js
-    - https://github.com/alexgorbatchev/node-crc/blob/master/lib/es6/crc24.js
-    - https://stackoverflow.com/questions/18638900/javascript-crc32
-  - extent frame modes with CRC frame modes
+    + https://github.com/latysheff/node-polycrc/blob/master/polycrc.js#L155
+    + https://dev.flarecast.eu/stash/projects/SAND/repos/swagger-ui/browse/node_modules/crc/lib/crc24.js
+    + https://github.com/alexgorbatchev/node-crc/blob/master/lib/es6/crc24.js
+    + https://stackoverflow.com/questions/18638900/javascript-crc32
+  + extent frame modes with CRC frame modes
   - extend frame-modes-benchmark with CRC frame modes
   + add bytes scrambling to the data link layer frame
   + implement wrapper for all methods (rightAlignedSubArrays, scrambledSubArrays?, allOneItemErrors)

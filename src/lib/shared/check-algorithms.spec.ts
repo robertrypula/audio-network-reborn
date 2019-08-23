@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { getFletcher16, getSha1 } from './check-algorithms';
+import { getCrc08, getCrc16, getCrc24, getCrc32, getFletcher16, getSha1 } from './check-algorithms';
 import { CheckAlgorithmImplementation, TestCaseInterface } from './model';
 import { getBytesFromText, getHexFromBytes } from './utils';
 
@@ -10,6 +10,54 @@ describe('CheckAlgorithms', () => {
       expect(getHexFromBytes(checkAlgorithmImplementation(getBytesFromText(testCase.in)))).toEqual(testCase.out)
     );
   };
+
+  describe('getCrc08', () => {
+    it('should pass all test cases', () => {
+      // Verified at: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html (CRC8)
+      runTestCases(getCrc08, [
+        { in: 'abcde', out: '52' },
+        { in: 'abcdef', out: '8c' },
+        { in: 'abcdefgh', out: 'cb' },
+        { in: 'The quick brown fox jumps over the lazy dog', out: 'c1' }
+      ]);
+    });
+  });
+
+  describe('getCrc16', () => {
+    it('should pass all test cases', () => {
+      // Verified at: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html (CRC16_ARC)
+      runTestCases(getCrc16, [
+        { in: 'abcde', out: '85 b8' },
+        { in: 'abcdef', out: '58 05' },
+        { in: 'abcdefgh', out: '74 29' },
+        { in: 'The quick brown fox jumps over the lazy dog', out: 'fc df' }
+      ]);
+    });
+  });
+
+  describe('getCrc24', () => {
+    it('should pass all test cases', () => {
+      // Verified by npm package: https://www.npmjs.com/package/polycrc
+      runTestCases(getCrc24, [
+        { in: 'abcde', out: 'd7 49 3c' },
+        { in: 'abcdef', out: '35 a8 3f' },
+        { in: 'abcdefgh', out: 'e8 6c c1' },
+        { in: 'The quick brown fox jumps over the lazy dog', out: 'a2 61 8c' }
+      ]);
+    });
+  });
+
+  describe('getCrc32', () => {
+    it('should pass all test cases', () => {
+      // Verified at: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html (CRC32)
+      runTestCases(getCrc32, [
+        { in: 'abcde', out: '85 87 d8 65' },
+        { in: 'abcdef', out: '4b 8e 39 ef' },
+        { in: 'abcdefgh', out: 'ae ef 2a 50' },
+        { in: 'The quick brown fox jumps over the lazy dog', out: '41 4f a3 39' }
+      ]);
+    });
+  });
 
   describe('getFletcher16', () => {
     it('should pass all test cases', () => {

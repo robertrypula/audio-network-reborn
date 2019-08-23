@@ -3,9 +3,6 @@
 import { getBytesFromHex } from '../shared/utils';
 import { FrameConfigWithoutCheckAlgorithm } from './model';
 
-// TODO check import issue when it's not function
-export const SCRAMBLE_SEQUENCE = () => getBytesFromHex('f9 cb 5d b3 ce 5a 88 5e e6 aa d3 3f bc 60 0e 8d b5');
-
 export const HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigWithoutCheckAlgorithm = {
   headerFirstByteCheckSequenceMask: 0x1f,
   headerFirstBytePayloadLengthBitShift: 5,
@@ -18,6 +15,20 @@ export const HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigWit
   payloadLengthMin: 1,
   rawBytesLengthMax: 10,
   rawBytesLengthMin: 3
+};
+
+export const HEADER_2_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigWithoutCheckAlgorithm = {
+  headerFirstByteCheckSequenceMask: null,
+  headerFirstBytePayloadLengthBitShift: null,
+  headerFirstBytePayloadLengthMask: null,
+  headerLength: 2,
+  headerPayloadLengthEnabled: false,
+  headerPayloadLengthOffset: null,
+  payloadLengthFixed: 8,
+  payloadLengthMax: null,
+  payloadLengthMin: null,
+  rawBytesLengthMax: 10,
+  rawBytesLengthMin: 10
 };
 
 export const HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigWithoutCheckAlgorithm = {
@@ -47,3 +58,6 @@ export const HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigWithoutC
   rawBytesLengthMax: 11,
   rawBytesLengthMin: 11
 };
+
+// TODO check import issue when it's not function
+export const SCRAMBLE_SEQUENCE = () => getBytesFromHex('f9 cb 5d b3 ce 5a 88 5e e6 aa d3 3f bc 60 0e 8d b5');
