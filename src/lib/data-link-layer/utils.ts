@@ -78,19 +78,29 @@ export const rightAlignedSubArrays = (
   }
 };
 
+export const scrambleArray = (
+  data: number[],
+  scramble: number[],
+  scramblePosition: number = 0,
+  add: boolean = true,
+  range = 256
+): void => {
+  for (let i = 0; i < data.length; i++) {
+    const scrambleValue = (add ? 1 : -1) * (scramble[(scramblePosition + i) % scramble.length] % range);
+    data[i] = (data[i] + scrambleValue + range) % range;
+  }
+};
+
 export const scrambledSubArrays = (
   data: number[],
   scramble: number[],
-  add: boolean,
+  add: boolean = true,
   callback: (subArray: number[]) => void,
   range = 256
 ): void => {
   for (let i = 0; i < scramble.length; i++) {
     const subArray = data.slice(0);
-    for (let j = 0; j < data.length; j++) {
-      const scrambleValue = (add ? 1 : -1) * (scramble[(i + j) % scramble.length] % range);
-      subArray[j] = (subArray[j] + scrambleValue + range) % range;
-    }
+    scrambleArray(subArray, scramble, i, add, range);
     callback(subArray);
   }
 };

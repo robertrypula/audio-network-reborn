@@ -1,13 +1,14 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import {
+  findFrameCandidates,
   FrameConfigInterface,
   FrameHistory,
   FrameMode,
   getRawBytesLengthMax,
-  getRawBytesLengthMin,
   PhysicalLayer,
-  rightAlignedSubArrays
+  SCRAMBLE_SEQUENCE,
+  scrambleArray
 } from '..';
 import { frameModeToFrameConfigLookUp } from './config';
 import { Frame } from './frame/frame';
@@ -22,7 +23,9 @@ export class DataLinkLayer {
   protected rxRawBytesA: number[] = [];
   protected rxRawBytesB: number[] = [];
   protected rxRawBytesCounter = 0;
+  protected scramble: number[] = SCRAMBLE_SEQUENCE();
   protected txFrame: Frame;
+  protected txRawBytesCounter = 0;
 
   public constructor(
     protected readonly frameConfig: FrameConfigInterface = frameModeToFrameConfigLookUp[
@@ -43,6 +46,8 @@ export class DataLinkLayer {
   public rxTimeTick(): void {
     const isEven = this.rxRawBytesCounter % 2 === 0;
     const rxRawBytes = isEven ? this.rxRawBytesA : this.rxRawBytesB;
+    const start = new Date().getTime(); // TODO remove me
+    let validFramesCounter = 0; // TODO remove me
 
     if (rxRawBytes.length > getRawBytesLengthMax(this.frameConfig)) {
       rxRawBytes.shift();
@@ -51,44 +56,49 @@ export class DataLinkLayer {
 
     this.rxFrames = [];
     this.rxFramesErrorCorrected = [];
-    // const start = new Date().getTime();    TODO remove me
-    rightAlignedSubArrays(rxRawBytes, getRawBytesLengthMin(this.frameConfig), rawBytes => {
-      if (!this.tryToFindValidFrame(rawBytes)) {
-        // allOneItemErrors(rawBytes, () => this.tryToFindValidFrame(rawBytes, true));
+
+    findFrameCandidates(rxRawBytes, this.scramble, this.frameConfig, false, (frameCandidate, isErrorCorrected) => {
+      if (this.tryToFindValidFrame(frameCandidate, isErrorCorrected)) {
+        validFramesCounter++; // TODO remove me
       }
     });
-    // const end = new Date().getTime();    TODO remove me
-    // console.log(end - start);    TODO remove me
+    if (validFramesCounter) {
+      // TODO remove me
+      /*tslint:disable-next-line:no-console*/
+      console.log(new Date().getTime() - start);
+    }
+
     this.rxRawBytesCounter++;
   }
 
   public setData(data: number[]): void {
     this.txFrame = new Frame(this.frameConfig);
     this.txFrame.setPayload(data);
+    scrambleArray(this.txFrame.getRawBytes(), this.scramble, this.txRawBytesCounter, true);
+    this.txRawBytesCounter += this.txFrame.getRawBytes().length;
   }
 
   public txTimeTick(): boolean {
     return this.physicalLayer.tx(this.txFrame.getNextRawByte());
   }
 
-  protected tryToFindValidFrame(rawBytes: number[], errorCorrected = false): boolean {
+  protected tryToFindValidFrame(frameCandidate: Frame, isErrorCorrected: boolean): boolean {
     const isEven = this.rxRawBytesCounter % 2 === 0;
     const rxFrameHistory = isEven ? this.rxFrameHistoryA : this.rxFrameHistoryB;
     const rxFrameHistoryHalfStepBack = isEven ? this.rxFrameHistoryB : this.rxFrameHistoryA;
-    const frame = new Frame(this.frameConfig).setRawBytes(rawBytes.slice(0)); // TODO rename to frameCandidate?
 
-    if (frame.isValid()) {
+    if (frameCandidate.isValid()) {
+      const frame = isErrorCorrected ? frameCandidate.clone() : frameCandidate;
       const equalFramesHalfStepBack = rxFrameHistoryHalfStepBack.filter(
         item => item.rawBytePosition >= this.rxRawBytesCounter - 1 && item.frame.isEqualTo(frame)
       );
 
       if (equalFramesHalfStepBack.length === 0) {
-        rxFrameHistory.push({ errorCorrected, frame, rawBytePosition: this.rxRawBytesCounter });
-        errorCorrected ? this.rxFramesErrorCorrected.push(frame) : this.rxFrames.push(frame);
+        rxFrameHistory.push({ frame, isErrorCorrected, rawBytePosition: this.rxRawBytesCounter });
+        isErrorCorrected ? this.rxFramesErrorCorrected.push(frame) : this.rxFrames.push(frame);
         return true;
       }
     }
-
     return false;
   }
 }

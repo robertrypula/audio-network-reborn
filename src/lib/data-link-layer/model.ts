@@ -17,8 +17,10 @@ export interface FrameConfigInterface {
 }
 
 export interface FrameCounterInterface {
+  errorCorrectedInvalid?: number;
+  errorCorrectedValid?: number;
+  errorCorrectedValidFake?: number;
   invalid?: number;
-  total?: number;
   valid?: number;
   validFake?: number;
 }
@@ -26,8 +28,8 @@ export interface FrameCounterInterface {
 export type FrameHistory = FrameHistoryEntryInterface[];
 
 export interface FrameHistoryEntryInterface {
-  errorCorrected: boolean;
   frame: Frame;
+  isErrorCorrected: boolean;
   rawBytePosition: number;
 }
 

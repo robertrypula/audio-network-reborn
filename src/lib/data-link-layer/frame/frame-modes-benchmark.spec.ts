@@ -2,6 +2,7 @@
 
 import {
   allOneItemErrors,
+  findFrameCandidates,
   FrameCounterInterface,
   getBytesFromHex,
   getHexFromBytes,
@@ -9,14 +10,15 @@ import {
   getRawBytesLengthMax,
   getRawBytesLengthMin,
   movingWindowSubArrays,
-  rightAlignedSubArrays,
+  SCRAMBLE_SEQUENCE,
+  scrambleArray,
   TestCaseFrameCounterWithPayloadInterface,
   TestCaseIntegrityInterface
 } from '../..';
 import { frameModeToFrameConfigLookUp } from '../config';
 import { FrameMode } from '../model';
 import { Frame } from './frame';
-import { mocked1024RandomBytesA, mocked1024RandomBytesB } from './frame-modes-benchmark.spec-data';
+import { mocked512RandomBytesA, mocked512RandomBytesB } from './frame-modes-benchmark.spec-data';
 
 describe('FrameModesBenchmark', () => {
   describe('Integrity', () => {
@@ -152,39 +154,93 @@ describe('FrameModesBenchmark', () => {
 
   describe('Frame detection in long random stream', () => {
     const localRun = false;
-    const localRunRandomBytesLength = 1000 * 10e3;
-    const runDetectionTestCases = (frameMode: FrameMode, testCases: TestCaseFrameCounterWithPayloadInterface[]) => {
+    const localRunRandomBytesLength = 1000 * 1e3;
+    const localRunRandomBytesLengthHalf = Math.ceil(localRunRandomBytesLength / 2);
+    const scramble = SCRAMBLE_SEQUENCE();
+    const runDetectionTestCases = (
+      frameMode: FrameMode,
+      errorCorrectionEnabled: boolean,
+      testCases: TestCaseFrameCounterWithPayloadInterface[]
+    ) => {
       const frameConfig = frameModeToFrameConfigLookUp[frameMode];
       const min = getRawBytesLengthMin(frameConfig);
       const max = getRawBytesLengthMax(frameConfig);
 
       testCases.forEach(testCase => {
-        const frame = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
-        const frameCounter: FrameCounterInterface = { invalid: 0, total: 0, valid: 0, validFake: 0 };
-        const byteStream = [
-          ...(localRun ? getRandomBytes(Math.ceil(localRunRandomBytesLength / 2)) : mocked1024RandomBytesA.slice(0)),
-          ...frame.getRawBytes(),
-          ...(localRun ? getRandomBytes(Math.ceil(localRunRandomBytesLength / 2)) : mocked1024RandomBytesB.slice(0))
-        ];
+        const start = new Date().getTime();
+        const frameCounter: FrameCounterInterface = {
+          errorCorrectedInvalid: 0,
+          errorCorrectedValid: 0,
+          errorCorrectedValidFake: 0,
+          invalid: 0,
+          valid: 0,
+          validFake: 0
+        };
+        let byteStream = localRun ? getRandomBytes(localRunRandomBytesLengthHalf) : mocked512RandomBytesA.slice(0);
+        let frameNotScrambled: Frame;
 
-        movingWindowSubArrays(byteStream, min, max, subArray => {
-          rightAlignedSubArrays(subArray, min, rawBytes => {
-            const frameCandidate = new Frame(frameConfig).setRawBytes(rawBytes);
-            frameCounter.total++;
-            frameCandidate.isValid()
-              ? frameCandidate.isEqualTo(frame)
-                ? frameCounter.valid++
-                : frameCounter.validFake++
-              : frameCounter.invalid++;
-          });
+        if (testCase.payload) {
+          const payload = getBytesFromHex(testCase.payload);
+          const frame = new Frame(frameConfig).setPayload(payload);
+          frameNotScrambled = frame.clone();
+          scrambleArray(frame.getRawBytes(), scramble);
+          byteStream = byteStream.concat(frame.getRawBytes());
+        }
+        byteStream = byteStream.concat(
+          localRun ? getRandomBytes(localRunRandomBytesLengthHalf) : mocked512RandomBytesB.slice(0)
+        );
+
+        movingWindowSubArrays(byteStream, min, max, rawBytes => {
+          findFrameCandidates(
+            rawBytes,
+            scramble,
+            frameConfig,
+            errorCorrectionEnabled,
+            (frameCandidate, isErrorCorrected) => {
+              if (isErrorCorrected) {
+                frameCandidate.isValid()
+                  ? frameCandidate.isEqualTo(frameNotScrambled)
+                    ? frameCounter.errorCorrectedValid++
+                    : frameCounter.errorCorrectedValidFake++
+                  : frameCounter.errorCorrectedInvalid++;
+              } else {
+                frameCandidate.isValid()
+                  ? frameCandidate.isEqualTo(frameNotScrambled)
+                    ? frameCounter.valid++
+                    : frameCounter.validFake++
+                  : frameCounter.invalid++;
+              }
+            }
+          );
         });
-        expect(frameCounter).toEqual(testCase.frameCounter);
+
+        if (localRun) {
+          expect({
+            byteStreamLength: byteStream.length,
+            errorCorrectedInvalidFrameEvery: byteStream.length / frameCounter.errorCorrectedInvalid,
+            executionTime: ((new Date().getTime() - start) / 1000).toFixed(1) + ' s',
+            frameCounter,
+            validFakeFrameEvery: byteStream.length / frameCounter.validFake
+          }).toEqual({});
+        } else {
+          expect(frameCounter).toEqual(testCase.frameCounter);
+        }
       });
     };
 
     it('should work with 2 bytes of header, 1-8 bytes of payload and Fletcher-16 check sequence', () => {
-      runDetectionTestCases(FrameMode.Header2BytesPayloadLengthBetween1And8BytesFletcher16, [
-        { frameCounter: { invalid: 16419, total: 16420, valid: 1, validFake: 0 }, payload: '00 0a 14 1e 28 78 fa ff' }
+      runDetectionTestCases(FrameMode.Header2BytesPayloadLengthBetween1And8BytesFletcher16, false, [
+        {
+          frameCounter: {
+            errorCorrectedInvalid: 0,
+            errorCorrectedValid: 0,
+            errorCorrectedValidFake: 0,
+            invalid: 139875,
+            valid: 1,
+            validFake: 0
+          },
+          payload: '77 b3 f9 61 5c 78 c7 9c'
+        }
       ]);
       /*
         10 000 000 random bytes + 10 valid frame bytes + 10 000 000 random bytes
@@ -193,23 +249,46 @@ describe('FrameModesBenchmark', () => {
           - tests result C: { invalid: 159999716, validFake: 319, validReal: 1 }
         It means that statistically every ~62 thousands random bytes there is one fake valid frame.
         When transmission speed is 5 bytes per second then we should get a fake frame every ~3.5 hours.
+
+        executionTime: '168.1 s', invalid: 135998536, valid: 1, validFake: 2075,
+        byteStreamLength: 1000010, validFakeFrameEvery: 481.9
       */
     });
 
-    /*
     it('should work with 3 bytes of header, 1-8 bytes of payload and SHA-1 check sequence', () => {
-      runDetectionTestCases(FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1, [
-        { frameCounter: { invalid: 16419, total: 16420, valid: 1, validFake: 0 }, payload: '00 0a 14 1e 28 78 fa ff' }
+      runDetectionTestCases(FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1, false, [
+        {
+          frameCounter: {
+            errorCorrectedInvalid: 0,
+            errorCorrectedValid: 0,
+            errorCorrectedValidFake: 0,
+            invalid: 139875,
+            valid: 1,
+            validFake: 0
+          },
+          payload: '77 b3 f9 61 5c 78 c7 9c'
+        }
       ]);
+      // executionTime: '616.7 s', invalid: 136000601, valid: 1, validFake: 10,
+      // byteStreamLength: 1000011, validFakeFrameEvery: 100001.1
     });
-    */
 
-    /*
     it('should work with 3 bytes of header, fixed 8 bytes of payload and SHA-1 check sequence', () => {
-      runDetectionTestCases(FrameMode.Header3BytesPayloadLengthFixedAt8BytesSha1, [
-        { frameCounter: { invalid: 2048, total: 2049, valid: 1, validFake: 0 }, payload: '00 0a 14 1e 28 78 fa ff' }
+      runDetectionTestCases(FrameMode.Header3BytesPayloadLengthFixedAt8BytesSha1, false, [
+        {
+          frameCounter: {
+            errorCorrectedInvalid: 0,
+            errorCorrectedValid: 0,
+            errorCorrectedValidFake: 0,
+            invalid: 17424,
+            valid: 1,
+            validFake: 0
+          },
+          payload: '77 b3 f9 61 5c 78 c7 9c'
+        }
       ]);
+      // executionTime: '85.1 s', invalid: 17000014, valid: 1, validFake: 2,
+      // byteStreamLength: 1000011, validFakeFrameEvery: 500005.5
     });
-    */
   });
 });

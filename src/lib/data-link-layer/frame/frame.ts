@@ -11,6 +11,15 @@ export class Frame {
 
   public constructor(protected readonly frameConfig: FrameConfigInterface) {}
 
+  public clone(): Frame {
+    const frame = new Frame(this.frameConfig);
+
+    frame.rawBytes = this.rawBytes.slice(0);
+    frame.rawBytePosition = this.rawBytePosition;
+
+    return frame;
+  }
+
   public getNextRawByte(): number {
     return this.rawBytePosition < this.rawBytes.length ? this.rawBytes[this.rawBytePosition++] : null;
   }

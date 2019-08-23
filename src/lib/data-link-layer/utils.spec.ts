@@ -129,36 +129,47 @@ describe('Utils', () => {
     });
   });
 
+  describe('scrambleArray', () => {
+    it('should properly scramble the data in the array', () => {
+      const data = [32];
+      const scramble = [10, 20, 30, 12];
+
+      // TODO improve test case
+      fromUtils.scrambleArray(data, scramble, 4, true);
+      expect(data).toEqual([42]);
+    });
+  });
+
   describe('scrambledSubArrays', () => {
     it('should properly return sub arrays with scrambled data', () => {
       const result: number[][] = [];
-      const scrambleList = [10, 20, 30, 12];
+      const scramble = [10, 20, 30, 12];
 
-      fromUtils.scrambledSubArrays([0, 100, 200], scrambleList, true, subArray => result.push(subArray));
+      fromUtils.scrambledSubArrays([0, 100, 200], scramble, true, subArray => result.push(subArray));
       expect(result).toEqual([[10, 120, 230], [20, 130, 212], [30, 112, 210], [12, 110, 220]]);
     });
 
     it('should properly return sub arrays with un-scrambled data', () => {
       const result: number[][] = [];
-      const scrambleList = [10, 20, 30, 12];
+      const scramble = [10, 20, 30, 12];
 
-      fromUtils.scrambledSubArrays([0, 100, 200], scrambleList, false, subArray => result.push(subArray));
+      fromUtils.scrambledSubArrays([0, 100, 200], scramble, false, subArray => result.push(subArray));
       expect(result).toEqual([[256 - 10, 80, 170], [256 - 20, 70, 188], [256 - 30, 88, 190], [256 - 12, 90, 180]]);
     });
 
     it('should properly return sub arrays with scrambled data (range check)', () => {
       const result: number[][] = [];
-      const scrambleList = [25, 26];
+      const scramble = [25, 26];
 
-      fromUtils.scrambledSubArrays([16, 2], scrambleList, true, subArray => result.push(subArray), 20);
+      fromUtils.scrambledSubArrays([16, 2], scramble, true, subArray => result.push(subArray), 20);
       expect(result).toEqual([[1, 8], [2, 7]]);
     });
 
     it('should properly return sub arrays with un-scrambled data (range check)', () => {
       const result: number[][] = [];
-      const scrambleList = [25, 26];
+      const scramble = [25, 26];
 
-      fromUtils.scrambledSubArrays([16, 2], scrambleList, false, subArray => result.push(subArray), 20);
+      fromUtils.scrambledSubArrays([16, 2], scramble, false, subArray => result.push(subArray), 20);
       expect(result).toEqual([[11, 16], [10, 17]]);
     });
   });
