@@ -30,6 +30,10 @@
     "url": "https://github.com/robertrypula/audio-network-lite/issues"
   },
   "jest": {
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/src/lib/web-examples/"
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
