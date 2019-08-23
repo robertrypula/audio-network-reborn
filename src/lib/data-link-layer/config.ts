@@ -14,10 +14,6 @@ export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
     checkAlgorithm: CheckAlgorithm.Crc16,
     ...HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES
   },
-  Header2BytesPayloadLengthBetween1And8BytesFletcher16: {
-    checkAlgorithm: CheckAlgorithm.Fletcher16,
-    ...HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES
-  },
   Header2BytesPayloadLengthFixedAt8BytesCrc16: {
     checkAlgorithm: CheckAlgorithm.Crc16,
     ...HEADER_2_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES
@@ -26,16 +22,8 @@ export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
     checkAlgorithm: CheckAlgorithm.Crc24,
     ...HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES
   },
-  Header3BytesPayloadLengthBetween1And8BytesSha1: {
-    checkAlgorithm: CheckAlgorithm.Sha1,
-    ...HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES
-  },
   Header3BytesPayloadLengthFixedAt8BytesCrc24: {
     checkAlgorithm: CheckAlgorithm.Crc24,
-    ...HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES
-  },
-  Header3BytesPayloadLengthFixedAt8BytesSha1: {
-    checkAlgorithm: CheckAlgorithm.Sha1,
     ...HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES
   }
 };

@@ -5,7 +5,6 @@ import { getCrc08 } from './crc-08';
 import { getCrc16 } from './crc-16';
 import { getCrc24 } from './crc-24';
 import { getCrc32 } from './crc-32';
-import { getFletcher16 } from './fletcher-16';
 import { getSha1 } from './sha-1';
 
 /*tslint:disable:no-bitwise*/
@@ -20,8 +19,6 @@ export const getCheckAlgorithmImplementation = (checkAlgorithm: CheckAlgorithm):
       return getCrc24;
     case CheckAlgorithm.Crc32:
       return getCrc32;
-    case CheckAlgorithm.Fletcher16:
-      return getFletcher16;
     case CheckAlgorithm.Sha1:
       return getSha1;
     default:

@@ -28,11 +28,6 @@ export * from './visualization/visualizers';
 
 /*
 TODO (code):
-  + frame.spec without fletcher
-  - split check function code
-  - remove Fletcher-16 implementation from the code
-  - remove Sha1 from frame modes
-  - remove error correction benchmark
   - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
   - physical layer constructor should get configs rather than modes !!!!!!!!!!!!!!!!!!!
     in current implementation it is not possible use custom config - client needs to rely on hardcoded modes

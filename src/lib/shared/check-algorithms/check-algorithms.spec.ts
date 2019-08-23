@@ -59,17 +59,6 @@ describe('CheckAlgorithms', () => {
     });
   });
 
-  describe('getFletcher16', () => {
-    it('should pass all test cases', () => {
-      // Fletcher-16 test vectors taken from https://en.wikipedia.org/wiki/Fletcher%27s_checksum
-      runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Fletcher16), [
-        { in: 'abcde', out: 'c8 f0' },
-        { in: 'abcdef', out: '20 57' },
-        { in: 'abcdefgh', out: '06 27' }
-      ]);
-    });
-  });
-
   describe('getSha1', () => {
     it('should pass all test cases', () => {
       // SHA-1 test vectors taken from https://www.di-mgt.com.au/sha_testvectors.html

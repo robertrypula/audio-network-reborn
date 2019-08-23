@@ -30,7 +30,7 @@ describe('Utils', () => {
 
   describe('findFrameCandidates', () => {
     it('should find all possible frame candidates', () => {
-      const frameConfig = frameModeToFrameConfigLookUp[FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1];
+      const frameConfig = frameModeToFrameConfigLookUp[FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24];
       const bytes = [32, 34, 242, 43, 65, 32, 65, 43, 13, 174, 52];
       const scramble = [20, 60];
       const counter = { errorCorrected: 0, nonErrorCorrected: 0 };
