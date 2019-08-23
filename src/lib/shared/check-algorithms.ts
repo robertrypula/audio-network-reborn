@@ -30,8 +30,9 @@ const CRC_08_LOOKUP_TABLE = `
   4c,45,42,6f,68,61,66,73,74,7d,7a,89,8e,87,80,95,92,9b,9c,b1,b6,bf,b8,ad,aa,a3,a4,f9,fe,f7,f0,e5,e2,eb,ec,c1,c6,cf,c8,
   dd,da,d3,d4,69,6e,67,60,75,72,7b,7c,51,56,5f,58,4d,4a,43,44,19,1e,17,10,05,02,0b,0c,21,26,2f,28,3d,3a,33,34,4e,49,40,
   47,52,55,5c,5b,76,71,78,7f,6a,6d,64,63,3e,39,30,37,22,25,2c,2b,06,01,08,0f,1a,1d,14,13,ae,a9,a0,a7,b2,b5,bc,bb,96,91,
-  98,9f,8a,8d,84,83,de,d9,d0,d7,c2,c5,cc,cb,e6,e1,e8,ef,fa,fd,f4,f3
-`.split(',').map(value => parseInt(value, 16));
+  98,9f,8a,8d,84,83,de,d9,d0,d7,c2,c5,cc,cb,e6,e1,e8,ef,fa,fd,f4,f3`
+  .split(',')
+  .map(value => parseInt(value, 16));
 
 export const getCrc08: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation taken from:
@@ -57,8 +58,9 @@ const CRC_16_LOOKUP_TABLE = `
   7200,b2c1,b381,7340,b101,71c0,7080,b041,5000,90c1,9181,5140,9301,53c0,5280,9241,9601,56c0,5780,9741,5500,95c1,9481,
   5440,9c01,5cc0,5d80,9d41,5f00,9fc1,9e81,5e40,5a00,9ac1,9b81,5b40,9901,59c0,5880,9841,8801,48c0,4980,8941,4b00,8bc1,
   8a81,4a40,4e00,8ec1,8f81,4f40,8d01,4dc0,4c80,8c41,4400,84c1,8581,4540,8701,47c0,4680,8641,8201,42c0,4380,8341,4100,
-  81c1,8081,4040
-`.split(',').map(value => parseInt(value, 16));
+  81c1,8081,4040`
+  .split(',')
+  .map(value => parseInt(value, 16));
 
 export const getCrc16: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation taken from:
@@ -88,8 +90,9 @@ const CRC_24_LOOKUP_TABLE = `
   2ae476,aca88d,a0317b,267d80,b90297,3f4e6c,33d79a,b59b61,8b654f,0d29b4,01b042,87fcb9,1883ae,9ecf55,9256a3,141a58,
   efaaff,69e604,657ff2,e33309,7c4c1e,fa00e5,f69913,70d5e8,4e2bc6,c8673d,c4fecb,42b230,ddcd27,5b81dc,57182a,d154d1,
   26359f,a07964,ace092,2aac69,b5d37e,339f85,3f0673,b94a88,87b4a6,01f85d,0d61ab,8b2d50,145247,921ebc,9e874a,18cbb1,
-  e37b16,6537ed,69ae1b,efe2e0,709df7,f6d10c,fa48fa,7c0401,42fa2f,c4b6d4,c82f22,4e63d9,d11cce,575035,5bc9c3,dd8538
-`.split(',').map(value => parseInt(value, 16));
+  e37b16,6537ed,69ae1b,efe2e0,709df7,f6d10c,fa48fa,7c0401,42fa2f,c4b6d4,c82f22,4e63d9,d11cce,575035,5bc9c3,dd8538`
+  .split(',')
+  .map(value => parseInt(value, 16));
 
 export const getCrc24: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation taken from:
@@ -123,8 +126,9 @@ const CRC_32_LOOKUP_TABLE = `
   86d3d2d4,f1d4e242,68ddb3f8,1fda836e,81be16cd,f6b9265b,6fb077e1,18b74777,88085ae6,ff0f6a70,66063bca,11010b5c,8f659eff,
   f862ae69,616bffd3,166ccf45,a00ae278,d70dd2ee,4e048354,3903b3c2,a7672661,d06016f7,4969474d,3e6e77db,aed16a4a,d9d65adc,
   40df0b66,37d83bf0,a9bcae53,debb9ec5,47b2cf7f,30b5ffe9,bdbdf21c,cabac28a,53b39330,24b4a3a6,bad03605,cdd70693,54de5729,
-  23d967bf,b3667a2e,c4614ab8,5d681b02,2a6f2b94,b40bbe37,c30c8ea1,5a05df1b,2d02ef8d
-`.split(',').map(value => parseInt(value, 16));
+  23d967bf,b3667a2e,c4614ab8,5d681b02,2a6f2b94,b40bbe37,c30c8ea1,5a05df1b,2d02ef8d`
+  .split(',')
+  .map(value => parseInt(value, 16));
 
 export const getCrc32: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation taken from:

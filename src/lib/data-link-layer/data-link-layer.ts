@@ -28,7 +28,7 @@ export class DataLinkLayer {
 
   public constructor(
     protected readonly frameConfig: FrameConfigInterface = frameModeToFrameConfigLookUp[
-      FrameMode.Header3BytesPayloadLengthBetween1And8BytesSha1
+      FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24
     ]
   ) {
     this.physicalLayer = new PhysicalLayer();

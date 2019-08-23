@@ -38,9 +38,6 @@ describe('Utils', () => {
       const errorCorrected = nonErrorCorrected * 0.5 * (bytes.length + frameConfig.rawBytesLengthMin) * 255;
       const nonErrorCorrectedRawBytes: number[][] = [];
 
-      // 3 bytes of header: { errorCorrected: 30600, nonErrorCorrected: 16 }
-      // 2 bytes of header: { errorCorrected: 26520, nonErrorCorrected: 16 }
-
       findFrameCandidates(bytes, scramble, frameConfig, true, (frameCandidate, isErrorCorrected) => {
         isErrorCorrected ? counter.errorCorrected++ : counter.nonErrorCorrected++;
         if (!isErrorCorrected) {

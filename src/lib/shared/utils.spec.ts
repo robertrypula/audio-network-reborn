@@ -37,13 +37,13 @@ describe('Utils', () => {
 
   describe('getRandomBytes', () => {
     it('should ...', () => {
-      expect(true).toBe(true); // TODO implement
+      // TODO implement
     });
   });
 
   describe('getRandomInt', () => {
     it('should ...', () => {
-      expect(true).toBe(true); // TODO implement
+      // TODO implement
     });
   });
 
