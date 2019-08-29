@@ -10,10 +10,10 @@ export enum AudioMonoIoCreateMode {
 export interface AudioMonoIoInterface {
   getFftSize(): number;
   getSampleRate(): number;
-  getFrequencyDomainData(): Float32Array;
+  getFrequencyDomainData(currentTime: number): Float32Array;
   inputDisable(): void;
   setFftSize(fftSize: number): void;
-  setPeriodicWave(frequency: number): void;
+  setPeriodicWave(frequency: number, currentTime: number): void;
   outputDisable(): void;
 }
 
@@ -27,9 +27,9 @@ export interface DspConfig {
   band: BandInterface;
   dspConfigInitial: DspConfigInitialInterface;
   rawByteRate: number;
-  timeTickMillisecondsRx: number;
-  timeTickMillisecondsTx: number;
+  rxIntervalMilliseconds: number;
   transmissionMode: TransmissionMode;
+  txIntervalMilliseconds: number;
   unifiedBinIndexes?: number[];
   unifiedFrequencies?: number[];
 }

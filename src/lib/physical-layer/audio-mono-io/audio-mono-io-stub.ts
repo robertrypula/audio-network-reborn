@@ -20,9 +20,9 @@ export class AudioMonoIoStub implements AudioMonoIoInterface {
     return this.sampleRate;
   }
 
-  public getFrequencyDomainData(): Float32Array {
+  public getFrequencyDomainData(currentTime: number): Float32Array {
     const length = 0.5 * this.fftSize;
-    CONSOLE && console.info('AudioMonoIoStub.getFrequencyDomainData -> [arrayLength=' + length + ']');
+    CONSOLE && console.info('AudioMonoIoStub.getFrequencyDomainData -> [arrayLength=' + length + ']', currentTime);
     return new Float32Array(length);
   }
 
@@ -35,8 +35,8 @@ export class AudioMonoIoStub implements AudioMonoIoInterface {
     this.fftSize = fftSize;
   }
 
-  public setPeriodicWave(frequency: number): void {
-    CONSOLE && console.info('AudioMonoIoStub.setPeriodicWave -> ' + frequency.toFixed(6));
+  public setPeriodicWave(frequency: number, currentTime: number): void {
+    CONSOLE && console.info('AudioMonoIoStub.setPeriodicWave -> ' + frequency.toFixed(6), currentTime);
   }
 
   public outputDisable(): void {

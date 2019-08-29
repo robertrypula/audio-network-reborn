@@ -2,7 +2,7 @@
 
 import { DataLinkLayer, DspConfig } from '../..';
 
-export const html = `
+export const mainHtml = `
   <div class="section">
     <select id="transmission-mode-dropdown" onchange="example.onTransmissionModeChange(this.value)"></select>
   </div>

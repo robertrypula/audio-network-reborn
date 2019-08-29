@@ -24,14 +24,14 @@ export const FREQUENCY_END_INAUDIBLE = FREQUENCY_19_5_KHZ - FREQUENCY_MARGIN;
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   SAFE_MARGIN_FACTOR_FAST (~1.3 in example below):
-  `           `           `           `           `           `   getTimeTickMillisecondsRx intervals
-  '                       '                       '               getTimeTickMillisecondsTx intervals
+  `           `           `           `           `           `   rxIntervalMilliseconds intervals
+  '                       '                       '               txIntervalMilliseconds intervals
               ..................      ..................          fftWindowTime #1
   ..................      ..................                      fftWindowTime #2
 
   SAFE_MARGIN_FACTOR_SLOW (~2.2 in example below):
-  `                  `                  `                  `                  `   getTimeTickMillisecondsRx intervals
-  '                                     '                                     '   getTimeTickMillisecondsTx intervals
+  `                  `                  `                  `                  `   rxIntervalMilliseconds intervals
+  '                                     '                                     '   txIntervalMilliseconds intervals
                      ..................                    ..................     fftWindowTime #1
   ..................                    ..................                        fftWindowTime #2
 
@@ -39,7 +39,7 @@ export const FREQUENCY_END_INAUDIBLE = FREQUENCY_19_5_KHZ - FREQUENCY_MARGIN;
 
   Simplified formula to understand the relation between parameters:
 
-    getTimeTickMillisecondsTx = safeMarginFactor * fftWindowTime
+    txIntervalMilliseconds = safeMarginFactor * fftWindowTime
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

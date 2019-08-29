@@ -39,20 +39,20 @@ export class DataLinkLayer {
   }
 
   public getRxBytesCollection(): number[][] {
-    return this.rxFrames.length ? this.rxFrames.map(item => item.getPayload()) : null;
+    return this.rxFrames.length ? this.rxFrames.map(item => item.getPayload()) : [];
   }
 
   public getRxBytesErrorCorrectedCollection(): number[][] {
-    return this.rxFramesErrorCorrected.length ? this.rxFramesErrorCorrected.map(item => item.getPayload()) : null;
+    return this.rxFramesErrorCorrected.length ? this.rxFramesErrorCorrected.map(item => item.getPayload()) : [];
   }
 
-  public rxTimeTick(): void {
+  public rxTimeTick(currentTime: number): void {
     const isEven = this.rxRawBytesCounter % 2 === 0;
     const rxRawBytes = isEven ? this.rxRawBytesA : this.rxRawBytesB;
     // const start = new Date().getTime(); // TODO remove me
     let validFramesCounter = 0; // TODO remove me
 
-    rxRawBytes.insert(this.physicalLayer.rx());
+    rxRawBytes.insert(this.physicalLayer.rx(currentTime));
     this.rxFrames = [];
     this.rxFramesErrorCorrected = [];
 
@@ -77,8 +77,8 @@ export class DataLinkLayer {
     this.txRawBytesCounter += this.txFrame.getRawBytes().length;
   }
 
-  public txTimeTick(): boolean {
-    return this.physicalLayer.tx(this.txFrame.getNextRawByte());
+  public txTimeTick(currentTime: number): boolean {
+    return this.physicalLayer.tx(this.txFrame.getNextRawByte(), currentTime);
   }
 
   protected tryToFindValidFrame(frameCandidate: Frame, isErrorCorrected: boolean): boolean {

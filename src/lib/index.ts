@@ -35,13 +35,14 @@ TODO #1:
   + rename methods at Data Link class: setTxBytes, getRxBytes
   + move configs outside package.json: jest, prettier
   + source map in prod? NO!!
-  - PhysicalLayer class should have rxTimeTick and txTimeTick methods, DataLinkLayer class should
-    have mandatory parameters in txTimeTick rxTimeTick that is passed to PhysicalLayer
+  + PhysicalLayer class should have rxTimeTick and txTimeTick methods, DataLinkLayer class should
+    have mandatory parameters in txTimeTick rxTimeTick that is passed to PhysicalLayer and AudioMonoIo
   + comment console logs!!
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:
   - refactor imports to absolute paths
+  - performance checker (store previous getFrequencyData array and compare with current) + example
   - find alternative for coveralls
   - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
   - PREPARE THE RELEASE: 0.2.0

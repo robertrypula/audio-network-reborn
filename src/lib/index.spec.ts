@@ -23,15 +23,15 @@ describe('Index', () => {
     const dataLinkLayer = new DataLinkLayer();
 
     dataLinkLayer.setTxBytes([1, 2, 3]);
-    expect(dataLinkLayer.txTimeTick()).toBe(true);
-    expect(dataLinkLayer.txTimeTick()).toBe(true);
-    expect(dataLinkLayer.txTimeTick()).toBe(true);
-    expect(dataLinkLayer.txTimeTick()).toBe(true);
-    expect(dataLinkLayer.txTimeTick()).toBe(true);
-    expect(dataLinkLayer.txTimeTick()).toBe(true);
-    expect(dataLinkLayer.txTimeTick()).toBe(false);
+    expect(dataLinkLayer.txTimeTick(0)).toBe(true);
+    expect(dataLinkLayer.txTimeTick(1)).toBe(true);
+    expect(dataLinkLayer.txTimeTick(2)).toBe(true);
+    expect(dataLinkLayer.txTimeTick(3)).toBe(true);
+    expect(dataLinkLayer.txTimeTick(4)).toBe(true);
+    expect(dataLinkLayer.txTimeTick(5)).toBe(true);
+    expect(dataLinkLayer.txTimeTick(6)).toBe(false);
 
-    dataLinkLayer.rxTimeTick();
-    expect(dataLinkLayer.getRxBytesCollection()).toEqual(null);
+    dataLinkLayer.rxTimeTick(7);
+    expect(dataLinkLayer.getRxBytesCollection()).toEqual([]);
   });
 });

@@ -16,7 +16,7 @@ export class PhysicalLayer {
 
   protected dspConfig: DspConfig;
 
-  public constructor(transmissionMode: TransmissionMode = TransmissionMode.SlimBandFastAudibleLower) {
+  public constructor(transmissionMode: TransmissionMode = TransmissionMode.NormalBandFastAudibleLower) {
     this.audioMonoIo = audioMonoIoFactory.createAudioMonoIo();
     this.setTransmissionMode(transmissionMode);
   }
@@ -25,8 +25,8 @@ export class PhysicalLayer {
     return this.dspConfig;
   }
 
-  public rx(): number {
-    return new FftResult(this.audioMonoIo.getFrequencyDomainData(), this.audioMonoIo.getSampleRate())
+  public rx(currentTime: number): number {
+    return new FftResult(this.audioMonoIo.getFrequencyDomainData(currentTime), this.audioMonoIo.getSampleRate())
       .pick(this.dspConfig.unifiedBinIndexes)
       .getLoudestBinIndex();
   }
@@ -38,10 +38,13 @@ export class PhysicalLayer {
     }
   }
 
-  public tx(byte: number | null): boolean {
+  public tx(byte: number, currentTime: number): boolean {
     const isValidByte = byte !== null && byte >= 0 && byte < BYTE_UNIQUE_VALUES;
 
-    this.audioMonoIo.setPeriodicWave(isValidByte ? this.dspConfig.unifiedFrequencies[byte] : SILENCE_FREQUENCY);
+    this.audioMonoIo.setPeriodicWave(
+      isValidByte ? this.dspConfig.unifiedFrequencies[byte] : SILENCE_FREQUENCY,
+      currentTime
+    );
 
     return isValidByte;
   }

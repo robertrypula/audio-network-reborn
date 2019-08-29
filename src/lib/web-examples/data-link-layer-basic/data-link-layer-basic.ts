@@ -11,7 +11,7 @@ export class DataLinkLayerBasicWebExample {
   public txInterval: any;
 
   public constructor() {
-    document.getElementById('audio-network-lite-root').innerHTML = fromTemplate.html;
+    document.getElementById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
     this.initializeTransmissionModeDropdown();
   }
 
@@ -20,8 +20,8 @@ export class DataLinkLayerBasicWebExample {
     if (transmissionMode) {
       this.dataLinkLayer.physicalLayer.setTransmissionMode(transmissionMode);
       document.getElementById('controls-wrapper').style.display = 'block';
-      this.rxInterval && this.initializeRxInterval();
-      this.txInterval && this.initializeTxInterval();
+      this.rxInterval && this.handleRxInterval();
+      this.txInterval && this.handleTxInterval();
     } else {
       document.getElementById('controls-wrapper').style.display = 'none';
       this.clearRxInterval();
@@ -37,7 +37,7 @@ export class DataLinkLayerBasicWebExample {
   public receiveEnable(): void {
     document.getElementById('enable-receiver-button').style.display = 'none';
     document.getElementById('waiting-for-data-frames-label').style.display = 'block';
-    this.initializeRxInterval();
+    this.handleRxInterval();
   }
 
   public transmit(): void {
@@ -47,8 +47,7 @@ export class DataLinkLayerBasicWebExample {
       .map(item => parseInt(item, 10));
 
     this.dataLinkLayer.setTxBytes(txBytes);
-    this.dataLinkLayer.txTimeTick();
-    this.initializeTxInterval();
+    this.handleTxInterval();
   }
 
   protected clearRxInterval(): void {
@@ -59,6 +58,32 @@ export class DataLinkLayerBasicWebExample {
   protected clearTxInterval(): void {
     clearInterval(this.txInterval);
     this.txInterval = null;
+  }
+
+  protected handleRxInterval(): void {
+    this.clearRxInterval();
+    this.rxInterval = setInterval(() => {
+      let rxBytesCollection: number[][];
+
+      this.dataLinkLayer.rxTimeTick(new Date().getTime());
+      rxBytesCollection = this.dataLinkLayer.getRxBytesCollection();
+
+      if (rxBytesCollection.length) {
+        document.getElementById('rx-data').innerHTML =
+          document.getElementById('rx-data').innerHTML +
+          rxBytesCollection.map(rxBytes => rxBytes.join(' ')).join(' | ') +
+          '<br/>';
+      }
+    }, this.dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds);
+  }
+
+  protected handleTxInterval(): void {
+    this.clearTxInterval();
+    if (this.dataLinkLayer.txTimeTick(new Date().getTime())) {
+      this.txInterval = setInterval(() => {
+        !this.dataLinkLayer.txTimeTick(new Date().getTime()) && this.clearTxInterval();
+      }, this.dataLinkLayer.physicalLayer.getDspConfig().txIntervalMilliseconds);
+    }
   }
 
   protected initializeDataLinkLayer(): void {
@@ -72,31 +97,5 @@ export class DataLinkLayerBasicWebExample {
   protected initializeTransmissionModeDropdown(): void {
     document.getElementById('transmission-mode-dropdown').innerHTML =
       fromTemplate.dropdownOptionEmpty + getDspConfigList().map(dspConfig => fromTemplate.dropdownOption(dspConfig));
-  }
-
-  protected initializeRxInterval(): void {
-    this.clearRxInterval();
-    this.rxInterval = setInterval(() => {
-      let rxBytesCollection: number[][];
-
-      this.dataLinkLayer.rxTimeTick();
-      rxBytesCollection = this.dataLinkLayer.getRxBytesCollection();
-
-      if (rxBytesCollection) {
-        document.getElementById('rx-data').innerHTML =
-          document.getElementById('rx-data').innerHTML +
-          rxBytesCollection.map(rxBytes => rxBytes.join(' ')).join(' | ') +
-          '<br/>';
-      }
-    }, this.dataLinkLayer.physicalLayer.getDspConfig().timeTickMillisecondsRx);
-  }
-
-  protected initializeTxInterval(): void {
-    this.clearTxInterval();
-    this.txInterval = setInterval(() => {
-      if (!this.dataLinkLayer.txTimeTick()) {
-        this.clearTxInterval();
-      }
-    }, this.dataLinkLayer.physicalLayer.getDspConfig().timeTickMillisecondsTx);
   }
 }

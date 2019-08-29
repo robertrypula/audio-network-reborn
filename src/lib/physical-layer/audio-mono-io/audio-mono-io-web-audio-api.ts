@@ -25,7 +25,7 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
     return this.audioContext.sampleRate;
   }
 
-  public getFrequencyDomainData(): Float32Array {
+  public getFrequencyDomainData(currentTime: number): Float32Array {
     let data: Float32Array;
 
     this.inputEnable();
@@ -64,7 +64,7 @@ export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
     }
   }
 
-  public setPeriodicWave(frequency: number): void {
+  public setPeriodicWave(frequency: number, currentTime: number): void {
     this.outputEnable();
     this.oscillatorNode.frequency.value = frequency;
     this.oscillatorNode.frequency.setValueAtTime(frequency, this.audioContext.currentTime);

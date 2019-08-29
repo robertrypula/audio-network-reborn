@@ -24,8 +24,8 @@ export const getDspConfig = (transmissionMode: TransmissionMode, sampleRate: num
     BYTE_UNIQUE_VALUES,
     SUPPORTED_SAMPLE_RATES
   );
-  const timeTickMillisecondsRx = getTimeTickMillisecondsRx(config);
-  const timeTickMillisecondsTx = NYQUIST_TWICE * timeTickMillisecondsRx;
+  const rxIntervalMilliseconds = getRxIntervalMilliseconds(config);
+  const txIntervalMilliseconds = NYQUIST_TWICE * rxIntervalMilliseconds;
   const dspConfig: DspConfig = {
     band: {
       bandwidth: unifiedFrequencies[unifiedFrequencies.length - 1] - unifiedFrequencies[0],
@@ -33,10 +33,10 @@ export const getDspConfig = (transmissionMode: TransmissionMode, sampleRate: num
       end: unifiedFrequencies[unifiedFrequencies.length - 1]
     },
     dspConfigInitial: config,
-    rawByteRate: MILLISECONDS_IN_SECOND / timeTickMillisecondsTx,
-    timeTickMillisecondsRx,
-    timeTickMillisecondsTx,
-    transmissionMode
+    rawByteRate: MILLISECONDS_IN_SECOND / txIntervalMilliseconds,
+    rxIntervalMilliseconds,
+    transmissionMode,
+    txIntervalMilliseconds
   };
 
   if (sampleRate !== null) {
@@ -57,7 +57,7 @@ export const getLongestFftWindowTime = (config: DspConfigInitialInterface): numb
   return config.fftSize / Math.min(...SUPPORTED_SAMPLE_RATES);
 };
 
-export const getTimeTickMillisecondsRx = (config: DspConfigInitialInterface): number => {
+export const getRxIntervalMilliseconds = (config: DspConfigInitialInterface): number => {
   // NOTE: division by NYQUIST_TWICE at 'RX' and multiplication by NYQUIST_TWICE at 'TX' done on purpose
   // in order to keep both values in 3 digits after dot and still have strict relation: 2rx = tx
   return Math.ceil(
