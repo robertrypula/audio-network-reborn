@@ -12,7 +12,5 @@
     "target": "es5"
   },
   "exclude": [],
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }

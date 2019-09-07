@@ -7,7 +7,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const packageJson = require('./package.json');
 const version = packageJson.version;
 const packageName = packageJson.name;
-const libraryName = packageName.toLowerCase().split('-').map(chunk => chunk.charAt(0).toUpperCase() + chunk.slice(1)).join('');
+const libraryName = packageName
+  .toLowerCase()
+  .split('-')
+  .map(chunk => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+  .join('');
 
 function getConfig(env) {
   return {
@@ -37,9 +41,9 @@ function getConfig(env) {
         hash: true,
         minify: false,
         template: './src/demo-browser.html',
-        excludeAssets: [/^demo\-node.*.js/]      // https://github.com/jantimon/html-webpack-plugin#filtering-chunks
+        excludeAssets: [/^demo\-node.*.js/] // https://github.com/jantimon/html-webpack-plugin#filtering-chunks
       }),
-      new HtmlWebpackExcludeAssetsPlugin(),       // https://stackoverflow.com/a/50830422
+      new HtmlWebpackExcludeAssetsPlugin(), // https://stackoverflow.com/a/50830422
       new webpack.DefinePlugin({
         DEVELOPMENT: JSON.stringify(env.DEVELOPMENT === true),
         PRODUCTION: JSON.stringify(env.PRODUCTION === true)
@@ -58,7 +62,7 @@ function fillDev(config) {
   config.devtool = 'inline-source-map';
 
   config.devServer = {
-    contentBase: path.resolve(__dirname),   // TODO probably not needed
+    contentBase: path.resolve(__dirname), // TODO probably not needed
     publicPath: '/dist/',
     compress: true,
     port: 8000,
@@ -81,19 +85,17 @@ function fillProd(config) {
   // config.devtool = 'source-map';
 
   config.plugins.push(
-    new CopyWebpackPlugin(
-      [
-        {
-          from: path.resolve(__dirname) + '/src/demo-node-vanilla.js',
-          to: path.resolve(__dirname) + '/dist/demo-node-vanilla.js',
-          toType: 'file'
-        }
-      ]
-    )
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname) + '/src/demo-node-vanilla.js',
+        to: path.resolve(__dirname) + '/dist/demo-node-vanilla.js',
+        toType: 'file'
+      }
+    ])
   );
 }
 
-module.exports = (env) => {
+module.exports = env => {
   const config = getConfig(env);
 
   if (env.DEVELOPMENT === true) {
