@@ -5,6 +5,10 @@ import { TransmissionMode } from '../../physical-layer/model';
 import { getDspConfigList } from '../../physical-layer/utils';
 import * as fromTemplate from './data-link-layer-basic.template';
 
+// TODO: this example doesn't use DataLinkLayerWrapper that handles
+// TODO: all timers by the AudioNetworkLite library itself
+// TODO: -> example should be deleted or refactored soon
+
 export class DataLinkLayerBasicWebExample {
   public dataLinkLayer: DataLinkLayer;
   public rxInterval: any;

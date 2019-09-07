@@ -3,6 +3,16 @@
 import { CheckAlgorithm } from '..';
 import { Frame } from './frame/frame';
 
+export interface DataLinkLayerWrapperListenHandlers {
+  next: (bytes: number[]) => void;
+  complete: () => void;
+}
+
+export interface DataLinkLayerWrapperSendHandlers {
+  next: (progress: number) => void;
+  complete: () => void;
+}
+
 export interface FrameConfigInterface {
   checkAlgorithm: CheckAlgorithm;
   headerFirstByteCheckSequenceMask: number;

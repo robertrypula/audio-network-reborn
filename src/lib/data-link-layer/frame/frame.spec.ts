@@ -28,6 +28,12 @@ describe('Frame', () => {
     });
   });
 
+  describe('getRawBytePosition', () => {
+    it('should ...', () => {
+      // TODO implement
+    });
+  });
+
   describe('getRawBytes', () => {
     it('should properly generate raw bytes (header + payload) for given payload', () => {
       // TODO implement

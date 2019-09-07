@@ -28,6 +28,10 @@ export class Frame {
     return this.rawBytes.slice(this.frameConfig.headerLength);
   }
 
+  public getRawBytePosition(): number {
+    return this.rawBytePosition;
+  }
+
   public getRawBytes(): number[] {
     return this.rawBytes;
   }

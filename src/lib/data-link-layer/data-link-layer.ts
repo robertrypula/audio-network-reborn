@@ -46,13 +46,22 @@ export class DataLinkLayer {
     return this.rxFramesErrorCorrected.length ? this.rxFramesErrorCorrected.map(item => item.getPayload()) : [];
   }
 
-  public rxTimeTick(currentTime: number): void {
+  public getTxProgress(): number {
+    return this.txFrame.getRawBytePosition() / this.txFrame.getRawBytes().length;
+  }
+
+  public rxTimeTick(currentTime: number): boolean {
     const isEven = this.rxRawBytesCounter % 2 === 0;
     const rxRawBytes = isEven ? this.rxRawBytesA : this.rxRawBytesB;
+    const rxRawByte = this.physicalLayer.rx(currentTime);
     // const start = new Date().getTime(); // TODO remove me
     let validFramesCounter = 0; // TODO remove me
 
-    rxRawBytes.insert(this.physicalLayer.rx(currentTime));
+    if (rxRawByte === null) {
+      return false;
+    }
+
+    rxRawBytes.insert(rxRawByte);
     this.rxFrames = [];
     this.rxFramesErrorCorrected = [];
 
@@ -68,6 +77,8 @@ export class DataLinkLayer {
     /*tslint:disable-next-line:no-console*/
     // validFramesCounter && console.log(new Date().getTime() - start); // TODO remove me
     this.rxRawBytesCounter++;
+
+    return true;
   }
 
   public setTxBytes(bytes: number[]): void {

@@ -6,6 +6,7 @@ export * from './application-layer/application-layer';
 export * from './data-link-layer/config';
 export * from './data-link-layer/constants';
 export * from './data-link-layer/data-link-layer';
+export * from './data-link-layer/data-link-layer-wrapper';
 export * from './data-link-layer/frame/frame';
 export * from './data-link-layer/model';
 export * from './data-link-layer/utils';
@@ -22,11 +23,13 @@ export * from './shared/check-algorithms/check-algorithms';
 export * from './shared/fixed-size-buffer';
 export * from './shared/model';
 export * from './shared/utils';
+export * from './shared/web-utils';
 // export * from './visualization/simple-canvas/simple-canvas';
 // export * from './visualization/spectrogram/spectrogram';
 // export * from './visualization/spectrogram/utils';
 // export * from './visualization/visualizers';
 export * from './web-examples/data-link-layer-basic/data-link-layer-basic';
+export * from './web-examples/data-link-layer-chat/data-link-layer-chat';
 
 /*
 TODO #1:
@@ -50,6 +53,7 @@ TODO #2:
 TODO #3:
   - PhysicalLayer should store history based on time tick values (getHistory, setHistory methods?)
     UPDATE: abstract class that handles history and virtual methods to be implemented in real classes (?)
+    UPDATE: getFrequencyDomainData could return null (or []) when history record will end
   - physical layer constructor should get configs rather than modes !!!!!!!!!!!!!!!!!!!
     in current implementation it is not possible use custom config - client needs to rely on hardcoded modes
     UPDATE: ...or add dedicated method to set custom config for those that want to experiment
