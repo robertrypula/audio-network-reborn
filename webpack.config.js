@@ -1,8 +1,8 @@
-const webpack = require('webpack');
-const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
 
 const packageJson = require('./package.json');
 const version = packageJson.version;
@@ -25,7 +25,7 @@ function getConfig(env) {
         {
           test: /\.scss$/,
           use: [
-            'style-loader', // creates `style` nodes from JS strings
+            { loader: path.resolve('webpack-style-loader.js') }, // creates 'style' html tag from JS strings
             'css-loader', // translates CSS into CommonJS
             'sass-loader' // compiles Sass to CSS
           ]

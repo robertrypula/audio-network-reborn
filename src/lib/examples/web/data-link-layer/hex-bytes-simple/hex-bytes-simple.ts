@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer, getBytesFromHex, getDspConfigList, getHexFromBytes, TransmissionMode } from '../../..';
+import { DataLinkLayer, getBytesFromHex, getDspConfigList, getHexFromBytes, TransmissionMode } from '../../../../index';
 import * as fromTemplate from './hex-bytes-simple.template';
 
 // TODO: this example doesn't use DataLinkLayerWrapper that handles

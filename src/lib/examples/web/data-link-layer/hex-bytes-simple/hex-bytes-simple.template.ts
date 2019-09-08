@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer, DspConfig } from '../../..';
+import { DataLinkLayer, DspConfig } from '../../../../index';
 
 export const mainHtml = `
   <div class="section">

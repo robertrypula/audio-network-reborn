@@ -1,9 +1,9 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-export class ApplicationLayer {}
+export class TransportLayer {} // TODO implement
 
 /*
-current DataLinkLayer: header 3 bytes, fixed 8 bytes
+current TransportLayer: header 3 bytes, fixed 8 bytes
 
 le th 33 44 55 66
 11 22 33 44 55 66
@@ -25,7 +25,7 @@ It means that real speed is 6.33 B/s
 
 ----------------------------------------------------
 
-proposed DataLinkLayer: header 2 bytes, fixed 10 bytes
+proposed TransportLayer: header 2 bytes, fixed 10 bytes
 
 le th 33 44 55 66 77 88
 11 22 33 44 55 66 77 88
@@ -49,7 +49,7 @@ It means that real speed is 8.27 B/s
 
 ----------------------------------------------------
 
-proposed DataLinkLayer: header 2 bytes, fixed 9 bytes
+proposed TransportLayer: header 2 bytes, fixed 9 bytes
 
 LE CR CC RC 55 66 77 88
 11 22 33 44 55 66 77 88

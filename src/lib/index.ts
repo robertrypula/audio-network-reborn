@@ -1,25 +1,30 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { CliNodeExample } from './examples/node/cli';
+
 export * from './info';
 
-export * from './application-layer/application-layer';
-export * from './data-link-layer/config';
-export * from './data-link-layer/constants';
-export * from './data-link-layer/data-link-layer';
-export * from './data-link-layer/data-link-layer-wrapper';
-export * from './data-link-layer/frame/frame';
-export * from './data-link-layer/model';
-export * from './data-link-layer/utils';
-export * from './physical-layer/audio-mono-io/audio-mono-io-factory';
-export * from './physical-layer/audio-mono-io/audio-mono-io-stub';
-export * from './physical-layer/audio-mono-io/audio-mono-io-web-audio-api';
-export * from './physical-layer/config';
-export * from './physical-layer/constants';
-export * from './physical-layer/fft-result';
-export * from './physical-layer/model';
-export * from './physical-layer/physical-layer';
-export * from './physical-layer/utils';
+export * from './0-physical-layer/audio-mono-io/audio-mono-io-factory';
+export * from './0-physical-layer/audio-mono-io/audio-mono-io-stub';
+export * from './0-physical-layer/audio-mono-io/audio-mono-io-web-audio-api';
+export * from './0-physical-layer/config';
+export * from './0-physical-layer/constants';
+export * from './0-physical-layer/fft-result';
+export * from './0-physical-layer/model';
+export * from './0-physical-layer/physical-layer';
+export * from './0-physical-layer/utils';
+export * from './1-data-link-layer/config';
+export * from './1-data-link-layer/constants';
+export * from './1-data-link-layer/data-link-layer';
+export * from './1-data-link-layer/data-link-layer-wrapper';
+export * from './1-data-link-layer/frame/frame';
+export * from './1-data-link-layer/model';
+export * from './1-data-link-layer/utils';
+export * from './3-transport-layer/transport-layer';
+export * from './4-application-layer/transferable-file';
+export * from './4-application-layer/transferable-file';
 export * from './shared/check-algorithms/check-algorithms';
+export * from './shared/environment-utils';
 export * from './shared/fixed-size-buffer';
 export * from './shared/model';
 export * from './shared/utils';
@@ -29,10 +34,21 @@ export * from './shared/web-utils';
 // export * from './visualization/spectrogram/utils';
 // export * from './visualization/visualizers';
 
-import './web-examples/index.scss';
-export * from './web-examples/data-link-layer/ascii-chat-advanced/ascii-chat-advanced';
-export * from './web-examples/data-link-layer/ascii-chat-simple/ascii-chat-simple';
-export * from './web-examples/data-link-layer/hex-bytes-simple/hex-bytes-simple';
+import './examples/web/index.scss';
+export * from './examples/node/cli';
+export * from './examples/web/data-link-layer/ascii-chat-advanced/ascii-chat-advanced';
+export * from './examples/web/data-link-layer/ascii-chat-simple/ascii-chat-simple';
+export * from './examples/web/data-link-layer/hex-bytes-simple/hex-bytes-simple';
+
+import { argc, argv, isNode } from './shared/environment-utils';
+
+let cliNodeExample: CliNodeExample;
+
+// I hope that 'run.cliNodeExample' argument will never collide
+// with some other node project that will use my library... :)
+if (isNode && argc >= 3 && argv[2] === 'run.cliNodeExample') {
+  cliNodeExample = new CliNodeExample();
+}
 
 /*
 TODO #1:
@@ -52,15 +68,26 @@ TODO #1:
   + PhysicalLayer class should have rxTimeTick and txTimeTick methods, DataLinkLayer class should
     have mandatory parameters in txTimeTick rxTimeTick that is passed to PhysicalLayer and AudioMonoIo
   + comment console logs!!
+  - html loader with minification
+    https://github.com/webpack-contrib/html-loader
+  - remove node-dev, just use condition and args like node audio-network.js run.cliNodeExample
+  - extract the code
+    https://stackoverflow.com/questions/51045727
+  - WebPack analyser
+    https://medium.com/@kenuete/passing-arguments-from-npm-command-to-access-it-in-webpack-config-file-4358afdc3683
+  - migrate utf-8 codec and use them in chat examples
+    https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_decode.js
+    https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_encode.js
+  - update README: add example
+  - refactor imports to absolute paths
+  - find alternative for coveralls
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:
   - implement ApplicationLayer/TransportLayer, key ideas:
     - files on chat send by starting the byte stream by ASCII 0x1C File Separator byte
       STREAM DETAILS: 0x1C {filename bytes in UTF-8} 0x00 {bytes of the file}
-  - refactor imports to absolute paths
   - performance checker (store previous getFrequencyData array and compare with current) + example
-  - find alternative for coveralls
   - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
     UPDATE: Maybe not implement it? :) In general all works fine up to ~15 raw bytes per second
   - PREPARE THE RELEASE: 0.2.0

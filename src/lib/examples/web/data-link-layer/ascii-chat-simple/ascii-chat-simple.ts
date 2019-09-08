@@ -7,7 +7,7 @@ import {
   getBytesFromText,
   getHexFromBytes,
   getTextFromBytes
-} from '../../..';
+} from '../../../..';
 import * as fromTemplate from './ascii-chat-simple.template';
 
 // const getById = <T = HTMLElement>(id: string) => (document.getElementById(id) as T); TODO check why it's not working

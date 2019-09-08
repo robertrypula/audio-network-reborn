@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer, DataLinkLayerWrapper } from '../../..';
+import { DataLinkLayer, DataLinkLayerWrapper } from '../../../../index';
 import * as fromBaseTemplate from '../../chat-advanced-base.template';
 import * as fromTemplate from './ascii-chat-advanced.template';
 

@@ -12,7 +12,7 @@
     "npm-check": "npm-check --skip-unused -u",
     "prettier": "prettier src/**/*.{ts,html,scss} -c",
     "start": "yarn clean && webpack-dev-server --env.DEVELOPMENT --open",
-    "start:node": "yarn clean && webpack --env.DEVELOPMENT && rimraf dist/demo-node.d.ts && node dist/demo-node.js",
+    "start:node": "yarn clean && webpack --env.DEVELOPMENT && rimraf dist/demo-node.d.ts && node dist/audio-network-lite-v0.1.0-rc15.js run.cliNodeExample",
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:report-coverage": "cat ./coverage/lcov.info | coveralls"
@@ -43,7 +43,6 @@
     "prettier": "1.18.2",
     "rimraf": "^3.0.0",
     "sass-loader": "^8.0.0",
-    "style-loader": "^1.0.0",
     "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.4",
     "tslint": "^5.18.0",
