@@ -1,6 +1,14 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 .data-link-layer-hex-bytes-simple {
+  input,
+  option,
+  select {
+    font-family: monospace;
+  }
+  .section {
+    padding-bottom: 15px;
+  }
   #rx-data {
     font-family: monospace;
   }

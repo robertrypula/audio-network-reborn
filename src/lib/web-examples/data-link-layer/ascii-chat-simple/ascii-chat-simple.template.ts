@@ -1,20 +1,18 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 export const mainHtml = `
-  <div class="data-link-layer-ascii-chat-simple">
-    <h2>Audio Network Lite</h2>
-    <div>
-      <input id="send-field" maxlength="8" placeholder="Type a message..." type="text" />
-      <button id="send-button" type="button">Send</button>
-      <div class="progress-bar-wrapper"><div id="progress-bar"></div></div>
-    </div>
-    <div class="section">
-      <button id="listen-enable-button" type="button">Listen</button>
-      <span id="waiting-for-data-frames-label" style="display: none;">Waiting for data frames...</span>
-    </div>
-    <div class="section">
-      <div id="messages"></div>
-    </div>
-    <div class="credits">(c) Robert Rypuła 2019</div>
+  <h2>Audio Network Lite</h2>
+  <div id="sent-wrapper">
+    <input id="send-field" placeholder="Type a message..." type="text" />
+    <button id="send-button" type="button">Send</button>
+    <input id="send-as-hex-checkbox" type="checkbox" value="1" />
+    <label for="send-as-hex-checkbox">as HEX</label>
+    <div class="send-progress-bar-wrapper"><div id="send-progress-bar"></div></div>
   </div>
+  <div id="listen-wrapper">
+    <button id="listen-enable-button" type="button">Listen</button>
+    <span>Waiting for data frames...</span>
+  </div>
+  <div id="messages-wrapper"></div>
+  <div class="credits">(c) Robert Rypuła 2019</div>
 `;

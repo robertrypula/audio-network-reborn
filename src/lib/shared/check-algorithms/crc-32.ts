@@ -29,7 +29,7 @@ const CRC_32_LOOKUP_TABLE = `
   .map(value => parseInt(value, 16));
 
 export const getCrc32: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
-  // Code migrated to TypeScript from vanilla JavaScript implementation taken from:
+  // Code migrated to TypeScript from vanilla JavaScript implementation:
   // https://dev.flarecast.eu/stash/projects/SAND/repos/swagger-ui/browse/node_modules/crc/lib/crc32.js
   let crc = 0 ^ -1;
 

@@ -1,0 +1,161 @@
+// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+
+export const mainHtml = `
+  <div id="top-bar-wrapper">
+    <div id="top-bar-wrapper-inner">
+      <div id="top-bar" class="clearfix">
+        <h1>Audio Network Lite</h1>
+        <div id="top-bar-menu-wrapper">
+          <div class="field-switch">
+            <input id="listen-enable" type="checkbox" />
+            <label for="listen-enable"></label>
+          </div>
+          <div class="icon-hamburger">
+            <input id="menu-enable" type="checkbox" />
+            <label for="menu-enable"><span></span><span></span><span></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="bottom-bar-wrapper">
+    <div id="bottom-bar-wrapper-inner">
+      <div id="bottom-bar">
+        <div id="input-and-buttons-wrapper">
+          <div class="file-attachment-button">
+            <input
+              type="file"
+              id="file-attachment"
+              onchange="AudioNetworkLite.fileRead(this.files[0]).then(bytes => console.log(bytes)).catch(error => console.log(error))"
+            />
+            <label for="file-attachment"></label>
+          </div>
+          <input type="text" placeholder="Type a message..." />
+          <button type="button">Send</button>
+          <div id="send-overlay">
+            <div id="send-progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <div id="settings">
+      <div class="settings-group">
+        <div class="settings-group-header">Select Transmission Mode</div>
+
+        <div class="field-radio">
+          <input id="transmission-mode-0" name="transmission-mode" type="radio" />
+          <label for="transmission-mode-0"> 7.9 B/s | 4.2- 7.2 kHz (3.0 kHz)</label>
+        </div>
+        <div class="field-radio">
+          <input id="transmission-mode-1" name="transmission-mode" type="radio" />
+          <label for="transmission-mode-1">Transmission mode 12 B/s</label>
+        </div>
+        <div class="field-radio">
+          <input id="transmission-mode-2" name="transmission-mode" type="radio" />
+          <label for="transmission-mode-2">Transmission mode 16 B/s</label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-header">About</div>
+        &copy; Robert Rypuła 2019<br />
+        <a href="https://github.com/robertrypula/audio-network-lite" target="_blank">
+          https://github.com/robertrypula/audio-network-lite
+        </a>
+      </div>
+    </div>
+
+    <div id="bytes">
+      <div class="clearfix">
+        <div class="log-info">
+          In order to receive data frames please enable your microphone by clicking on switch on the top bar.
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-received">
+          lorem ipsum dolorlorem ipsum dolorlorem ipsum dolorlorem ipsum dolorlorem ipsum dolorlorem ipsum dolor
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="log-info">
+          Microphone enabled
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-received">
+          lorem ipsum dolor
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="log-info">
+          Microphone disabled
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-sent">
+          lorem ipsum dolorlorem ipsum dolorlorem ipsum dolorlorem ipsum dolorlorem ipsum dolorlorem ipsum dolor
+          lorem ipsum dolor lorem ipsum dolorlorem ipsum dolorlorem ipsum dolor
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-received">
+          lorem ipsum dolor
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-received">
+          lorem ipsum dolor
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-received">
+          lorem ipsum dolor
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-received">
+          lorem ipsum dolor
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-received">
+          lorem ipsum dolorlorem ipsum dolorlorem ipsum dolorlorem ipsum dolorlorem ipsum dolorlorem ipsum dolor
+          lorem ipsum dolor lorem ipsum dolorlorem ipsum dolorlorem ipsum dolor
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="log-error">
+          File too big
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-received">
+          some file.txt (548 bytes)
+          <button type="button" onClick="AudioNetworkLite.fileSave('test.txt', [0x61, 0x62, 0x63])">
+            Download
+          </button>
+          <div style="font-family: monospace; font-size: 10px; line-height: 1em; text-align: left;">
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+            ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea ef 00 ea ef 43 ba 63 64 ea
+          </div>
+        </div>
+      </div>
+      <div class="clearfix">
+        <div class="bytes-received">
+          test
+        </div>
+      </div>
+    </div>
+  </div>
+`;

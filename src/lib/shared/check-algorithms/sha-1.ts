@@ -5,7 +5,7 @@ import { CheckAlgorithmImplementation } from '../model';
 /*tslint:disable:no-bitwise*/
 
 export const getSha1: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
-  // Code migrated to TypeScript from vanilla JavaScript implementation taken from:
+  // Code migrated to TypeScript from vanilla JavaScript implementation:
   // https://github.com/kvz/locutus/blob/master/src/php/strings/sha1.js
   const bytesLength = bytes.length;
   const rotLeft = (n: number, s: number): number => (n << s) | (n >>> (32 - s));

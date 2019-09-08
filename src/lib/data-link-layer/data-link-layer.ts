@@ -38,6 +38,10 @@ export class DataLinkLayer {
     this.rxRawBytesB = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLengthMax);
   }
 
+  public getFrameConfig(): FrameConfigInterface {
+    return this.frameConfig;
+  }
+
   public getRxBytesCollection(): number[][] {
     return this.rxFrames.length ? this.rxFrames.map(item => item.getPayload()) : [];
   }

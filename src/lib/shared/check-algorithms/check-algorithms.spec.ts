@@ -61,7 +61,7 @@ describe('CheckAlgorithms', () => {
 
   describe('getSha1', () => {
     it('should pass all test cases', () => {
-      // SHA-1 test vectors taken from https://www.di-mgt.com.au/sha_testvectors.html
+      // SHA-1 'abc...' test vectors from https://www.di-mgt.com.au/sha_testvectors.html
       runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Sha1), [
         {
           in: '',
@@ -80,6 +80,10 @@ describe('CheckAlgorithms', () => {
             'abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmn' +
             'hijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu',
           out: 'a4 9b 24 46 a0 2c 64 5b f4 19 f9 95 b6 70 91 25 3a 04 a2 59'
+        },
+        {
+          in: 'The quick brown fox jumps over the lazy dog',
+          out: '2f d4 e1 c6 7a 2d 28 fc ed 84 9e e1 bb 76 e7 39 1b 93 eb 12'
         }
       ]);
     });

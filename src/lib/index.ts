@@ -30,13 +30,22 @@ export * from './shared/web-utils';
 // export * from './visualization/visualizers';
 
 import './web-examples/index.scss';
+export * from './web-examples/data-link-layer/ascii-chat-advanced/ascii-chat-advanced';
 export * from './web-examples/data-link-layer/ascii-chat-simple/ascii-chat-simple';
 export * from './web-examples/data-link-layer/hex-bytes-simple/hex-bytes-simple';
 
 /*
 TODO #1:
   + move example to lib (web-examples directory)
-  - finalize example: enter sends the message, text and hex mode, history show sent and received frames
+  -/+ finalize examples
+    + add SCSS
+    + implement advanced example HTML/CSS
+    + enter sends the message
+    + text and hex mode
+    + history show sent and received frames
+    - detect own transmitted frame caught by the microphone on the same machine
+    - finalize advanced chat example
+    - remove hex-bytes example
   + rename methods at Data Link class: setTxBytes, getRxBytes
   + move configs outside package.json: jest, prettier
   + source map in prod? NO!!
@@ -46,10 +55,14 @@ TODO #1:
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:
+  - implement ApplicationLayer/TransportLayer, key ideas:
+    - files on chat send by starting the byte stream by ASCII 0x1C File Separator byte
+      STREAM DETAILS: 0x1C {filename bytes in UTF-8} 0x00 {bytes of the file}
   - refactor imports to absolute paths
   - performance checker (store previous getFrequencyData array and compare with current) + example
   - find alternative for coveralls
   - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
+    UPDATE: Maybe not implement it? :) In general all works fine up to ~15 raw bytes per second
   - PREPARE THE RELEASE: 0.2.0
 
 TODO #3:

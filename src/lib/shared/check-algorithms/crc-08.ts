@@ -16,7 +16,7 @@ const CRC_08_LOOKUP_TABLE = `
   .map(value => parseInt(value, 16));
 
 export const getCrc08: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
-  // Code migrated to TypeScript from vanilla JavaScript implementation taken from:
+  // Code migrated to TypeScript from vanilla JavaScript implementation:
   // https://dev.flarecast.eu/stash/projects/SAND/repos/swagger-ui/browse/node_modules/crc/lib/crc8.js
   let crc = 0;
 

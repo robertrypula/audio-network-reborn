@@ -1,13 +1,9 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-input,
-option,
-select {
-  font-family: monospace;
-}
-.section {
-  padding-bottom: 15px;
-}
+// advanced examples
+@import 'chat-advanced-base';
+@import 'data-link-layer/ascii-chat-advanced/ascii-chat-advanced';
 
+// simple examples
 @import 'data-link-layer/ascii-chat-simple/ascii-chat-simple';
 @import 'data-link-layer/hex-bytes-simple/hex-bytes-simple';

@@ -15,6 +15,7 @@ export class DataLinkLayerHexBytesSimpleWebExample {
   public txInterval: any;
 
   public constructor() {
+    document.getElementsByTagName('html')[0].classList.add('data-link-layer-hex-bytes-simple');
     getById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
     this.initializeTransmissionModeDropdown();
   }
