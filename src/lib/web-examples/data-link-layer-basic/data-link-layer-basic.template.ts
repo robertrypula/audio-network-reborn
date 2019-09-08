@@ -42,10 +42,10 @@ const byteRatePipe = (value: number): string => {
 export const sampleRate = (dataLinkLayer: DataLinkLayer) =>
   (dataLinkLayer.physicalLayer.audioMonoIo.getSampleRate() / 1000).toFixed(1);
 
-export const dropdownOptionEmpty = '<option value="">--- Select Transmission Mode ---</option>\n';
+export const dropdownOptionEmpty = '<option value="">--- Select Transmission Mode ---</option>';
 
 export const dropdownOption = (dspConfig: DspConfig) =>
   `<option value="${dspConfig.transmissionMode}">` +
   `${byteRatePipe(dspConfig.rawByteRate)} B/s | ${kHzPipe(dspConfig.band.begin)}-${kHzPipe(dspConfig.band.end)} kHz ` +
   `(${(dspConfig.band.bandwidth / 1000).toFixed(1)} kHz)` +
-  '</option>\n';
+  '</option>';

@@ -100,6 +100,9 @@ export class DataLinkLayerBasicWebExample {
 
   protected initializeTransmissionModeDropdown(): void {
     document.getElementById('transmission-mode-dropdown').innerHTML =
-      fromTemplate.dropdownOptionEmpty + getDspConfigList().map(dspConfig => fromTemplate.dropdownOption(dspConfig));
+      fromTemplate.dropdownOptionEmpty +
+      getDspConfigList()
+        .map(dspConfig => fromTemplate.dropdownOption(dspConfig))
+        .join('');
   }
 }
