@@ -1,11 +1,11 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer, DataLinkLayerWrapper, getBytesFromText, getTextFromBytes } from '../..';
-import * as fromTemplate from './data-link-layer-chat.template';
+import { DataLinkLayer, DataLinkLayerWrapper, getBytesFromText, getTextFromBytes } from '../../..';
+import * as fromTemplate from './ascii-chat-simple.template';
 
 const getById = (id: string) => document.getElementById(id);
 
-export class DataLinkLayerChatWebExample {
+export class DataLinkLayerAsciiChatSimpleWebExample {
   public dataLinkLayerWrapper: DataLinkLayerWrapper;
 
   public constructor() {

@@ -1,21 +1,21 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer } from '../../data-link-layer/data-link-layer';
-import { TransmissionMode } from '../../physical-layer/model';
-import { getDspConfigList } from '../../physical-layer/utils';
-import * as fromTemplate from './data-link-layer-basic.template';
+import { DataLinkLayer, getBytesFromHex, getDspConfigList, getHexFromBytes, TransmissionMode } from '../../..';
+import * as fromTemplate from './hex-bytes-simple.template';
 
 // TODO: this example doesn't use DataLinkLayerWrapper that handles
 // TODO: all timers by the AudioNetworkLite library itself
 // TODO: -> example should be deleted or refactored soon
 
-export class DataLinkLayerBasicWebExample {
+const getById = (id: string) => document.getElementById(id);
+
+export class DataLinkLayerHexBytesSimpleWebExample {
   public dataLinkLayer: DataLinkLayer;
   public rxInterval: any;
   public txInterval: any;
 
   public constructor() {
-    document.getElementById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
+    getById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
     this.initializeTransmissionModeDropdown();
   }
 
@@ -23,32 +23,29 @@ export class DataLinkLayerBasicWebExample {
     this.initializeDataLinkLayer();
     if (transmissionMode) {
       this.dataLinkLayer.physicalLayer.setTransmissionMode(transmissionMode);
-      document.getElementById('controls-wrapper').style.display = 'block';
+      getById('controls-wrapper').style.display = 'block';
       this.rxInterval && this.handleRxInterval();
       this.txInterval && this.handleTxInterval();
     } else {
-      document.getElementById('controls-wrapper').style.display = 'none';
+      getById('controls-wrapper').style.display = 'none';
       this.clearRxInterval();
       this.clearTxInterval();
       this.dataLinkLayer.physicalLayer.audioMonoIo.inputDisable();
       this.dataLinkLayer.physicalLayer.audioMonoIo.outputDisable();
-      document.getElementById('enable-receiver-button').style.display = 'block';
-      document.getElementById('waiting-for-data-frames-label').style.display = 'none';
-      document.getElementById('rx-data').innerHTML = '';
+      getById('enable-receiver-button').style.display = 'block';
+      getById('waiting-for-data-frames-label').style.display = 'none';
+      getById('rx-data').innerHTML = '';
     }
   }
 
   public receiveEnable(): void {
-    document.getElementById('enable-receiver-button').style.display = 'none';
-    document.getElementById('waiting-for-data-frames-label').style.display = 'block';
+    getById('enable-receiver-button').style.display = 'none';
+    getById('waiting-for-data-frames-label').style.display = 'block';
     this.handleRxInterval();
   }
 
   public transmit(): void {
-    const txBytes = (document.getElementById('tx-data') as HTMLInputElement).value
-      .split(' ')
-      .filter(item => item.trim() !== '')
-      .map(item => parseInt(item, 10));
+    const txBytes = getBytesFromHex((getById('tx-data') as HTMLInputElement).value);
 
     this.dataLinkLayer.setTxBytes(txBytes);
     this.handleTxInterval();
@@ -73,10 +70,10 @@ export class DataLinkLayerBasicWebExample {
       rxBytesCollection = this.dataLinkLayer.getRxBytesCollection();
 
       if (rxBytesCollection.length) {
-        document.getElementById('rx-data').innerHTML =
-          document.getElementById('rx-data').innerHTML +
-          rxBytesCollection.map(rxBytes => rxBytes.join(' ')).join(' | ') +
-          '<br/>';
+        const div = document.createElement('div');
+
+        div.innerHTML = rxBytesCollection.map(rxBytes => getHexFromBytes(rxBytes)).join(' | ');
+        getById('rx-data').appendChild(div);
       }
     }, this.dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds);
   }
@@ -94,12 +91,12 @@ export class DataLinkLayerBasicWebExample {
     if (!this.dataLinkLayer) {
       // AudioNetworkLite.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkLite.AudioMonoIoCreateMode.Stub;
       this.dataLinkLayer = new DataLinkLayer();
-      document.getElementById('sample-rate-label').innerHTML = fromTemplate.sampleRate(this.dataLinkLayer);
+      getById('sample-rate-label').innerHTML = fromTemplate.sampleRate(this.dataLinkLayer);
     }
   }
 
   protected initializeTransmissionModeDropdown(): void {
-    document.getElementById('transmission-mode-dropdown').innerHTML =
+    getById('transmission-mode-dropdown').innerHTML =
       fromTemplate.dropdownOptionEmpty +
       getDspConfigList()
         .map(dspConfig => fromTemplate.dropdownOption(dspConfig))

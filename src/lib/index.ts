@@ -30,8 +30,8 @@ export * from './shared/web-utils';
 // export * from './visualization/visualizers';
 
 import './web-examples/index.scss';
-export * from './web-examples/data-link-layer-basic/data-link-layer-basic';
-export * from './web-examples/data-link-layer-chat/data-link-layer-chat';
+export * from './web-examples/data-link-layer/ascii-chat-simple/ascii-chat-simple';
+export * from './web-examples/data-link-layer/hex-bytes-simple/hex-bytes-simple';
 
 /*
 TODO #1:

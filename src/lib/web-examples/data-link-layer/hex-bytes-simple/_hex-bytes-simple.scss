@@ -1,6 +1,9 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-.data-link-layer-basic {
+.data-link-layer-hex-bytes-simple {
+  #rx-data {
+    font-family: monospace;
+  }
   #tx-data {
     width: 200px;
   }

@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 export const mainHtml = `
-  <div class="data-link-layer-chat">
+  <div class="data-link-layer-ascii-chat-simple">
     <h2>Audio Network Lite</h2>
     <div>
       <input id="send-field" maxlength="8" placeholder="Type a message..." type="text" />
