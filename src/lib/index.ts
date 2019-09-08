@@ -28,6 +28,8 @@ export * from './shared/web-utils';
 // export * from './visualization/spectrogram/spectrogram';
 // export * from './visualization/spectrogram/utils';
 // export * from './visualization/visualizers';
+
+import './web-examples/index.scss';
 export * from './web-examples/data-link-layer-basic/data-link-layer-basic';
 export * from './web-examples/data-link-layer-chat/data-link-layer-chat';
 

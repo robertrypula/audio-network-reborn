@@ -1,0 +1,39 @@
+// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+
+$chatContainerColor: #efeef1;
+$fadedColor: lightgray;
+$progressBarColor: green;
+
+.data-link-layer-chat {
+  background-color: $chatContainerColor;
+  margin: 0 auto;
+  max-width: 400px;
+  padding: 15px;
+
+  h2 {
+    margin-top: 0;
+  }
+
+  .progress-bar-wrapper {
+    background-color: $fadedColor;
+    height: 5px;
+    margin: 8px 0;
+    position: relative;
+    width: 100%;
+    > div {
+      background-color: $progressBarColor;
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      top: 0;
+    }
+  }
+
+  .credits {
+    border-top: 1px solid $fadedColor;
+    color: $fadedColor;
+    margin-top: 8px;
+    padding-top: 8px;
+    text-align: right;
+  }
+}

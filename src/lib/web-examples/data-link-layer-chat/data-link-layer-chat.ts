@@ -3,43 +3,57 @@
 import { DataLinkLayer, DataLinkLayerWrapper, getBytesFromText, getTextFromBytes } from '../..';
 import * as fromTemplate from './data-link-layer-chat.template';
 
+const getById = (id: string) => document.getElementById(id);
+
 export class DataLinkLayerChatWebExample {
   public dataLinkLayerWrapper: DataLinkLayerWrapper;
 
   public constructor() {
-    document.getElementById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
+    getById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());
+    this.initializeEvents();
   }
 
   public listenEnable(): void {
-    document.getElementById('listen-enable-button').style.display = 'none';
-    document.getElementById('waiting-for-data-frames-label').style.display = 'block';
+    getById('listen-enable-button').style.display = 'none';
+    getById('waiting-for-data-frames-label').style.display = 'block';
     this.dataLinkLayerWrapper.listen({
       complete: () => {
-        document.getElementById('listen-enable-button').style.display = 'block';
-        document.getElementById('waiting-for-data-frames-label').style.display = 'none';
+        getById('listen-enable-button').style.display = 'block';
+        getById('waiting-for-data-frames-label').style.display = 'none';
       },
       next: bytes => this.logFrame(getTextFromBytes(bytes), true)
     });
   }
 
   public send(): void {
-    const asciiText = (document.getElementById('send-field') as HTMLInputElement).value.replace(/[^\x20-\x7E]+/g, '');
+    const asciiText = (getById('send-field') as HTMLInputElement).value.replace(/[^\x20-\x7E]+/g, '');
 
     if (asciiText === '') {
       return;
     }
 
-    document.getElementById('send-field').setAttribute('disabled', 'disabled');
-    document.getElementById('send-button').setAttribute('disabled', 'disabled');
+    getById('send-field').setAttribute('disabled', 'disabled');
+    getById('send-button').setAttribute('disabled', 'disabled');
     this.dataLinkLayerWrapper.send(getBytesFromText(asciiText), {
       complete: () => {
-        document.getElementById('send-field').removeAttribute('disabled');
-        document.getElementById('send-button').removeAttribute('disabled');
-        (document.getElementById('send-field') as HTMLInputElement).value = '';
+        getById('send-field').removeAttribute('disabled');
+        getById('send-button').removeAttribute('disabled');
+        (getById('send-field') as HTMLInputElement).value = '';
         this.logFrame(asciiText, false);
       },
-      next: progress => (document.getElementById('progress').style.width = progress * 100 + '%')
+      next: progress => (getById('progress-bar').style.width = progress * 100 + '%')
+    });
+  }
+
+  protected initializeEvents(): void {
+    getById('send-button').addEventListener('click', () => this.send());
+    getById('listen-enable-button').addEventListener('click', () => this.listenEnable());
+    getById('send-field').addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        this.send();
+      }
     });
   }
 
@@ -50,6 +64,6 @@ export class DataLinkLayerChatWebExample {
     if (isReceived) {
       div.style.textAlign = 'right';
     }
-    document.getElementById('messages').appendChild(div);
+    getById('messages').appendChild(div);
   }
 }

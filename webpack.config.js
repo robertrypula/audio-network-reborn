@@ -18,9 +18,17 @@ function getConfig(env) {
     module: {
       rules: [
         {
-          test: /\.tsx?$/,
+          test: /\.ts$/,
           use: 'ts-loader',
           exclude: /node_modules/
+        },
+        {
+          test: /\.scss$/,
+          use: [
+            'style-loader', // creates `style` nodes from JS strings
+            'css-loader', // translates CSS into CommonJS
+            'sass-loader' // compiles Sass to CSS
+          ]
         }
       ]
     },
