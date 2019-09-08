@@ -1,7 +1,5 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { CliNodeExample } from './examples/node/cli';
-
 export * from './info';
 
 export * from './0-physical-layer/audio-mono-io/audio-mono-io-factory';
@@ -40,6 +38,7 @@ export * from './examples/web/data-link-layer/ascii-chat-advanced/ascii-chat-adv
 export * from './examples/web/data-link-layer/ascii-chat-simple/ascii-chat-simple';
 export * from './examples/web/data-link-layer/hex-bytes-simple/hex-bytes-simple';
 
+import { CliNodeExample } from './examples/node/cli';
 import { argc, argv, isNode } from './shared/environment-utils';
 
 let cliNodeExample: CliNodeExample;
@@ -53,6 +52,13 @@ if (isNode && argc >= 3 && argv[2] === 'run.cliNodeExample') {
 /*
 TODO #1:
   + move example to lib (web-examples directory)
+  + rename methods at Data Link class: setTxBytes, getRxBytes
+  + move configs outside package.json: jest, prettier
+  + source map in prod? NO!!
+  + PhysicalLayer class should have rxTimeTick and txTimeTick methods, DataLinkLayer class should
+    have mandatory parameters in txTimeTick rxTimeTick that is passed to PhysicalLayer and AudioMonoIo
+  + comment console logs!!
+  + remove node-dev, just use condition and args like node audio-network.js run.cliNodeExample
   -/+ finalize examples
     + add SCSS
     + implement advanced example HTML/CSS
@@ -62,19 +68,8 @@ TODO #1:
     - detect own transmitted frame caught by the microphone on the same machine
     - finalize advanced chat example
     - remove hex-bytes example
-  + rename methods at Data Link class: setTxBytes, getRxBytes
-  + move configs outside package.json: jest, prettier
-  + source map in prod? NO!!
-  + PhysicalLayer class should have rxTimeTick and txTimeTick methods, DataLinkLayer class should
-    have mandatory parameters in txTimeTick rxTimeTick that is passed to PhysicalLayer and AudioMonoIo
-  + comment console logs!!
   - html loader with minification
     https://github.com/webpack-contrib/html-loader
-  - remove node-dev, just use condition and args like node audio-network.js run.cliNodeExample
-  - extract the code
-    https://stackoverflow.com/questions/51045727
-  - WebPack analyser
-    https://medium.com/@kenuete/passing-arguments-from-npm-command-to-access-it-in-webpack-config-file-4358afdc3683
   - migrate utf-8 codec and use them in chat examples
     https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_decode.js
     https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_encode.js
@@ -84,6 +79,10 @@ TODO #1:
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:
+  - WebPack analyser
+    https://medium.com/@kenuete/passing-arguments-from-npm-command-to-access-it-in-webpack-config-file-4358afdc3683
+  - extract the code
+    https://stackoverflow.com/questions/51045727
   - implement ApplicationLayer/TransportLayer, key ideas:
     - files on chat send by starting the byte stream by ASCII 0x1C File Separator byte
       STREAM DETAILS: 0x1C {filename bytes in UTF-8} 0x00 {bytes of the file}

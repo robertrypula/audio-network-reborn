@@ -1,5 +1,3 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
@@ -45,13 +43,11 @@ function getConfig(env) {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        filename: 'demo-browser.html',
+        filename: 'index.html',
         hash: true,
         minify: false,
-        template: './src/demo-browser.html',
-        excludeAssets: [/^demo\-node.*.js/] // https://github.com/jantimon/html-webpack-plugin#filtering-chunks
+        template: './src/index.html'
       }),
-      new HtmlWebpackExcludeAssetsPlugin(), // https://stackoverflow.com/a/50830422
       new webpack.DefinePlugin({
         DEVELOPMENT: JSON.stringify(env.DEVELOPMENT === true),
         PRODUCTION: JSON.stringify(env.PRODUCTION === true)
@@ -63,8 +59,7 @@ function getConfig(env) {
 function fillDev(config) {
   config.mode = 'development';
   config.entry = {
-    [`${packageName}-v${version}`]: './src/lib/index.ts',
-    [`demo-node`]: './src/demo-node.ts'
+    [`${packageName}-v${version}`]: './src/lib/index.ts'
   };
 
   config.devtool = 'inline-source-map';
@@ -75,7 +70,7 @@ function fillDev(config) {
     compress: true,
     port: 8000,
     hot: false,
-    openPage: 'dist/demo-browser.html',
+    openPage: 'dist/index.html',
     overlay: {
       warnings: true,
       errors: true
@@ -91,16 +86,6 @@ function fillProd(config) {
 
   // TODO think if source maps will be ever needed on production, if no delete this line:
   // config.devtool = 'source-map';
-
-  config.plugins.push(
-    new CopyWebpackPlugin([
-      {
-        from: path.resolve(__dirname) + '/src/demo-node-vanilla.js',
-        to: path.resolve(__dirname) + '/dist/demo-node-vanilla.js',
-        toType: 'file'
-      }
-    ])
-  );
 }
 
 module.exports = env => {
