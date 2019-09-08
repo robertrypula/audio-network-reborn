@@ -9,19 +9,25 @@
     <div id="audio-network-lite-root">
       <h1>Audio Network Lite</h1>
       <h4>Pick example:</h4>
-      <button type="button" onclick="window['example'] = new AudioNetworkLite.DataLinkLayerHexBytesSimpleWebExample()">
+      <button type="button" onclick="runExample('DataLinkLayerHexBytesSimpleWebExample')">
         Hex bytes with all transmission modes
       </button>
-      <button type="button" onclick="window['example'] = new AudioNetworkLite.DataLinkLayerAsciiChatSimpleWebExample()">
+      <button type="button" onclick="runExample('DataLinkLayerAsciiChatSimpleWebExample')">
         ASCII chat simple
       </button>
-      <button
-        type="button"
-        onclick="window['example'] = new AudioNetworkLite.DataLinkLayerAsciiChatAdvancedWebExample()"
-      >
+      <button type="button" onclick="runExample('DataLinkLayerAsciiChatAdvancedWebExample')">
         ASCII chat advanced
       </button>
     </div>
+
+    <script>
+      let example;
+
+      function runExample(name) {
+        example = AudioNetworkLite && AudioNetworkLite[name] && new AudioNetworkLite[name]();
+      }
+    </script>
+
     <!-- you can access distribution version via: <script src="https://unpkg.com/audio-network-lite"></script> -->
   </body>
 </html>
