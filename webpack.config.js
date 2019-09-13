@@ -1,3 +1,4 @@
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
@@ -29,7 +30,7 @@ function getConfig(env) {
         {
           test: /\.scss$/,
           use: [
-            { loader: path.resolve('webpack-style-loader.js') }, // creates 'style' html tag from JS strings
+            { loader: path.resolve('src/setup/webpack-style-loader.js') }, // creates 'style' html tag from JS strings
             'css-loader', // translates CSS into CommonJS
             'sass-loader' // compiles Sass to CSS
           ]
@@ -42,6 +43,18 @@ function getConfig(env) {
       ]
     },
     resolve: {
+      alias: {
+        // TODO read it from tsconfig.json
+        '@': path.join(__dirname, 'src/lib', ''),
+        '@application-layer': path.join(__dirname, 'src/lib', '4-application-layer'),
+        '@data-link-layer': path.join(__dirname, 'src/lib', '1-data-link-layer'),
+        '@examples': path.join(__dirname, 'src/lib', 'examples'),
+        '@network-layer': path.join(__dirname, 'src/lib', 'network-layer'),
+        '@physical-layer': path.join(__dirname, 'src/lib', '0-physical-layer'),
+        '@shared': path.join(__dirname, 'src/lib', 'shared'),
+        '@transport-layer': path.join(__dirname, 'src/lib', '3-transport-layer'),
+        '@visualization': path.join(__dirname, 'src/lib', 'visualization'),
+      },
       extensions: ['.ts', '.js']
     },
     target: 'web',
@@ -89,11 +102,12 @@ function fillDev(config) {
   };
 }
 
-function fillProd(config) {
+function fillProd(config, env) {
   config.mode = 'production';
   config.entry = {
     [`${packageName}-v${version}`]: './src/lib/index.ts'
   };
+  env.ANALYZER && config.plugins.push(new BundleAnalyzerPlugin());
 
   // TODO think if source maps will be ever needed on production, if no delete this line:
   // config.devtool = 'source-map';
@@ -105,7 +119,7 @@ module.exports = env => {
   if (env.DEVELOPMENT === true) {
     fillDev(config);
   } else if (env.PRODUCTION === true) {
-    fillProd(config);
+    fillProd(config, env);
   } else {
     throw 'Please set the environment!';
   }

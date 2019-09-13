@@ -59,6 +59,9 @@ TODO #1:
     have mandatory parameters in txTimeTick rxTimeTick that is passed to PhysicalLayer and AudioMonoIo
   + comment console logs!!
   + remove node-dev, just use condition and args like node audio-network.js run.cliNodeExample
+  + WebPack analyser
+    https://medium.com/@kenuete/passing-arguments-from-npm-command-to-access-it-in-webpack-config-file-4358afdc3683
+  + refactor imports to absolute paths
   -/+ finalize examples
     + add SCSS
     + implement advanced example HTML/CSS
@@ -68,21 +71,20 @@ TODO #1:
     - detect own transmitted frame caught by the microphone on the same machine
     - finalize advanced chat example
     - remove hex-bytes example
-  - html loader with minification
+  -/+ html loader with minification
     https://github.com/webpack-contrib/html-loader
   - migrate utf-8 codec and use them in chat examples
     https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_decode.js
     https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_encode.js
   - update README: add example
-  - refactor imports to absolute paths
   - find alternative for coveralls
+
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:
-  - WebPack analyser
-    https://medium.com/@kenuete/passing-arguments-from-npm-command-to-access-it-in-webpack-config-file-4358afdc3683
   - extract the code
     https://stackoverflow.com/questions/51045727
+  - get rid of CRC lookup tables in order to reduce the bundle size
   - implement ApplicationLayer/TransportLayer, key ideas:
     - files on chat send by starting the byte stream by ASCII 0x1C File Separator byte
       STREAM DETAILS: 0x1C {filename bytes in UTF-8} 0x00 {bytes of the file}

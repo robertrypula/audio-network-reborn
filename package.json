@@ -7,10 +7,11 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn clean && yarn lint && yarn prettier && yarn test:coverage && webpack --env.PRODUCTION",
+    "build:analyzer": "yarn clean && webpack --env.PRODUCTION --env.ANALYZER",
     "clean": "rimraf dist && rimraf coverage",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "npm-check": "npm-check --skip-unused -u",
-    "prettier": "prettier src/**/*.{ts,html,scss} -c",
+    "prettier": "prettier src/**/*.{ts,js,html,scss} -c",
     "start": "yarn clean && webpack-dev-server --env.DEVELOPMENT --open",
     "start:node": "yarn clean && webpack --env.DEVELOPMENT && && node dist/audio-network-lite-v0.1.0-rc15.js run.cliNodeExample",
     "test": "jest --watch",
@@ -49,6 +50,7 @@
     "typescript-formatter": "^7.2.2",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.39.2",
+    "webpack-bundle-analyzer": "^3.5.0",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.8.0"
   }
