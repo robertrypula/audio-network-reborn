@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer, DataLinkLayerWrapper } from '../../../../index';
-import * as fromBaseTemplate from '../../chat-advanced-base.template';
-import * as fromTemplate from './ascii-chat-advanced.template';
+import { DataLinkLayerWrapper } from '@';
+import * as fromBaseTemplate from '@examples/web/chat-advanced-base.template';
+import * as fromTemplate from '@examples/web/data-link-layer/ascii-chat-advanced/ascii-chat-advanced.template';
 
 const getById = (id: string) => document.getElementById(id);
 

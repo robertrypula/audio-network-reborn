@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import * as fromUtils from './utils';
+import * as fromUtils from '@physical-layer/utils';
 
 describe('Utils', () => {
   describe('getDspConfigList', () => {

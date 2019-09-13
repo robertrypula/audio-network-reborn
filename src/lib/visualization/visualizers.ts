@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { NYQUIST_TWICE } from '..';
-import { SimpleCanvas } from './simple-canvas/simple-canvas';
+import { NYQUIST_TWICE } from '@physical-layer/constants';
+import { SimpleCanvas } from '@visualization/simple-canvas/simple-canvas';
 
 /**
  * For 'getUnifiedFrequencies' function debugging purposes. Code example:

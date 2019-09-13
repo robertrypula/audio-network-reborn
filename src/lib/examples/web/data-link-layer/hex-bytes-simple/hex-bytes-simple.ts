@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer, getBytesFromHex, getDspConfigList, getHexFromBytes, TransmissionMode } from '../../../../index';
-import * as fromTemplate from './hex-bytes-simple.template';
+import { DataLinkLayer, getBytesFromHex, getDspConfigList, getHexFromBytes, TransmissionMode } from '@';
+import * as fromTemplate from '@examples/web/data-link-layer/hex-bytes-simple/hex-bytes-simple.template';
 
 // TODO: this example doesn't use DataLinkLayerWrapper that handles
 // TODO: all timers by the AudioNetworkLite library itself

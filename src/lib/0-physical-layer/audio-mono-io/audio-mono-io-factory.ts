@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { AudioMonoIoCreateMode, AudioMonoIoInterface } from '../model';
-import { AudioMonoIoStub } from './audio-mono-io-stub';
-import { AudioMonoIoWebAudioApi } from './audio-mono-io-web-audio-api';
+import { AudioMonoIoStub } from '@physical-layer/audio-mono-io/audio-mono-io-stub';
+import { AudioMonoIoWebAudioApi } from '@physical-layer/audio-mono-io/audio-mono-io-web-audio-api';
+import { AudioMonoIoCreateMode, AudioMonoIoInterface } from '@physical-layer/model';
 
 export class AudioMonoIoFactory {
   public audioMonoIoCreateMode: AudioMonoIoCreateMode = AudioMonoIoCreateMode.WebAudioApi;

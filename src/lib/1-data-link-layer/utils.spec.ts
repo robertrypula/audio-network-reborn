@@ -1,9 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { frameModeToFrameConfigLookUp } from './config';
-import { FrameMode } from './model';
-import * as fromUtils from './utils';
-import { findFrameCandidates } from './utils';
+import { frameModeToFrameConfigLookUp } from '@data-link-layer/config';
+import { FrameMode } from '@data-link-layer/model';
+import * as fromUtils from '@data-link-layer/utils';
 
 describe('Utils', () => {
   describe('allOneItemErrors', () => {
@@ -38,7 +37,7 @@ describe('Utils', () => {
       const errorCorrected = nonErrorCorrected * 0.5 * (bytes.length + frameConfig.rawBytesLengthMin) * 255;
       const nonErrorCorrectedRawBytes: number[][] = [];
 
-      findFrameCandidates(bytes, scramble, frameConfig, true, (frameCandidate, isErrorCorrected) => {
+      fromUtils.findFrameCandidates(bytes, scramble, frameConfig, true, (frameCandidate, isErrorCorrected) => {
         isErrorCorrected ? counter.errorCorrected++ : counter.nonErrorCorrected++;
         if (!isErrorCorrected) {
           nonErrorCorrectedRawBytes.push(frameCandidate.getRawBytes());

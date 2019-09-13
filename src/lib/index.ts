@@ -2,44 +2,49 @@
 
 export * from './info';
 
-export * from './0-physical-layer/audio-mono-io/audio-mono-io-factory';
-export * from './0-physical-layer/audio-mono-io/audio-mono-io-stub';
-export * from './0-physical-layer/audio-mono-io/audio-mono-io-web-audio-api';
-export * from './0-physical-layer/config';
-export * from './0-physical-layer/constants';
-export * from './0-physical-layer/fft-result';
-export * from './0-physical-layer/model';
-export * from './0-physical-layer/physical-layer';
-export * from './0-physical-layer/utils';
-export * from './1-data-link-layer/config';
-export * from './1-data-link-layer/constants';
-export * from './1-data-link-layer/data-link-layer';
-export * from './1-data-link-layer/data-link-layer-wrapper';
-export * from './1-data-link-layer/frame/frame';
-export * from './1-data-link-layer/model';
-export * from './1-data-link-layer/utils';
-export * from './3-transport-layer/transport-layer';
-export * from './4-application-layer/transferable-file';
-export * from './4-application-layer/transferable-file';
-export * from './shared/check-algorithms/check-algorithms';
-export * from './shared/environment-utils';
-export * from './shared/fixed-size-buffer';
-export * from './shared/model';
-export * from './shared/utils';
-export * from './shared/web-utils';
-// export * from './visualization/simple-canvas/simple-canvas';
-// export * from './visualization/spectrogram/spectrogram';
-// export * from './visualization/spectrogram/utils';
-// export * from './visualization/visualizers';
+export * from '@physical-layer/audio-mono-io/audio-mono-io-factory';
+export * from '@physical-layer/audio-mono-io/audio-mono-io-stub';
+export * from '@physical-layer/audio-mono-io/audio-mono-io-web-audio-api';
+export * from '@physical-layer/config';
+export * from '@physical-layer/constants';
+export * from '@physical-layer/fft-result';
+export * from '@physical-layer/model';
+export * from '@physical-layer/physical-layer';
+export * from '@physical-layer/utils';
 
-import './examples/web/index.scss';
-export * from './examples/node/cli';
-export * from './examples/web/data-link-layer/ascii-chat-advanced/ascii-chat-advanced';
-export * from './examples/web/data-link-layer/ascii-chat-simple/ascii-chat-simple';
-export * from './examples/web/data-link-layer/hex-bytes-simple/hex-bytes-simple';
+export * from '@data-link-layer/config';
+export * from '@data-link-layer/constants';
+export * from '@data-link-layer/data-link-layer';
+export * from '@data-link-layer/data-link-layer-wrapper';
+export * from '@data-link-layer/frame/frame';
+export * from '@data-link-layer/model';
+export * from '@data-link-layer/utils';
 
-import { CliNodeExample } from './examples/node/cli';
-import { argc, argv, isNode } from './shared/environment-utils';
+export * from '@transport-layer/transport-layer';
+
+export * from '@application-layer/transferable-file';
+export * from '@application-layer/transferable-file';
+
+export * from '@shared/check-algorithms/check-algorithms';
+export * from '@shared/environment-utils';
+export * from '@shared/fixed-size-buffer';
+export * from '@shared/model';
+export * from '@shared/utils';
+export * from '@shared/web-utils';
+
+// export * from '@visualization/simple-canvas/simple-canvas';
+// export * from '@visualization/spectrogram/spectrogram';
+// export * from '@visualization/spectrogram/utils';
+// export * from '@visualization/visualizers';
+
+import '@examples/web/index.scss';
+export * from '@examples/node/cli';
+export * from '@examples/web/data-link-layer/ascii-chat-advanced/ascii-chat-advanced';
+export * from '@examples/web/data-link-layer/ascii-chat-simple/ascii-chat-simple';
+export * from '@examples/web/data-link-layer/hex-bytes-simple/hex-bytes-simple';
+
+import { CliNodeExample } from '@examples/node/cli';
+import { argc, argv, isNode } from '@shared/environment-utils';
 
 let cliNodeExample: CliNodeExample;
 

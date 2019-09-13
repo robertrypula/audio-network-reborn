@@ -1,15 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import {
-  AudioMonoIoInterface,
-  BYTE_UNIQUE_VALUES,
-  DspConfig,
-  FftResult,
-  getDspConfig,
-  SILENCE_FREQUENCY,
-  TransmissionMode
-} from '..';
-import { audioMonoIoFactory } from './audio-mono-io/audio-mono-io-factory';
+import { audioMonoIoFactory } from '@physical-layer/audio-mono-io/audio-mono-io-factory';
+import { BYTE_UNIQUE_VALUES, SILENCE_FREQUENCY } from '@physical-layer/constants';
+import { FftResult } from '@physical-layer/fft-result';
+import { AudioMonoIoInterface, DspConfig, TransmissionMode } from '@physical-layer/model';
+import { getDspConfig } from '@physical-layer/utils';
 
 export class PhysicalLayer {
   public readonly audioMonoIo: AudioMonoIoInterface;

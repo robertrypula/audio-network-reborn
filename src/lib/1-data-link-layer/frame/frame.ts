@@ -1,9 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { getCheckAlgorithmImplementation, getFilledArray } from '../..';
-import { FrameConfigInterface } from '../model';
-
 /*tslint:disable:no-bitwise*/
+
+import { FrameConfigInterface } from '@data-link-layer/model';
+import { getCheckAlgorithmImplementation } from '@shared/check-algorithms/check-algorithms';
+import { getFilledArray } from '@shared/utils';
 
 export class Frame {
   protected rawBytes: number[] = [];

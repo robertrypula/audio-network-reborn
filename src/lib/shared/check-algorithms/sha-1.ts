@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { CheckAlgorithmImplementation } from '../model';
+import { CheckAlgorithmImplementation } from '@shared/model';
 
 /*tslint:disable:no-bitwise*/
 

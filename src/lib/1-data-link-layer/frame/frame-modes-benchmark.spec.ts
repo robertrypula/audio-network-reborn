@@ -1,21 +1,18 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { frameModeToFrameConfigLookUp } from '@data-link-layer/config';
+import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
+import { Frame } from '@data-link-layer/frame/frame';
+import { mocked512RandomBytesA, mocked512RandomBytesB } from '@data-link-layer/frame/frame-modes-benchmark.spec-data';
 import {
-  findFrameCandidates,
-  FixedSizeBuffer,
   FrameCounterInterface,
-  getBytesFromHex,
-  getHexFromBytes,
-  getRandomBytes,
-  SCRAMBLE_SEQUENCE,
-  scrambleArray,
+  FrameMode,
   TestCaseFrameCounterWithPayloadInterface,
   TestCaseIntegrityInterface
-} from '../..';
-import { frameModeToFrameConfigLookUp } from '../config';
-import { FrameMode } from '../model';
-import { Frame } from './frame';
-import { mocked512RandomBytesA, mocked512RandomBytesB } from './frame-modes-benchmark.spec-data';
+} from '@data-link-layer/model';
+import { findFrameCandidates, scrambleArray } from '@data-link-layer/utils';
+import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
+import { getBytesFromHex, getHexFromBytes, getRandomBytes } from '@shared/utils';
 
 describe('FrameModesBenchmark', () => {
   describe('Integrity', () => {

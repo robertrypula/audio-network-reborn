@@ -1,11 +1,11 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { CheckAlgorithm, CheckAlgorithmImplementation } from '../model';
-import { getCrc08 } from './crc-08';
-import { getCrc16 } from './crc-16';
-import { getCrc24 } from './crc-24';
-import { getCrc32 } from './crc-32';
-import { getSha1 } from './sha-1';
+import { getCrc08 } from '@shared/check-algorithms/crc-08';
+import { getCrc16 } from '@shared/check-algorithms/crc-16';
+import { getCrc24 } from '@shared/check-algorithms/crc-24';
+import { getCrc32 } from '@shared/check-algorithms/crc-32';
+import { getSha1 } from '@shared/check-algorithms/sha-1';
+import { CheckAlgorithm, CheckAlgorithmImplementation } from '@shared/model';
 
 /*tslint:disable:no-bitwise*/
 

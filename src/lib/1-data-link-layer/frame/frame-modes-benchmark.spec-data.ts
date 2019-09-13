@@ -1,4 +1,4 @@
-import { getBytesFromHex } from '../..';
+import { getBytesFromHex } from '@shared/utils';
 
 export const mocked512RandomBytesA = getBytesFromHex(`
   0f c8 e2 37 4e e1 31 e2 80 6e 66 1a ef 50 bc 47 9a 31 80 fe f1 73 78 7c 92 2a b0 fc 9b 3c a4 3f

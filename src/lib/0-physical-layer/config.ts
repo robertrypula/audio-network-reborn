@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FREQUENCY_08_0_KHZ, FREQUENCY_16_0_KHZ, FREQUENCY_19_5_KHZ } from './constants';
-import { TransmissionModeToDspConfigInitialLookUp } from './model';
+import { FREQUENCY_08_0_KHZ, FREQUENCY_16_0_KHZ, FREQUENCY_19_5_KHZ } from '@physical-layer/constants';
+import { TransmissionModeToDspConfigInitialLookUp } from '@physical-layer/model';
 
 export const FREQUENCY_MARGIN = 800;
 export const FREQUENCY_FORBIDDEN_RANGE = [

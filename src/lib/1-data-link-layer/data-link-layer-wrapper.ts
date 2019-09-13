@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer } from './data-link-layer';
-import { DataLinkLayerWrapperListenHandlers, DataLinkLayerWrapperSendHandlers } from './model';
+import { DataLinkLayer } from '@data-link-layer/data-link-layer';
+import { DataLinkLayerWrapperListenHandlers, DataLinkLayerWrapperSendHandlers } from '@data-link-layer/model';
 
 export class DataLinkLayerWrapper {
   protected rxHandlers: DataLinkLayerWrapperListenHandlers;

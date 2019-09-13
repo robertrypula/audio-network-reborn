@@ -1,17 +1,12 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import {
-  findFrameCandidates,
-  FixedSizeBuffer,
-  FrameConfigInterface,
-  FrameHistory,
-  FrameMode,
-  PhysicalLayer,
-  SCRAMBLE_SEQUENCE,
-  scrambleArray
-} from '..';
-import { frameModeToFrameConfigLookUp } from './config';
-import { Frame } from './frame/frame';
+import { frameModeToFrameConfigLookUp } from '@data-link-layer/config';
+import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
+import { Frame } from '@data-link-layer/frame/frame';
+import { FrameConfigInterface, FrameHistory, FrameMode } from '@data-link-layer/model';
+import { findFrameCandidates, scrambleArray } from '@data-link-layer/utils';
+import { PhysicalLayer } from '@physical-layer/physical-layer';
+import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 
 export class DataLinkLayer {
   public readonly physicalLayer: PhysicalLayer;

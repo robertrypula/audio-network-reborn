@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { getBytesFromHex } from '../shared/utils';
-import { FrameConfigWithoutCheckAlgorithm } from './model';
+import { FrameConfigWithoutCheckAlgorithm } from '@data-link-layer/model';
+import { getBytesFromHex } from '@shared/utils';
 
 export const HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigWithoutCheckAlgorithm = {
   headerFirstByteCheckSequenceMask: 0x1f,

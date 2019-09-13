@@ -1,28 +1,20 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import {
-  BYTE_UNIQUE_VALUES,
-  DspConfig,
-  DspConfigInitialInterface,
-  FREQUENCY_FORBIDDEN_RANGE,
-  MILLISECONDS_IN_SECOND,
-  NYQUIST_TWICE,
-  SUPPORTED_SAMPLE_RATES,
-  TransmissionMode,
-  transmissionModeToDspConfigInitialLookUp
-} from '..';
+import * as fromConfig from '@physical-layer/config';
+import { BYTE_UNIQUE_VALUES, MILLISECONDS_IN_SECOND, NYQUIST_TWICE } from '@physical-layer/constants';
+import { DspConfig, DspConfigInitialInterface, TransmissionMode } from '@physical-layer/model';
 
 export const getClosestBinIndexes = (fftSize: number, sampleRate: number, frequencies: number[]): number[] => {
   return frequencies.map((frequency: number) => Math.round((frequency * fftSize) / sampleRate));
 };
 
 export const getDspConfig = (transmissionMode: TransmissionMode, sampleRate: number = null): DspConfig => {
-  const config = transmissionModeToDspConfigInitialLookUp[transmissionMode];
+  const config = fromConfig.transmissionModeToDspConfigInitialLookUp[transmissionMode];
   const unifiedFrequencies = getUnifiedFrequencies(
     config.fftSize,
     config.frequencyEnd,
     BYTE_UNIQUE_VALUES,
-    SUPPORTED_SAMPLE_RATES
+    fromConfig.SUPPORTED_SAMPLE_RATES
   );
   const rxIntervalMilliseconds = getRxIntervalMilliseconds(config);
   const txIntervalMilliseconds = NYQUIST_TWICE * rxIntervalMilliseconds;
@@ -54,7 +46,7 @@ export const getDspConfigList = (sampleRate: number = null): DspConfig[] => {
 };
 
 export const getLongestFftWindowTime = (config: DspConfigInitialInterface): number => {
-  return config.fftSize / Math.min(...SUPPORTED_SAMPLE_RATES);
+  return config.fftSize / Math.min(...fromConfig.SUPPORTED_SAMPLE_RATES);
 };
 
 export const getRxIntervalMilliseconds = (config: DspConfigInitialInterface): number => {
@@ -110,5 +102,5 @@ export const getUnifiedFrequencies = (
 };
 
 const isInsideForbiddenFrequencies = (frequency: number): boolean => {
-  return FREQUENCY_FORBIDDEN_RANGE.some((range: number[]) => range[0] < frequency && frequency < range[1]);
+  return fromConfig.FREQUENCY_FORBIDDEN_RANGE.some((range: number[]) => range[0] < frequency && frequency < range[1]);
 };

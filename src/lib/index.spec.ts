@@ -1,20 +1,22 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import * as AudioNetworkLite from './index';
-import { AudioMonoIoCreateMode, audioMonoIoFactory, DataLinkLayer } from './index';
+import { info } from '@';
+import { DataLinkLayer } from '@data-link-layer/data-link-layer';
+import { audioMonoIoFactory } from '@physical-layer/audio-mono-io/audio-mono-io-factory';
+import { AudioMonoIoCreateMode } from '@physical-layer/model';
 
 describe('Index', () => {
   describe('Info', () => {
     it('should return version', () => {
-      expect(AudioNetworkLite.version).toBeTruthy();
+      expect(info.version).toBeTruthy();
     });
 
     it('should return author', () => {
-      expect(AudioNetworkLite.author).toBeTruthy();
+      expect(info.author).toBeTruthy();
     });
 
     it('should return githubUrl', () => {
-      expect(AudioNetworkLite.githubUrl).toBeTruthy();
+      expect(info.githubUrl).toBeTruthy();
     });
   });
 

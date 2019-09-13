@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { CheckAlgorithm } from '..';
-import { Frame } from './frame/frame';
+import { Frame } from '@data-link-layer/frame/frame';
+import { CheckAlgorithm } from '@shared/model';
 
 export interface DataLinkLayerWrapperListenHandlers {
   next: (bytes: number[]) => void;

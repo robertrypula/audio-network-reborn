@@ -1,9 +1,9 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FrameConfigInterface, HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES } from '../..';
-import { Frame } from './frame';
-
 /*tslint:disable:no-bitwise*/
+
+import { HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES } from '@data-link-layer/constants';
+import { FrameConfigInterface } from '@data-link-layer/model';
 
 const frameConfig: FrameConfigInterface = {
   checkAlgorithm: null,
