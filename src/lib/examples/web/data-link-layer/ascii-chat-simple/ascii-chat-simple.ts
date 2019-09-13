@@ -10,6 +10,9 @@ import {
 } from '../../../..';
 import * as fromTemplate from './ascii-chat-simple.template';
 
+/*tslint:disable-next-line:no-var-requires*/
+const template = require('./ascii-chat-simple.html');
+
 // const getById = <T = HTMLElement>(id: string) => (document.getElementById(id) as T); TODO check why it's not working
 const getById = (id: string) => document.getElementById(id);
 const getByIdInput = (id: string) => document.getElementById(id) as HTMLInputElement;
@@ -19,6 +22,8 @@ export class DataLinkLayerAsciiChatSimpleWebExample {
   public dataLinkLayerWrapper: DataLinkLayerWrapper;
 
   public constructor() {
+    /*tslint:disable-next-line:no-console*/
+    console.log(template);
     getByTagName('html')[0].classList.add('data-link-layer-ascii-chat-simple');
     getById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());

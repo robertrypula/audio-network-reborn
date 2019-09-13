@@ -16,9 +16,15 @@ function getConfig(env) {
     module: {
       rules: [
         {
-          test: /\.ts$/,
-          use: 'ts-loader',
-          exclude: /node_modules/
+          test: /\.html$/,
+          use: [
+            {
+              loader: 'html-loader',
+              options: {
+                minimize: env.PRODUCTION
+              }
+            }
+          ]
         },
         {
           test: /\.scss$/,
@@ -27,6 +33,11 @@ function getConfig(env) {
             'css-loader', // translates CSS into CommonJS
             'sass-loader' // compiles Sass to CSS
           ]
+        },
+        {
+          test: /\.ts$/,
+          use: 'ts-loader',
+          exclude: /node_modules/
         }
       ]
     },
