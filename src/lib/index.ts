@@ -75,10 +75,10 @@ TODO #1:
   + refactor imports to absolute paths
   + html loader with minification
     https://github.com/webpack-contrib/html-loader
-  - style-loader tag ID option and finalization
-  - migrate utf-8 codec and use them in chat examples
+  + migrate utf-8 codec and use them in chat examples
     https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_decode.js
     https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_encode.js
+  - style-loader tag ID option and finalization
   -/+ finalize examples
     + add SCSS
     + implement advanced example HTML/CSS
@@ -89,19 +89,16 @@ TODO #1:
     - finalize advanced chat example
     - remove hex-bytes example
   - update README: add example
-  - find alternative for coveralls
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:
-  - extract the code
-    https://stackoverflow.com/questions/51045727
-  - get rid of CRC lookup tables in order to reduce the bundle size
   - implement ApplicationLayer/TransportLayer, key ideas:
     - files on chat send by starting the byte stream by ASCII 0x1C File Separator byte
       STREAM DETAILS: 0x1C {filename bytes in UTF-8} 0x00 {bytes of the file}
   - performance checker (store previous getFrequencyData array and compare with current) + example
   - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
     UPDATE: Maybe not implement it? :) In general all works fine up to ~15 raw bytes per second
+  - get rid of CRC lookup tables in order to reduce the bundle size
   - PREPARE THE RELEASE: 0.2.0
 
 TODO #3:
@@ -113,4 +110,7 @@ TODO #3:
     UPDATE: ...or add dedicated method to set custom config for those that want to experiment
   - experiment with a bit higher safeMarginFactor to produce rawByteRates like: 3, 4, 6, 8, 12, 16, 20/24?, 24/32?
   - check constraints https://github.com/quiet/quiet-js/blob/master/quiet.js#L565
+  - extract the code
+    https://stackoverflow.com/questions/51045727
+  - find alternative for coveralls
 */

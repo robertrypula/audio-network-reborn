@@ -23,11 +23,11 @@ export const getUtf8BytesFromText = (text: string): number[] => {
     } else {
       // surrogate pairs
       if ((charCode & 0xfc00) !== 0xd800) {
-        throw new RangeError('Unmatched trail surrogate at ' + n);
+        return []; // unmatched trail surrogate at (n) character
       }
       const charCodeNext = text.charCodeAt(++n);
       if ((charCodeNext & 0xfc00) !== 0xdc00) {
-        throw new RangeError('Unmatched lead surrogate at ' + (n - 1));
+        return []; // unmatched lead surrogate at (n - 1) character
       }
       charCode = ((charCode & 0x3ff) << 10) + (charCodeNext & 0x3ff) + 0x10000;
       utf8TextPart = String.fromCharCode(
