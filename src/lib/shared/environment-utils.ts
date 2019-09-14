@@ -1,11 +1,12 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 /*
-isNode && isBrowser based on:
-- https://stackoverflow.com/a/33697246
-- https://github.com/foo123/asynchronous.js/blob/0.5.1/asynchronous.js#L40
-- https://stackoverflow.com/a/48536881
+  Implementation of isNode and isBrowser based on:
+  - https://stackoverflow.com/a/33697246
+  - https://github.com/foo123/asynchronous.js/blob/0.5.1/asynchronous.js#L40
+  - https://stackoverflow.com/a/48536881
 */
+
 export const isNode = typeof global !== 'undefined' && toString.call(global) === '[object global]';
 
 export const isBrowser =

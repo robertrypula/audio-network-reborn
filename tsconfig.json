@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "src/lib", // important for 'paths' option
+    "baseUrl": "src/lib",
     "declaration": true,
     "declarationDir": "./dist",
     "experimentalDecorators": true,

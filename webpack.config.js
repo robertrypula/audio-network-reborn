@@ -4,13 +4,25 @@ const path = require('path');
 const webpack = require('webpack');
 
 const packageJson = require('./package.json');
-const version = packageJson.version;
-const packageName = packageJson.name;
-const libraryName = packageName
+const libraryName = packageJson.name
   .toLowerCase()
   .split('-')
   .map(chunk => chunk.charAt(0).toUpperCase() + chunk.slice(1))
   .join('');
+
+const relativePaths = () => {
+  const paths = require('./tsconfig').compilerOptions.paths;
+  const getFullPath = lastPart => path.join(__dirname, 'src/lib', lastPart);
+  const result = {};
+
+  Object.keys(paths).forEach(key =>
+    key === '@'
+      ? (result['@'] = getFullPath('index'))
+      : (result[key.replace('/*', '')] = getFullPath(paths[key][0].replace('/*', '')))
+  );
+
+  return result;
+};
 
 function getConfig(env) {
   return {
@@ -44,16 +56,7 @@ function getConfig(env) {
     },
     resolve: {
       alias: {
-        // TODO read it from tsconfig.json
-        '@': path.join(__dirname, 'src/lib', ''),
-        '@application-layer': path.join(__dirname, 'src/lib', '4-application-layer'),
-        '@data-link-layer': path.join(__dirname, 'src/lib', '1-data-link-layer'),
-        '@examples': path.join(__dirname, 'src/lib', 'examples'),
-        '@network-layer': path.join(__dirname, 'src/lib', 'network-layer'),
-        '@physical-layer': path.join(__dirname, 'src/lib', '0-physical-layer'),
-        '@shared': path.join(__dirname, 'src/lib', 'shared'),
-        '@transport-layer': path.join(__dirname, 'src/lib', '3-transport-layer'),
-        '@visualization': path.join(__dirname, 'src/lib', 'visualization'),
+        ...relativePaths()
       },
       extensions: ['.ts', '.js']
     },
@@ -83,7 +86,7 @@ function getConfig(env) {
 function fillDev(config) {
   config.mode = 'development';
   config.entry = {
-    [`${packageName}-v${version}`]: './src/lib/index.ts'
+    [`${packageJson.name}-v${packageJson.version}`]: './src/lib/index.ts'
   };
 
   config.devtool = 'inline-source-map';
@@ -105,7 +108,7 @@ function fillDev(config) {
 function fillProd(config, env) {
   config.mode = 'production';
   config.entry = {
-    [`${packageName}-v${version}`]: './src/lib/index.ts'
+    [`${packageJson.name}-v${packageJson.version}`]: './src/lib/index.ts'
   };
   env.ANALYZER && config.plugins.push(new BundleAnalyzerPlugin());
 

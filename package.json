@@ -12,6 +12,7 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "npm-check": "npm-check --skip-unused -u",
     "prettier": "prettier src/**/*.{ts,js,html,scss} -c",
+    "prettier:write": "prettier --write src/**/*.{ts,js,html,scss}",
     "start": "yarn clean && webpack-dev-server --env.DEVELOPMENT --open",
     "start:node": "yarn clean && webpack --env.DEVELOPMENT && && node dist/audio-network-lite-v0.1.0-rc15.js run.cliNodeExample",
     "test": "jest --watch",

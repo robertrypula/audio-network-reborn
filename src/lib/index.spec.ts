@@ -1,22 +1,19 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { info } from '@';
-import { DataLinkLayer } from '@data-link-layer/data-link-layer';
-import { audioMonoIoFactory } from '@physical-layer/audio-mono-io/audio-mono-io-factory';
-import { AudioMonoIoCreateMode } from '@physical-layer/model';
+import { AudioMonoIoCreateMode, audioMonoIoFactory, DataLinkLayer, libraryInfo } from '@';
 
 describe('Index', () => {
-  describe('Info', () => {
+  describe('Library Info', () => {
     it('should return version', () => {
-      expect(info.version).toBeTruthy();
+      expect(libraryInfo.version).toBeTruthy();
     });
 
     it('should return author', () => {
-      expect(info.author).toBeTruthy();
+      expect(libraryInfo.author).toBeTruthy();
     });
 
     it('should return githubUrl', () => {
-      expect(info.githubUrl).toBeTruthy();
+      expect(libraryInfo.githubUrl).toBeTruthy();
     });
   });
 

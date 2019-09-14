@@ -1,6 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-export * from './info';
+export const libraryInfo = {
+  author: 'Robert Rypuła',
+  githubUrl: 'https://github.com/robertrypula',
+  version: '0.1.0-rc15'
+};
 
 export * from '@physical-layer/audio-mono-io/audio-mono-io-factory';
 export * from '@physical-layer/audio-mono-io/audio-mono-io-stub';

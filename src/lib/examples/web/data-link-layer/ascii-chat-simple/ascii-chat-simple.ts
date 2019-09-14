@@ -8,7 +8,7 @@ import {
   getHexFromBytes,
   getTextFromBytes
 } from '@';
-import * as fromTemplate from '@examples/web/data-link-layer/ascii-chat-simple/ascii-chat-simple.template';
+import * as fromTemplate from './ascii-chat-simple.template';
 
 /*tslint:disable-next-line:no-var-requires*/
 const template = require('./ascii-chat-simple.html');

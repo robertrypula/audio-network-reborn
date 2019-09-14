@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-/*tslint:disable:no-console*/
-
 import { AudioMonoIoInterface } from '@physical-layer/model';
+
+/*tslint:disable:no-console*/
 
 const CONSOLE = false;
 
