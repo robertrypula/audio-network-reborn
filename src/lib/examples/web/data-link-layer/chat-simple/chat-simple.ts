@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { DataLinkLayer, DataLinkLayerWrapper } from '@';
-import { getBytesFromHex, getBytesFromText, getHexFromBytes, getTextFromBytes } from '@';
+import { getBytesFromHex, getHexFromBytes, getTextFromUtf8Bytes, getUtf8BytesFromText } from '@';
 
 // const getById = <T = HTMLElement>(id: string) => (document.getElementById(id) as T); TODO check why it's not working
 const getById = (id: string) => document.getElementById(id);
@@ -31,7 +31,7 @@ export class DataLinkLayerChatSimpleWebExample {
     const value = (getById('send-field') as HTMLInputElement).value;
     const bytes = (getById('send-as-hex-checkbox') as HTMLInputElement).checked
       ? getBytesFromHex(value)
-      : getBytesFromText(value.replace(/[^\x20-\x7E]+/g, ''));
+      : getUtf8BytesFromText(value);
 
     if (bytes.length < payloadLengthMin || payloadLengthMax < bytes.length) {
       alert('Payload of ' + bytes.length + ' B is out of range <' + payloadLengthMin + ', ' + payloadLengthMax + '>');
@@ -59,7 +59,7 @@ export class DataLinkLayerChatSimpleWebExample {
   protected logFrame(bytes: number[], isReceived: boolean): void {
     const div = document.createElement('div');
 
-    div.innerHTML = `<div>${getTextFromBytes(bytes)}<br/>${getHexFromBytes(bytes)}</div>`;
+    div.innerHTML = `<div>${getTextFromUtf8Bytes(bytes)}<br/>${getHexFromBytes(bytes)}</div>`;
     div.classList.add(isReceived ? 'received' : 'sent');
     getById('messages-wrapper').appendChild(div);
   }

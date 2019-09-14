@@ -33,6 +33,8 @@ export * from '@shared/check-algorithms/check-algorithms';
 export * from '@shared/environment-utils';
 export * from '@shared/fixed-size-buffer';
 export * from '@shared/model';
+export * from '@shared/utf8/decode';
+export * from '@shared/utf8/encode';
 export * from '@shared/utils';
 export * from '@shared/web-utils';
 
