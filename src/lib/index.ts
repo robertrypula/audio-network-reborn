@@ -43,8 +43,8 @@ export * from '@shared/web-utils';
 
 import '@examples/web/index.scss';
 export * from '@examples/node/cli';
-export * from '@examples/web/data-link-layer/ascii-chat-advanced/ascii-chat-advanced';
-export * from '@examples/web/data-link-layer/ascii-chat-simple/ascii-chat-simple';
+export * from '@examples/web/data-link-layer/chat-advanced/chat-advanced';
+export * from '@examples/web/data-link-layer/chat-simple/chat-simple';
 export * from '@examples/web/data-link-layer/hex-bytes-simple/hex-bytes-simple';
 
 import { CliNodeExample } from '@examples/node/cli';
@@ -71,6 +71,12 @@ TODO #1:
   + WebPack analyser
     https://medium.com/@kenuete/passing-arguments-from-npm-command-to-access-it-in-webpack-config-file-4358afdc3683
   + refactor imports to absolute paths
+  + html loader with minification
+    https://github.com/webpack-contrib/html-loader
+  - style-loader tag ID option and finalization
+  - migrate utf-8 codec and use them in chat examples
+    https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_decode.js
+    https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_encode.js
   -/+ finalize examples
     + add SCSS
     + implement advanced example HTML/CSS
@@ -80,14 +86,8 @@ TODO #1:
     - detect own transmitted frame caught by the microphone on the same machine
     - finalize advanced chat example
     - remove hex-bytes example
-  -/+ html loader with minification
-    https://github.com/webpack-contrib/html-loader
-  - migrate utf-8 codec and use them in chat examples
-    https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_decode.js
-    https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_encode.js
   - update README: add example
   - find alternative for coveralls
-
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:

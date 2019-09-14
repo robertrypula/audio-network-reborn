@@ -7,6 +7,7 @@
     "indent": [true, "spaces", 2],
     "interface-name": [true, "never-prefix"],
     "no-unused-expression": [true, "allow-fast-null-checks"],
+    "no-var-requires": false,
     "prefer-for-of": false,
     "quotemark": [true, "single"],
     "trailing-comma": [

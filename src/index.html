@@ -12,20 +12,19 @@
       <button type="button" onclick="runExample('DataLinkLayerHexBytesSimpleWebExample')">
         Hex bytes with all transmission modes
       </button>
-      <button type="button" onclick="runExample('DataLinkLayerAsciiChatSimpleWebExample')">
-        ASCII chat simple
+      <button type="button" onclick="runExample('DataLinkLayerChatSimpleWebExample')">
+        Chat simple
       </button>
-      <button type="button" onclick="runExample('DataLinkLayerAsciiChatAdvancedWebExample')">
-        ASCII chat advanced
+      <button type="button" onclick="runExample('DataLinkLayerChatAdvancedWebExample')">
+        Chat advanced
       </button>
     </div>
 
     <script>
       let example;
-
-      function runExample(name) {
+      const runExample = name => {
         example = AudioNetworkLite && AudioNetworkLite[name] && new AudioNetworkLite[name]();
-      }
+      };
     </script>
 
     <!-- you can access distribution version via: <script src="https://unpkg.com/audio-network-lite"></script> -->

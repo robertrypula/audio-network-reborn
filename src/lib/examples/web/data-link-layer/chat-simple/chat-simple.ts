@@ -1,31 +1,19 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import {
-  DataLinkLayer,
-  DataLinkLayerWrapper,
-  getBytesFromHex,
-  getBytesFromText,
-  getHexFromBytes,
-  getTextFromBytes
-} from '@';
-import * as fromTemplate from './ascii-chat-simple.template';
-
-/*tslint:disable-next-line:no-var-requires*/
-const template = require('./ascii-chat-simple.html');
+import { DataLinkLayer, DataLinkLayerWrapper } from '@';
+import { getBytesFromHex, getBytesFromText, getHexFromBytes, getTextFromBytes } from '@';
 
 // const getById = <T = HTMLElement>(id: string) => (document.getElementById(id) as T); TODO check why it's not working
 const getById = (id: string) => document.getElementById(id);
 const getByIdInput = (id: string) => document.getElementById(id) as HTMLInputElement;
 const getByTagName = (tag: string) => document.getElementsByTagName(tag);
 
-export class DataLinkLayerAsciiChatSimpleWebExample {
+export class DataLinkLayerChatSimpleWebExample {
   public dataLinkLayerWrapper: DataLinkLayerWrapper;
 
   public constructor() {
-    /*tslint:disable-next-line:no-console*/
-    console.log(template);
-    getByTagName('html')[0].classList.add('data-link-layer-ascii-chat-simple');
-    getById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
+    getByTagName('html')[0].classList.add('data-link-layer-chat-simple');
+    getById('audio-network-lite-root').innerHTML = require('./chat-simple.html');
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());
     this.initializeHtmlElements();
   }

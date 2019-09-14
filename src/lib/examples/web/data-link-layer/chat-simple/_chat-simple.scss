@@ -8,13 +8,13 @@ $frameReceivedFontColor: white;
 $frameSentBackgroundColor: lightgray;
 $frameSentFontColor: inherit;
 
-html.data-link-layer-ascii-chat-simple,
-.data-link-layer-ascii-chat-simple body {
+html.data-link-layer-chat-simple,
+.data-link-layer-chat-simple body {
   margin: 0;
   padding: 0;
 }
 
-.data-link-layer-ascii-chat-simple {
+.data-link-layer-chat-simple {
   #audio-network-lite-root {
     background-color: $chatContainerColor;
     box-sizing: border-box;
