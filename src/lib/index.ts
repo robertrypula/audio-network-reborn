@@ -88,7 +88,8 @@ TODO #1:
     + PhysicalLayer:  dspConfig,     dspConfigInitializer,     dspMode
     - DataLinkLayer:  frameConfig,   frameConfigInitializer,   frameMode
     - TransportLayer: segmentConfig, segmentConfigInitializer, segmentMode    (<<<< in future)
-    - set methods for updating the config in the runtime
+    + set methods for updating the config in the runtime (Physical Layer)
+    - set methods for updating the config in the runtime (Data Link Layer)
   - timeTick methods should return enum rather than boolean, for example: IDLE, SYMBOL, GUARD
   - style-loader tag ID option and finalization
   - CLI 'run.cliNodeExample' run parameter needs to me more unique to avoid collision with other npm package

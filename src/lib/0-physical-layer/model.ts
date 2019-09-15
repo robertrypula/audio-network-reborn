@@ -26,6 +26,7 @@ export interface DspConfig {
   band: BandInterface;
   dspConfigInitializer: DspConfigInitializerInterface;
   dspMode: DspMode;
+  longestFftWindowTimeMilliseconds: number;
   rawByteRate: number;
   rxIntervalMilliseconds: number;
   txIntervalMilliseconds: number;

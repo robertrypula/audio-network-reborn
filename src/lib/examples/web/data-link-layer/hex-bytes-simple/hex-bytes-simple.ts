@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer, DspMode, getBytesFromHex, getDspConfigList, getHexFromBytes } from '@';
+import { DataLinkLayer, DspMode, getBytesFromHex, getDspConfigsFromAllDspModes, getHexFromBytes } from '@';
 import * as fromTemplate from './hex-bytes-simple.template';
 
 // TODO: this example doesn't use DataLinkLayerWrapper that handles
@@ -99,7 +99,7 @@ export class DataLinkLayerHexBytesSimpleWebExample {
   protected initializeDspModeDropdown(): void {
     getById('dsp-mode-dropdown').innerHTML =
       fromTemplate.dropdownOptionEmpty +
-      getDspConfigList()
+      getDspConfigsFromAllDspModes()
         .map(dspConfig => fromTemplate.dropdownOption(dspConfig))
         .join('');
   }

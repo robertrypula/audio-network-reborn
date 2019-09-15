@@ -4,12 +4,21 @@ import * as fromConfig from '@physical-layer/config';
 import { BYTE_UNIQUE_VALUES, MILLISECONDS_IN_SECOND, NYQUIST_TWICE } from '@physical-layer/constants';
 import { DspConfig, DspConfigInitializerInterface, DspMode } from '@physical-layer/model';
 
+export const detectDspMode = (dspConfigInitializer: DspConfigInitializerInterface): DspMode => {
+  return Object.keys(DspMode).find(
+    (dspMode: DspMode) =>
+      JSON.stringify(fromConfig.dspModeToDspConfigInitializerLookUp[dspMode]) === JSON.stringify(dspConfigInitializer)
+  ) as DspMode;
+};
+
 export const getClosestBinIndexes = (fftSize: number, sampleRate: number, frequencies: number[]): number[] => {
   return frequencies.map((frequency: number) => Math.round((frequency * fftSize) / sampleRate));
 };
 
-export const getDspConfig = (dspMode: DspMode, sampleRate: number = null): DspConfig => {
-  const dspConfigInitializer = fromConfig.dspModeToDspConfigInitializerLookUp[dspMode];
+export const getDspConfig = (
+  dspConfigInitializer: DspConfigInitializerInterface,
+  sampleRate: number = null
+): DspConfig => {
   const unifiedFrequencies = getUnifiedFrequencies(
     dspConfigInitializer.fftSize,
     dspConfigInitializer.frequencyEnd,
@@ -25,7 +34,8 @@ export const getDspConfig = (dspMode: DspMode, sampleRate: number = null): DspCo
       end: unifiedFrequencies[unifiedFrequencies.length - 1]
     },
     dspConfigInitializer,
-    dspMode,
+    dspMode: detectDspMode(dspConfigInitializer),
+    longestFftWindowTimeMilliseconds: MILLISECONDS_IN_SECOND * getLongestFftWindowTime(dspConfigInitializer),
     rawByteRate: MILLISECONDS_IN_SECOND / txIntervalMilliseconds,
     rxIntervalMilliseconds,
     txIntervalMilliseconds
@@ -39,8 +49,10 @@ export const getDspConfig = (dspMode: DspMode, sampleRate: number = null): DspCo
   return dspConfig;
 };
 
-export const getDspConfigList = (sampleRate: number = null): DspConfig[] => {
-  return Object.keys(DspMode).map((dspMode: DspMode) => getDspConfig(dspMode, sampleRate));
+export const getDspConfigsFromAllDspModes = (sampleRate: number = null): DspConfig[] => {
+  return Object.keys(DspMode).map((dspMode: DspMode) =>
+    getDspConfig(fromConfig.dspModeToDspConfigInitializerLookUp[dspMode], sampleRate)
+  );
 };
 
 export const getLongestFftWindowTime = (dspConfigInitializer: DspConfigInitializerInterface): number => {
