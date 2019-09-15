@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { FREQUENCY_08_0_KHZ, FREQUENCY_16_0_KHZ, FREQUENCY_19_5_KHZ } from '@physical-layer/constants';
-import { TransmissionModeToDspConfigInitialLookUp } from '@physical-layer/model';
+import { DspModeToDspConfigInitializerLookUp } from '@physical-layer/model';
 
 export const FREQUENCY_MARGIN = 800;
 export const FREQUENCY_FORBIDDEN_RANGE = [
@@ -58,7 +58,7 @@ export const FREQUENCY_END_INAUDIBLE = FREQUENCY_19_5_KHZ - FREQUENCY_MARGIN;
 const SAFE_MARGIN_FACTOR_FAST = 1.344;
 const SAFE_MARGIN_FACTOR_SLOW = 2.15;
 
-export const transmissionModeToDspConfigInitialLookUp: TransmissionModeToDspConfigInitialLookUp = {
+export const dspModeToDspConfigInitializerLookUp: DspModeToDspConfigInitializerLookUp = {
   // Extraordinary band ~ 12.0 kHz
   ExtraordinaryBandFast: {
     fftSize: 1024,

@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer, getBytesFromHex, getDspConfigList, getHexFromBytes, TransmissionMode } from '@';
+import { DataLinkLayer, DspMode, getBytesFromHex, getDspConfigList, getHexFromBytes } from '@';
 import * as fromTemplate from './hex-bytes-simple.template';
 
 // TODO: this example doesn't use DataLinkLayerWrapper that handles
@@ -17,13 +17,13 @@ export class DataLinkLayerHexBytesSimpleWebExample {
   public constructor() {
     document.getElementsByTagName('html')[0].classList.add('data-link-layer-hex-bytes-simple');
     getById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
-    this.initializeTransmissionModeDropdown();
+    this.initializeDspModeDropdown();
   }
 
-  public onTransmissionModeChange(transmissionMode: TransmissionMode): void {
+  public onDspModeChange(dspMode: DspMode): void {
     this.initializeDataLinkLayer();
-    if (transmissionMode) {
-      this.dataLinkLayer.physicalLayer.setTransmissionMode(transmissionMode);
+    if (dspMode) {
+      this.dataLinkLayer.physicalLayer.setDspMode(dspMode);
       getById('controls-wrapper').style.display = 'block';
       this.rxInterval && this.handleRxInterval();
       this.txInterval && this.handleTxInterval();
@@ -96,8 +96,8 @@ export class DataLinkLayerHexBytesSimpleWebExample {
     }
   }
 
-  protected initializeTransmissionModeDropdown(): void {
-    getById('transmission-mode-dropdown').innerHTML =
+  protected initializeDspModeDropdown(): void {
+    getById('dsp-mode-dropdown').innerHTML =
       fromTemplate.dropdownOptionEmpty +
       getDspConfigList()
         .map(dspConfig => fromTemplate.dropdownOption(dspConfig))

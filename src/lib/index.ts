@@ -10,11 +10,11 @@ export * from '@physical-layer/audio-mono-io/audio-mono-io-factory';
 export * from '@physical-layer/audio-mono-io/audio-mono-io-stub';
 export * from '@physical-layer/audio-mono-io/audio-mono-io-web-audio-api';
 export * from '@physical-layer/config';
+export * from '@physical-layer/config-utils';
 export * from '@physical-layer/constants';
 export * from '@physical-layer/fft-result';
 export * from '@physical-layer/model';
 export * from '@physical-layer/physical-layer';
-export * from '@physical-layer/utils';
 
 export * from '@data-link-layer/config';
 export * from '@data-link-layer/constants';
@@ -85,12 +85,13 @@ TODO #1:
     + text and hex mode
     + history show sent and received frames
   - refactor at physical layer & data link layer configuration
-    - PhysicalLayer:  dspConfig,     dspConfigInitializer,     dspMode
+    + PhysicalLayer:  dspConfig,     dspConfigInitializer,     dspMode
     - DataLinkLayer:  frameConfig,   frameConfigInitializer,   frameMode
     - TransportLayer: segmentConfig, segmentConfigInitializer, segmentMode    (<<<< in future)
     - set methods for updating the config in the runtime
   - timeTick methods should return enum rather than boolean, for example: IDLE, SYMBOL, GUARD
   - style-loader tag ID option and finalization
+  - CLI 'run.cliNodeExample' run parameter needs to me more unique to avoid collision with other npm package
   - detect own transmitted frame caught by the microphone on the same machine
   - finalize advanced chat example
   - remove hex-bytes example

@@ -1,7 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 export enum AudioMonoIoCreateMode {
-  // AutoDetectWebAudioOrNode = 'AutoDetectWebAudioOrNode',
   // Node = 'Node',
   Stub = 'Stub',
   WebAudioApi = 'WebAudioApi'
@@ -25,22 +24,22 @@ export interface BandInterface {
 
 export interface DspConfig {
   band: BandInterface;
-  dspConfigInitial: DspConfigInitialInterface;
+  dspConfigInitializer: DspConfigInitializerInterface;
+  dspMode: DspMode;
   rawByteRate: number;
   rxIntervalMilliseconds: number;
-  transmissionMode: TransmissionMode;
   txIntervalMilliseconds: number;
   unifiedBinIndexes?: number[];
   unifiedFrequencies?: number[];
 }
 
-export interface DspConfigInitialInterface {
+export interface DspConfigInitializerInterface {
   fftSize: number;
   frequencyEnd: number;
   safeMarginFactor: number;
 }
 
-export enum TransmissionMode {
+export enum DspMode {
   // NOTE: names picked in a way that they sort alphabetically from fast to slow
   ExtraordinaryBandFast = 'ExtraordinaryBandFast',
   ExtraordinaryBandSlow = 'ExtraordinaryBandSlow',
@@ -64,6 +63,6 @@ export enum TransmissionMode {
   SlimBandSlowInaudible = 'SlimBandSlowInaudible'
 }
 
-export type TransmissionModeToDspConfigInitialLookUp = {
-  [key in keyof typeof TransmissionMode]: DspConfigInitialInterface;
+export type DspModeToDspConfigInitializerLookUp = {
+  [key in keyof typeof DspMode]: DspConfigInitializerInterface;
 };

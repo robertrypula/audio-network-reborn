@@ -1,19 +1,19 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { audioMonoIoFactory } from '@physical-layer/audio-mono-io/audio-mono-io-factory';
+import { getDspConfig } from '@physical-layer/config-utils';
 import { BYTE_UNIQUE_VALUES, SILENCE_FREQUENCY } from '@physical-layer/constants';
 import { FftResult } from '@physical-layer/fft-result';
-import { AudioMonoIoInterface, DspConfig, TransmissionMode } from '@physical-layer/model';
-import { getDspConfig } from '@physical-layer/utils';
+import { AudioMonoIoInterface, DspConfig, DspMode } from '@physical-layer/model';
 
 export class PhysicalLayer {
   public readonly audioMonoIo: AudioMonoIoInterface;
 
   protected dspConfig: DspConfig;
 
-  public constructor(transmissionMode: TransmissionMode = TransmissionMode.NormalBandFastAudibleLower) {
+  public constructor(dspMode: DspMode = DspMode.NormalBandFastAudibleLower) {
     this.audioMonoIo = audioMonoIoFactory.createAudioMonoIo();
-    this.setTransmissionMode(transmissionMode);
+    this.setDspMode(dspMode);
   }
 
   public getDspConfig(): DspConfig {
@@ -26,10 +26,10 @@ export class PhysicalLayer {
       .getLoudestBinIndex();
   }
 
-  public setTransmissionMode(transmissionMode: TransmissionMode): void {
-    if (!this.dspConfig || transmissionMode !== this.dspConfig.transmissionMode) {
-      this.dspConfig = getDspConfig(transmissionMode, this.audioMonoIo.getSampleRate());
-      this.audioMonoIo.setFftSize(this.dspConfig.dspConfigInitial.fftSize);
+  public setDspMode(dspMode: DspMode): void {
+    if (!this.dspConfig || dspMode !== this.dspConfig.dspMode) {
+      this.dspConfig = getDspConfig(dspMode, this.audioMonoIo.getSampleRate());
+      this.audioMonoIo.setFftSize(this.dspConfig.dspConfigInitializer.fftSize);
     }
   }
 

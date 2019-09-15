@@ -4,7 +4,7 @@ import { DataLinkLayer, DspConfig } from '../../../../index';
 
 export const mainHtml = `
   <div class="section">
-    <select id="transmission-mode-dropdown" onchange="example.onTransmissionModeChange(this.value)"></select>
+    <select id="dsp-mode-dropdown" onchange="example.onDspModeChange(this.value)"></select>
   </div>
   <div id="controls-wrapper" style="display: none;">
     <div class="section">
@@ -40,10 +40,10 @@ const byteRatePipe = (value: number): string => {
 export const sampleRate = (dataLinkLayer: DataLinkLayer) =>
   (dataLinkLayer.physicalLayer.audioMonoIo.getSampleRate() / 1000).toFixed(1);
 
-export const dropdownOptionEmpty = '<option value="">--- Select Transmission Mode ---</option>';
+export const dropdownOptionEmpty = '<option value="">--- Select Dsp Mode ---</option>';
 
 export const dropdownOption = (dspConfig: DspConfig) =>
-  `<option value="${dspConfig.transmissionMode}">` +
+  `<option value="${dspConfig.dspMode}">` +
   `${byteRatePipe(dspConfig.rawByteRate)} B/s | ${kHzPipe(dspConfig.band.begin)}-${kHzPipe(dspConfig.band.end)} kHz ` +
   `(${(dspConfig.band.bandwidth / 1000).toFixed(1)} kHz)` +
   '</option>';

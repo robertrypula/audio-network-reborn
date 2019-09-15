@@ -2,21 +2,21 @@
 
 import * as fromConfig from '@physical-layer/config';
 import { BYTE_UNIQUE_VALUES, MILLISECONDS_IN_SECOND, NYQUIST_TWICE } from '@physical-layer/constants';
-import { DspConfig, DspConfigInitialInterface, TransmissionMode } from '@physical-layer/model';
+import { DspConfig, DspConfigInitializerInterface, DspMode } from '@physical-layer/model';
 
 export const getClosestBinIndexes = (fftSize: number, sampleRate: number, frequencies: number[]): number[] => {
   return frequencies.map((frequency: number) => Math.round((frequency * fftSize) / sampleRate));
 };
 
-export const getDspConfig = (transmissionMode: TransmissionMode, sampleRate: number = null): DspConfig => {
-  const config = fromConfig.transmissionModeToDspConfigInitialLookUp[transmissionMode];
+export const getDspConfig = (dspMode: DspMode, sampleRate: number = null): DspConfig => {
+  const dspConfigInitializer = fromConfig.dspModeToDspConfigInitializerLookUp[dspMode];
   const unifiedFrequencies = getUnifiedFrequencies(
-    config.fftSize,
-    config.frequencyEnd,
+    dspConfigInitializer.fftSize,
+    dspConfigInitializer.frequencyEnd,
     BYTE_UNIQUE_VALUES,
     fromConfig.SUPPORTED_SAMPLE_RATES
   );
-  const rxIntervalMilliseconds = getRxIntervalMilliseconds(config);
+  const rxIntervalMilliseconds = getRxIntervalMilliseconds(dspConfigInitializer);
   const txIntervalMilliseconds = NYQUIST_TWICE * rxIntervalMilliseconds;
   const dspConfig: DspConfig = {
     band: {
@@ -24,36 +24,35 @@ export const getDspConfig = (transmissionMode: TransmissionMode, sampleRate: num
       begin: unifiedFrequencies[0],
       end: unifiedFrequencies[unifiedFrequencies.length - 1]
     },
-    dspConfigInitial: config,
+    dspConfigInitializer,
+    dspMode,
     rawByteRate: MILLISECONDS_IN_SECOND / txIntervalMilliseconds,
     rxIntervalMilliseconds,
-    transmissionMode,
     txIntervalMilliseconds
   };
 
   if (sampleRate !== null) {
     dspConfig.unifiedFrequencies = unifiedFrequencies;
-    dspConfig.unifiedBinIndexes = getClosestBinIndexes(config.fftSize, sampleRate, unifiedFrequencies);
+    dspConfig.unifiedBinIndexes = getClosestBinIndexes(dspConfigInitializer.fftSize, sampleRate, unifiedFrequencies);
   }
 
   return dspConfig;
 };
 
 export const getDspConfigList = (sampleRate: number = null): DspConfig[] => {
-  return Object.keys(TransmissionMode).map((transmissionMode: TransmissionMode) =>
-    getDspConfig(transmissionMode, sampleRate)
-  );
+  return Object.keys(DspMode).map((dspMode: DspMode) => getDspConfig(dspMode, sampleRate));
 };
 
-export const getLongestFftWindowTime = (config: DspConfigInitialInterface): number => {
-  return config.fftSize / Math.min(...fromConfig.SUPPORTED_SAMPLE_RATES);
+export const getLongestFftWindowTime = (dspConfigInitializer: DspConfigInitializerInterface): number => {
+  return dspConfigInitializer.fftSize / Math.min(...fromConfig.SUPPORTED_SAMPLE_RATES);
 };
 
-export const getRxIntervalMilliseconds = (config: DspConfigInitialInterface): number => {
+export const getRxIntervalMilliseconds = (dspConfigInitializer: DspConfigInitializerInterface): number => {
   // NOTE: division by NYQUIST_TWICE at 'RX' and multiplication by NYQUIST_TWICE at 'TX' done on purpose
   // in order to keep both values in 3 digits after dot and still have strict relation: 2rx = tx
   return Math.ceil(
-    (MILLISECONDS_IN_SECOND * config.safeMarginFactor * getLongestFftWindowTime(config)) / NYQUIST_TWICE
+    (MILLISECONDS_IN_SECOND * dspConfigInitializer.safeMarginFactor * getLongestFftWindowTime(dspConfigInitializer)) /
+      NYQUIST_TWICE
   );
 };
 
