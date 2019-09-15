@@ -1,6 +1,6 @@
 {
   "name": "audio-network-lite",
-  "version": "0.1.0-rc16",
+  "version": "0.1.0-rc17",
   "description": "",
   "keywords": [],
   "author": "Robert Rypuła",
@@ -14,12 +14,12 @@
     "prettier": "prettier src/**/*.{ts,js,html,scss} -c",
     "prettier:write": "prettier --write src/**/*.{ts,js,html,scss}",
     "start": "yarn clean && webpack-dev-server --env.DEVELOPMENT --open",
-    "start:node": "yarn clean && webpack --env.DEVELOPMENT && && node dist/audio-network-lite-v0.1.0-rc16.js run.cliNodeExample",
+    "start:node": "yarn clean && webpack --env.DEVELOPMENT && && node dist/audio-network-lite-v0.1.0-rc17.js run.cliNodeExample",
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:report-coverage": "cat ./coverage/lcov.info | coveralls"
   },
-  "main": "dist/audio-network-lite-v0.1.0-rc16.js",
+  "main": "dist/audio-network-lite-v0.1.0-rc17.js",
   "types": "dist/lib/index.d.ts",
   "files": [
     "dist/"

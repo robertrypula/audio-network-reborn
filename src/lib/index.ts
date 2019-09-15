@@ -3,7 +3,7 @@
 export const libraryInfo = {
   author: 'Robert Rypuła',
   githubUrl: 'https://github.com/robertrypula',
-  version: '0.1.0-rc16'
+  version: '0.1.0-rc17'
 };
 
 export * from '@physical-layer/audio-mono-io/audio-mono-io-factory';
