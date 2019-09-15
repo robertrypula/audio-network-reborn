@@ -78,39 +78,38 @@ TODO #1:
   + migrate utf-8 codec and use them in chat examples
     https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_decode.js
     https://github.com/kvz/locutus/blob/master/src/php/xml/utf8_encode.js
-  - style-loader tag ID option and finalization
-  -/+ finalize examples
+  + improvements at examples
     + add SCSS
     + implement advanced example HTML/CSS
     + enter sends the message
     + text and hex mode
     + history show sent and received frames
-    - detect own transmitted frame caught by the microphone on the same machine
-    - finalize advanced chat example
-    - remove hex-bytes example
+  - refactor at physical layer & data link layer configuration
+    - PhysicalLayer:  dspConfig,     dspConfigInitializer,     dspMode
+    - DataLinkLayer:  frameConfig,   frameConfigInitializer,   frameMode
+    - TransportLayer: segmentConfig, segmentConfigInitializer, segmentMode    (<<<< in future)
+    - set methods for updating the config in the runtime
+  - timeTick methods should return enum rather than boolean, for example: IDLE, SYMBOL, GUARD
+  - style-loader tag ID option and finalization
+  - detect own transmitted frame caught by the microphone on the same machine
+  - finalize advanced chat example
+  - remove hex-bytes example
   - update README: add example
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:
-  - implement ApplicationLayer/TransportLayer, key ideas:
-    - files on chat send by starting the byte stream by ASCII 0x1C File Separator byte
-      STREAM DETAILS: 0x1C {filename bytes in UTF-8} 0x00 {bytes of the file}
-  - performance checker (store previous getFrequencyData array and compare with current) + example
-  - schedule tx frame frequencies at web audio api rather than setInternal from the clients side
-    UPDATE: Maybe not implement it? :) In general all works fine up to ~15 raw bytes per second
-  - get rid of CRC lookup tables in order to reduce the bundle size
+  - implement ApplicationLayer/TransportLayer code with chat examples
+  - PhysicalLayer should store history based on time tick values (getHistory, setHistory methods?)
+  - implement 'integration' test for full stack of layers
   - PREPARE THE RELEASE: 0.2.0
 
 TODO #3:
-  - PhysicalLayer should store history based on time tick values (getHistory, setHistory methods?)
-    UPDATE: abstract class that handles history and virtual methods to be implemented in real classes (?)
-    UPDATE: getFrequencyDomainData could return null (or []) when history record will end
-  - physical layer constructor should get configs rather than modes !!!!!!!!!!!!!!!!!!!
-    in current implementation it is not possible use custom config - client needs to rely on hardcoded modes
-    UPDATE: ...or add dedicated method to set custom config for those that want to experiment
+  - performance checker (store previous getFrequencyData array and compare with current) + example
+  - experiment with scheduling tx frame frequencies at web audio api rather than setInternal from the clients side
   - experiment with a bit higher safeMarginFactor to produce rawByteRates like: 3, 4, 6, 8, 12, 16, 20/24?, 24/32?
-  - check constraints https://github.com/quiet/quiet-js/blob/master/quiet.js#L565
-  - extract the code
-    https://stackoverflow.com/questions/51045727
+  - check microphone constraints: https://github.com/quiet/quiet-js/blob/master/quiet.js#L565
+  - add yarn task to output analyzer node viewer code (currently it's only running local server)
+  - get rid of CRC lookup tables in order to reduce the bundle size
+  - experiment with splitting the examples code to dedicated bundle: https://stackoverflow.com/questions/51045727
   - find alternative for coveralls
 */
