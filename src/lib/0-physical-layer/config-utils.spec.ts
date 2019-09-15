@@ -1,11 +1,11 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import * as fromUtils from '@physical-layer/config-utils';
+import { getDspConfigsFromAllDspModes } from '@physical-layer/config-utils';
 
 describe('Config Utils', () => {
   describe('getDspConfigsFromAllDspModes', () => {
     it('should return valid list', () => {
-      expect(fromUtils.getDspConfigsFromAllDspModes()).toEqual([
+      expect(getDspConfigsFromAllDspModes()).toEqual([
         {
           band: { bandwidth: 15128.466796875, begin: 3568.505859375, end: 18696.97265625 },
           dspConfigInitializer: { fftSize: 1024, frequencyEnd: 18700, safeMarginFactor: 1.7 },

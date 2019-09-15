@@ -1,20 +1,20 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { AudioMonoIoStub } from '@physical-layer/audio-mono-io/audio-mono-io-stub';
-import { AudioMonoIoWebAudioApi } from '@physical-layer/audio-mono-io/audio-mono-io-web-audio-api';
-import { AudioMonoIoCreateMode, AudioMonoIoInterface } from '@physical-layer/model';
+import { AudioMonoIoWebApi } from '@physical-layer/audio-mono-io/audio-mono-io-web-api';
+import { AudioMonoIo, AudioMonoIoCreateMode } from '@physical-layer/model';
 
 export class AudioMonoIoFactory {
-  public audioMonoIoCreateMode: AudioMonoIoCreateMode = AudioMonoIoCreateMode.WebAudioApi;
+  public audioMonoIoCreateMode: AudioMonoIoCreateMode = AudioMonoIoCreateMode.WebApi;
 
-  public createAudioMonoIo(): AudioMonoIoInterface {
+  public createAudioMonoIo(): AudioMonoIo {
     // TODO implement auto detection of browser/node environment
     switch (this.audioMonoIoCreateMode) {
       case AudioMonoIoCreateMode.Stub:
         return new AudioMonoIoStub();
-      case AudioMonoIoCreateMode.WebAudioApi:
+      case AudioMonoIoCreateMode.WebApi:
       default:
-        return new AudioMonoIoWebAudioApi();
+        return new AudioMonoIoWebApi();
     }
   }
 }

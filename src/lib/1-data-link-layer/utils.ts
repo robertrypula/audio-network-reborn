@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { Frame } from '@data-link-layer/frame/frame';
-import { FrameConfigInterface } from '@data-link-layer/model';
+import { FrameConfig } from '@data-link-layer/model';
 
 export const allOneItemErrors = (data: number[], callback: () => void, range = 256): void => {
   for (let i = 0; i < data.length; i++) {
@@ -21,7 +21,7 @@ export const allOneItemErrors = (data: number[], callback: () => void, range = 2
 export const findFrameCandidates = (
   bytes: number[],
   scramble: number[],
-  frameConfig: FrameConfigInterface,
+  frameConfig: FrameConfig,
   errorCorrectionEnabled: boolean,
   callback: (frameCandidate: Frame, isErrorCorrected: boolean) => void
 ): void => {

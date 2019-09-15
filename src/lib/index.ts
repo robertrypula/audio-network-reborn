@@ -8,7 +8,7 @@ export const libraryInfo = {
 
 export * from '@physical-layer/audio-mono-io/audio-mono-io-factory';
 export * from '@physical-layer/audio-mono-io/audio-mono-io-stub';
-export * from '@physical-layer/audio-mono-io/audio-mono-io-web-audio-api';
+export * from '@physical-layer/audio-mono-io/audio-mono-io-web-api';
 export * from '@physical-layer/config';
 export * from '@physical-layer/config-utils';
 export * from '@physical-layer/constants';

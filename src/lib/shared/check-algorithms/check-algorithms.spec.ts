@@ -1,11 +1,11 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { getCheckAlgorithmImplementation } from '@shared/check-algorithms/check-algorithms';
-import { CheckAlgorithm, CheckAlgorithmImplementation, TestCaseInterface } from '@shared/model';
+import { CheckAlgorithm, CheckAlgorithmImplementation, TestCase } from '@shared/model';
 import { getBytesFromText, getHexFromBytes } from '@shared/utils';
 
 describe('CheckAlgorithms', () => {
-  const runTestCases = (checkAlgorithmImplementation: CheckAlgorithmImplementation, testCases: TestCaseInterface[]) => {
+  const runTestCases = (checkAlgorithmImplementation: CheckAlgorithmImplementation, testCases: TestCase[]) => {
     testCases.forEach(testCase =>
       expect(getHexFromBytes(checkAlgorithmImplementation(getBytesFromText(testCase.in)))).toEqual(testCase.out)
     );

@@ -10,7 +10,7 @@ export enum CheckAlgorithm {
   Sha1 = 'Sha1'
 }
 
-export interface TestCaseInterface {
+export interface TestCase {
   in: string;
   out: string;
 }

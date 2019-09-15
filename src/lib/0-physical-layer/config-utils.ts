@@ -2,12 +2,13 @@
 
 import * as fromConfig from '@physical-layer/config';
 import { BYTE_UNIQUE_VALUES, MILLISECONDS_IN_SECOND, NYQUIST_TWICE } from '@physical-layer/constants';
-import { DspConfig, DspConfigInitializerInterface, DspMode } from '@physical-layer/model';
+import { DspConfig, DspConfigInitializer, DspMode } from '@physical-layer/model';
 
-export const detectDspMode = (dspConfigInitializer: DspConfigInitializerInterface): DspMode => {
+export const detectDspMode = (dspConfigInitializer: DspConfigInitializer): DspMode => {
   return Object.keys(DspMode).find(
     (dspMode: DspMode) =>
-      JSON.stringify(fromConfig.dspModeToDspConfigInitializerLookUp[dspMode]) === JSON.stringify(dspConfigInitializer)
+      JSON.stringify(fromConfig.DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP[dspMode]) ===
+      JSON.stringify(dspConfigInitializer)
   ) as DspMode;
 };
 
@@ -15,10 +16,7 @@ export const getClosestBinIndexes = (fftSize: number, sampleRate: number, freque
   return frequencies.map((frequency: number) => Math.round((frequency * fftSize) / sampleRate));
 };
 
-export const getDspConfig = (
-  dspConfigInitializer: DspConfigInitializerInterface,
-  sampleRate: number = null
-): DspConfig => {
+export const getDspConfig = (dspConfigInitializer: DspConfigInitializer, sampleRate: number = null): DspConfig => {
   const unifiedFrequencies = getUnifiedFrequencies(
     dspConfigInitializer.fftSize,
     dspConfigInitializer.frequencyEnd,
@@ -51,15 +49,15 @@ export const getDspConfig = (
 
 export const getDspConfigsFromAllDspModes = (sampleRate: number = null): DspConfig[] => {
   return Object.keys(DspMode).map((dspMode: DspMode) =>
-    getDspConfig(fromConfig.dspModeToDspConfigInitializerLookUp[dspMode], sampleRate)
+    getDspConfig(fromConfig.DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP[dspMode], sampleRate)
   );
 };
 
-export const getLongestFftWindowTime = (dspConfigInitializer: DspConfigInitializerInterface): number => {
+export const getLongestFftWindowTime = (dspConfigInitializer: DspConfigInitializer): number => {
   return dspConfigInitializer.fftSize / Math.min(...fromConfig.SUPPORTED_SAMPLE_RATES);
 };
 
-export const getRxIntervalMilliseconds = (dspConfigInitializer: DspConfigInitializerInterface): number => {
+export const getRxIntervalMilliseconds = (dspConfigInitializer: DspConfigInitializer): number => {
   // NOTE: division by NYQUIST_TWICE at 'RX' and multiplication by NYQUIST_TWICE at 'TX' done on purpose
   // in order to keep both values in 3 digits after dot and still have strict relation: 2rx = tx
   return Math.ceil(

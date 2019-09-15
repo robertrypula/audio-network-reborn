@@ -3,7 +3,7 @@
 import { frameModeToFrameConfigLookUp } from '@data-link-layer/config';
 import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
-import { FrameConfigInterface, FrameHistory, FrameMode } from '@data-link-layer/model';
+import { FrameConfig, FrameHistory, FrameMode } from '@data-link-layer/model';
 import { findFrameCandidates, scrambleArray } from '@data-link-layer/utils';
 import { PhysicalLayer } from '@physical-layer/physical-layer';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
@@ -24,7 +24,7 @@ export class DataLinkLayer {
   protected txRawBytesCounter = 0;
 
   public constructor(
-    protected readonly frameConfig: FrameConfigInterface = frameModeToFrameConfigLookUp[
+    protected readonly frameConfig: FrameConfig = frameModeToFrameConfigLookUp[
       FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24
     ]
   ) {
@@ -33,7 +33,7 @@ export class DataLinkLayer {
     this.rxRawBytesB = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLengthMax);
   }
 
-  public getFrameConfig(): FrameConfigInterface {
+  public getFrameConfig(): FrameConfig {
     return this.frameConfig;
   }
 

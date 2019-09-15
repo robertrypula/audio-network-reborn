@@ -1,12 +1,12 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 export enum AudioMonoIoCreateMode {
-  // Node = 'Node',
+  // SampleStream = 'SampleStream',
   Stub = 'Stub',
-  WebAudioApi = 'WebAudioApi'
+  WebApi = 'WebApi'
 }
 
-export interface AudioMonoIoInterface {
+export interface AudioMonoIo {
   getFftSize(): number;
   getSampleRate(): number;
   getFrequencyDomainData(currentTime: number): Float32Array;
@@ -16,15 +16,15 @@ export interface AudioMonoIoInterface {
   outputDisable(): void;
 }
 
-export interface BandInterface {
+export interface Band {
   bandwidth: number;
   begin: number;
   end: number;
 }
 
 export interface DspConfig {
-  band: BandInterface;
-  dspConfigInitializer: DspConfigInitializerInterface;
+  band: Band;
+  dspConfigInitializer: DspConfigInitializer;
   dspMode: DspMode;
   longestFftWindowTimeMilliseconds: number;
   rawByteRate: number;
@@ -34,7 +34,7 @@ export interface DspConfig {
   unifiedFrequencies?: number[];
 }
 
-export interface DspConfigInitializerInterface {
+export interface DspConfigInitializer {
   fftSize: number;
   frequencyEnd: number;
   safeMarginFactor: number;
@@ -65,5 +65,5 @@ export enum DspMode {
 }
 
 export type DspModeToDspConfigInitializerLookUp = {
-  [key in keyof typeof DspMode]: DspConfigInitializerInterface;
+  [key in keyof typeof DspMode]: DspConfigInitializer;
 };

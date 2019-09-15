@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FrameConfigInterface } from '@data-link-layer/model';
+import { FrameConfig } from '@data-link-layer/model';
 import { getCheckAlgorithmImplementation } from '@shared/check-algorithms/check-algorithms';
 import { getFilledArray } from '@shared/utils';
 
@@ -10,7 +10,7 @@ export class Frame {
   protected rawBytes: number[] = [];
   protected rawBytePosition: number = 0;
 
-  public constructor(protected readonly frameConfig: FrameConfigInterface) {}
+  public constructor(protected readonly frameConfig: FrameConfig) {}
 
   public clone(): Frame {
     const frame = new Frame(this.frameConfig);

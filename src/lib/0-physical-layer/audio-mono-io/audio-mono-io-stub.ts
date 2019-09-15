@@ -1,12 +1,12 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { AudioMonoIoInterface } from '@physical-layer/model';
+import { AudioMonoIo } from '@physical-layer/model';
 
 /*tslint:disable:no-console*/
 
 const CONSOLE = false;
 
-export class AudioMonoIoStub implements AudioMonoIoInterface {
+export class AudioMonoIoStub implements AudioMonoIo {
   protected fftSize: number = 4096;
   protected sampleRate: number = 48000;
 

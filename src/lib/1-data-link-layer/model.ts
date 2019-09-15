@@ -13,7 +13,7 @@ export interface DataLinkLayerWrapperSendHandlers {
   complete: () => void;
 }
 
-export interface FrameConfigInterface {
+export interface FrameConfig {
   checkAlgorithm: CheckAlgorithm;
   headerFirstByteCheckSequenceMask: number;
   headerFirstBytePayloadLengthBitShift: number;
@@ -28,9 +28,9 @@ export interface FrameConfigInterface {
   rawBytesLengthMin: number;
 }
 
-export type FrameConfigWithoutCheckAlgorithm = Omit<FrameConfigInterface, 'checkAlgorithm'>;
+export type FrameConfigWithoutCheckAlgorithm = Omit<FrameConfig, 'checkAlgorithm'>;
 
-export interface FrameCounterInterface {
+export interface FrameCounter {
   errorCorrectedInvalid?: number;
   errorCorrectedValid?: number;
   errorCorrectedValidFake?: number;
@@ -39,9 +39,9 @@ export interface FrameCounterInterface {
   validFake?: number;
 }
 
-export type FrameHistory = FrameHistoryEntryInterface[];
+export type FrameHistory = FrameHistoryEntry[];
 
-export interface FrameHistoryEntryInterface {
+export interface FrameHistoryEntry {
   frame: Frame;
   isErrorCorrected: boolean;
   rawBytePosition: number;
@@ -55,15 +55,15 @@ export enum FrameMode {
 }
 
 export type FrameModeToFrameConfigLookUp = {
-  [key in keyof typeof FrameMode]: FrameConfigInterface;
+  [key in keyof typeof FrameMode]: FrameConfig;
 };
 
-export interface TestCaseFrameCounterWithPayloadInterface {
-  frameCounter: FrameCounterInterface;
+export interface TestCaseFrameCounterWithPayload {
+  frameCounter: FrameCounter;
   payload: string;
 }
 
-export interface TestCaseIntegrityInterface {
+export interface TestCaseIntegrity {
   payload: string;
   expectedRawBytes: string;
 }

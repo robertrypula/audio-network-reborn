@@ -4,19 +4,14 @@ import { frameModeToFrameConfigLookUp } from '@data-link-layer/config';
 import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
 import { mocked512RandomBytesA, mocked512RandomBytesB } from '@data-link-layer/frame/frame-modes-benchmark.spec-data';
-import {
-  FrameCounterInterface,
-  FrameMode,
-  TestCaseFrameCounterWithPayloadInterface,
-  TestCaseIntegrityInterface
-} from '@data-link-layer/model';
+import { FrameCounter, FrameMode, TestCaseFrameCounterWithPayload, TestCaseIntegrity } from '@data-link-layer/model';
 import { findFrameCandidates, scrambleArray } from '@data-link-layer/utils';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 import { getBytesFromHex, getHexFromBytes, getRandomBytes } from '@shared/utils';
 
 describe('FrameModesBenchmark', () => {
   describe('Integrity', () => {
-    const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseIntegrityInterface[]) => {
+    const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseIntegrity[]) => {
       const frameConfig = frameModeToFrameConfigLookUp[frameMode];
       testCases.forEach(testCase => {
         const frameA = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
@@ -99,14 +94,14 @@ describe('FrameModesBenchmark', () => {
     const runDetectionTestCases = (
       frameMode: FrameMode,
       errorCorrectionEnabled: boolean,
-      testCases: TestCaseFrameCounterWithPayloadInterface[]
+      testCases: TestCaseFrameCounterWithPayload[]
     ) => {
       const frameConfig = frameModeToFrameConfigLookUp[frameMode];
 
       testCases.forEach(testCase => {
         const start = new Date().getTime();
         const buffer = new FixedSizeBuffer<number>(frameConfig.rawBytesLengthMax, frameConfig.rawBytesLengthMin);
-        const frameCounter: FrameCounterInterface = {
+        const frameCounter: FrameCounter = {
           errorCorrectedInvalid: 0,
           errorCorrectedValid: 0,
           errorCorrectedValidFake: 0,

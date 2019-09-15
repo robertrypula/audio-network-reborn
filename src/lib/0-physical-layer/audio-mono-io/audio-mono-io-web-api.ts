@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { AudioMonoIoInterface } from '@physical-layer/model';
+import { AudioMonoIo } from '@physical-layer/model';
 
-export class AudioMonoIoWebAudioApi implements AudioMonoIoInterface {
+export class AudioMonoIoWebApi implements AudioMonoIo {
   protected audioContext: AudioContext;
 
   protected analyserNode: AnalyserNode;
