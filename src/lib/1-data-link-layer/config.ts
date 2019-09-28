@@ -1,10 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import * as fromConstants from '@data-link-layer/constants';
-import { FrameModeToFrameConfigLookUp } from '@data-link-layer/model';
+import { FrameModeToFrameConfigInitializerLookUp } from '@data-link-layer/model';
 import { CheckAlgorithm } from '@shared/model';
 
-export const frameModeToFrameConfigLookUp: FrameModeToFrameConfigLookUp = {
+export const FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP: FrameModeToFrameConfigInitializerLookUp = {
   Header2BytesPayloadLengthBetween1And8BytesCrc16: {
     checkAlgorithm: CheckAlgorithm.Crc16,
     ...fromConstants.HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES

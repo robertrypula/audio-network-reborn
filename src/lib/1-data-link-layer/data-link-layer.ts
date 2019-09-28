@@ -1,9 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { frameModeToFrameConfigLookUp } from '@data-link-layer/config';
+import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
+import { getFrameConfig } from '@data-link-layer/config-utils';
 import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
-import { FrameConfig, FrameHistory, FrameMode } from '@data-link-layer/model';
+import { FrameConfig, FrameConfigInitializer, FrameHistory, FrameMode } from '@data-link-layer/model';
 import { findFrameCandidates, scrambleArray } from '@data-link-layer/utils';
 import { PhysicalLayer } from '@physical-layer/physical-layer';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
@@ -11,7 +12,8 @@ import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 export class DataLinkLayer {
   public readonly physicalLayer: PhysicalLayer;
 
-  protected readonly rxErrorCorrectionEnabled = false; // keep false, current 'brute-force' solution is just bad... :)
+  protected frameConfig: FrameConfig;
+  protected rxErrorCorrectionEnabled = false; // keep false, current 'brute-force' solution is just bad... :)
   protected rxFrameHistoryA: FrameHistory = [];
   protected rxFrameHistoryB: FrameHistory = [];
   protected rxFrames: Frame[];
@@ -23,14 +25,9 @@ export class DataLinkLayer {
   protected txFrame: Frame;
   protected txRawBytesCounter = 0;
 
-  public constructor(
-    protected readonly frameConfig: FrameConfig = frameModeToFrameConfigLookUp[
-      FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24
-    ]
-  ) {
+  public constructor(frameMode: FrameMode = FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24) {
     this.physicalLayer = new PhysicalLayer();
-    this.rxRawBytesA = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLengthMax);
-    this.rxRawBytesB = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLengthMax);
+    this.setFrameMode(frameMode);
   }
 
   public getFrameConfig(): FrameConfig {
@@ -78,6 +75,18 @@ export class DataLinkLayer {
     this.rxRawBytesCounter++;
 
     return true;
+  }
+
+  public setFrameConfigInitializer(frameConfigInitializer: FrameConfigInitializer): void {
+    this.frameConfig = getFrameConfig(frameConfigInitializer);
+    this.rxRawBytesA = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLength.max);
+    this.rxRawBytesB = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLength.max);
+  }
+
+  public setFrameMode(frameMode: FrameMode): void {
+    if (!this.frameConfig || frameMode !== this.frameConfig.frameMode) {
+      this.setFrameConfigInitializer(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
+    }
   }
 
   public setTxBytes(bytes: number[]): void {

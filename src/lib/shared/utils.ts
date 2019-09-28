@@ -64,3 +64,27 @@ export const getRandomInt = (min: number, max: number): number => {
 export const getTextFromBytes = (bytes: number[]): string => {
   return bytes.map(i => String.fromCharCode(i)).join('');
 };
+
+export const isEqual = (a: any, b: any): boolean => {
+  const aClone = JSON.parse(JSON.stringify(a));
+  const bClone = JSON.parse(JSON.stringify(b));
+
+  sortKeys(aClone);
+  sortKeys(bClone);
+
+  return JSON.stringify(aClone) === JSON.stringify(bClone);
+};
+
+export const sortKeys = (object: any): void => {
+  typeof object === 'object' &&
+    object !== null &&
+    Object.keys(object)
+      .sort()
+      .forEach((key: string) => {
+        object['_' + key] = object[key];
+        delete object[key];
+        object[key] = object['_' + key];
+        delete object['_' + key];
+        sortKeys(object[key]);
+      });
+};

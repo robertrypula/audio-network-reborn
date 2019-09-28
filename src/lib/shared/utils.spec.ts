@@ -58,4 +58,28 @@ describe('Utils', () => {
       expect(fromUtils.getTextFromBytes([0x61, 0x62, 0x63, 0x0a])).toEqual('abc\n');
     });
   });
+
+  describe('isEqual', () => {
+    it('should check if two variables (including objects) are equal', () => {
+      /*tslint:disable:object-literal-sort-keys*/
+      expect(fromUtils.isEqual({ a: 1, b: 2 }, { a: 1, b: 2 })).toBe(true);
+      expect(fromUtils.isEqual({ b: 2, a: 1 }, { a: 1, b: 2 })).toBe(true);
+      expect(fromUtils.isEqual({ b: 2, z: { x: 32, a: 1 }, a: 1 }, { a: 1, b: 2, z: { a: 1, x: 32 } })).toBe(true);
+      expect(fromUtils.isEqual({ a: 1, b: 2 }, { a: 111111, b: 2 })).toBe(false);
+      expect(fromUtils.isEqual('test', 'test')).toBe(true);
+      expect(fromUtils.isEqual('test', 'test!!!')).toBe(false);
+      /*tslint:enable:object-literal-sort-keys*/
+    });
+  });
+
+  describe('sortKeys', () => {
+    it('should recursively sort keys in given object', () => {
+      /*tslint:disable:object-literal-sort-keys*/
+      const object = { b: 'test B', a: 'test A', z: { zSub: null as number, bSub: 2 }, c: 'test C' };
+
+      fromUtils.sortKeys(object);
+      expect(object).toEqual({ a: 'test A', b: 'test B', c: 'test C', z: { bSub: 2, zSub: null as number } });
+      /*tslint:enable:object-literal-sort-keys*/
+    });
+  });
 });

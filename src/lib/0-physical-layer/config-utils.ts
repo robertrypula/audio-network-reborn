@@ -3,12 +3,11 @@
 import * as fromConfig from '@physical-layer/config';
 import { BYTE_UNIQUE_VALUES, MILLISECONDS_IN_SECOND, NYQUIST_TWICE } from '@physical-layer/constants';
 import { DspConfig, DspConfigInitializer, DspMode } from '@physical-layer/model';
+import { isEqual } from '@shared/utils';
 
 export const detectDspMode = (dspConfigInitializer: DspConfigInitializer): DspMode => {
-  return Object.keys(DspMode).find(
-    (dspMode: DspMode) =>
-      JSON.stringify(fromConfig.DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP[dspMode]) ===
-      JSON.stringify(dspConfigInitializer)
+  return Object.keys(DspMode).find((dspMode: DspMode) =>
+    isEqual(fromConfig.DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP[dspMode], dspConfigInitializer)
   ) as DspMode;
 };
 

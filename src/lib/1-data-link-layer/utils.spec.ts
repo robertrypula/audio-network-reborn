@@ -1,7 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { frameModeToFrameConfigLookUp } from '@data-link-layer/config';
-import { FrameMode } from '@data-link-layer/model';
+import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
+import { getFrameConfig } from '@data-link-layer/config-utils';
+import { FrameConfig, FrameMode } from '@data-link-layer/model';
 import * as fromUtils from '@data-link-layer/utils';
 
 describe('Utils', () => {
@@ -29,12 +30,13 @@ describe('Utils', () => {
 
   describe('findFrameCandidates', () => {
     it('should find all possible frame candidates', () => {
-      const frameConfig = frameModeToFrameConfigLookUp[FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24];
+      const frameMode: FrameMode = FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24;
+      const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
       const bytes = [32, 34, 242, 43, 65, 32, 65, 43, 13, 174, 52];
       const scramble = [20, 60];
       const counter = { errorCorrected: 0, nonErrorCorrected: 0 };
-      const nonErrorCorrected = scramble.length * (bytes.length - frameConfig.rawBytesLengthMin + 1);
-      const errorCorrected = nonErrorCorrected * 0.5 * (bytes.length + frameConfig.rawBytesLengthMin) * 255;
+      const nonErrorCorrected = scramble.length * (bytes.length - frameConfig.rawBytesLength.min + 1);
+      const errorCorrected = nonErrorCorrected * 0.5 * (bytes.length + frameConfig.rawBytesLength.min) * 255;
       const nonErrorCorrectedRawBytes: number[][] = [];
 
       fromUtils.findFrameCandidates(bytes, scramble, frameConfig, true, (frameCandidate, isErrorCorrected) => {

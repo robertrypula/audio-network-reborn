@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { Frame } from '@data-link-layer/frame/frame';
-import { CheckAlgorithm } from '@shared/model';
+import { CheckAlgorithm, MinMaxRange } from '@shared/model';
 
 export interface DataLinkLayerWrapperListenHandlers {
   next: (bytes: number[]) => void;
@@ -14,21 +14,22 @@ export interface DataLinkLayerWrapperSendHandlers {
 }
 
 export interface FrameConfig {
-  checkAlgorithm: CheckAlgorithm;
-  headerFirstByteCheckSequenceMask: number;
-  headerFirstBytePayloadLengthBitShift: number;
-  headerFirstBytePayloadLengthMask: number;
-  headerLength: number;
-  headerPayloadLengthEnabled: boolean;
-  headerPayloadLengthOffset: number;
-  payloadLengthFixed: number;
-  payloadLengthMax: number;
-  payloadLengthMin: number;
-  rawBytesLengthMax: number;
-  rawBytesLengthMin: number;
+  frameConfigInitializer: FrameConfigInitializer;
+  frameMode: FrameMode;
+  headerFirstByte?: HeaderFirstByte;
+  payloadLength: MinMaxRange;
+  rawBytesLength: MinMaxRange;
 }
 
-export type FrameConfigWithoutCheckAlgorithm = Omit<FrameConfig, 'checkAlgorithm'>;
+export interface FrameConfigInitializer {
+  checkAlgorithm: CheckAlgorithm;
+  headerLength: number;
+  payloadLengthBitSize: number; // value in range <0, 8>
+  payloadLengthOffset?: number; // required if payloadLengthBitSize > 0
+  payloadLengthFixed?: number; // required if payloadLengthBitSize === 0
+}
+
+export type FrameConfigInitializerWithoutCheckAlgorithm = Omit<FrameConfigInitializer, 'checkAlgorithm'>;
 
 export interface FrameCounter {
   errorCorrectedInvalid?: number;
@@ -54,9 +55,15 @@ export enum FrameMode {
   Header3BytesPayloadLengthFixedAt8BytesCrc24 = 'Header3BytesPayloadLengthFixedAt8BytesCrc24'
 }
 
-export type FrameModeToFrameConfigLookUp = {
-  [key in keyof typeof FrameMode]: FrameConfig;
+export type FrameModeToFrameConfigInitializerLookUp = {
+  [key in keyof typeof FrameMode]: FrameConfigInitializer;
 };
+
+export interface HeaderFirstByte {
+  checkSequenceMask: number;
+  payloadLengthBitShift: number;
+  payloadLengthMask: number;
+}
 
 export interface TestCaseFrameCounterWithPayload {
   frameCounter: FrameCounter;
