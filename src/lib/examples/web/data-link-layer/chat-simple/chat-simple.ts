@@ -22,6 +22,7 @@ export class DataLinkLayerChatSimpleWebExample {
     getByTagName('html')[0].classList.add('data-link-layer-chat-simple');
     getById('audio-network-lite-root').innerHTML = require('./chat-simple.html');
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());
+    /*
     this.dataLinkLayerWrapper.dataLinkLayer.setFrameConfigInitializer({
       checkAlgorithm: CheckAlgorithm.Sha1,
       headerLength: 20,
@@ -36,6 +37,7 @@ export class DataLinkLayerChatSimpleWebExample {
     });
     console.log(this.dataLinkLayerWrapper.dataLinkLayer.getFrameConfig());
     console.log(this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.getDspConfig());
+    */
     this.initializeHtmlElements();
   }
 

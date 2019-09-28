@@ -73,7 +73,7 @@ export const getRawBytesLength = (
 ): MinMaxRange => {
   const { headerLength } = frameConfigInitializer;
 
-  // full Sha-1 needs 20 bytes
+  // 20 bytes limit because the longest supported check algorithm is Sha-1
   if (headerLength < 1 || headerLength > 20) {
     throw new Error(`Header length equal ${headerLength} is out of range <1, 20>`);
   }
