@@ -12,8 +12,8 @@ describe('Index', () => {
       expect(libraryInfo.author).toBeTruthy();
     });
 
-    it('should return githubUrl', () => {
-      expect(libraryInfo.githubUrl).toBeTruthy();
+    it('should return gitHub', () => {
+      expect(libraryInfo.gitHub).toBeTruthy();
     });
   });
 
