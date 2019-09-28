@@ -26,7 +26,7 @@ export const findFrameCandidates = (
   callback: (frameCandidate: Frame, isErrorCorrected: boolean) => void
 ): void => {
   scrambledSubArrays(bytes, scramble, false, rawBytesScrambled => {
-    rightAlignedSubArrays(rawBytesScrambled, frameConfig.rawBytesLengthMin, rawBytes => {
+    rightAlignedSubArrays(rawBytesScrambled, frameConfig.rawBytesLength.min, rawBytes => {
       callback(new Frame(frameConfig).setRawBytes(rawBytes), false);
       errorCorrectionEnabled &&
         allOneItemErrors(rawBytes, () => callback(new Frame(frameConfig).setRawBytes(rawBytes), true));

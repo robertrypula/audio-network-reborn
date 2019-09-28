@@ -1,10 +1,17 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { frameModeToFrameConfigLookUp } from '@data-link-layer/config';
+import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
+import { getFrameConfig } from '@data-link-layer/config-utils';
 import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
 import { mocked512RandomBytesA, mocked512RandomBytesB } from '@data-link-layer/frame/frame-modes-benchmark.spec-data';
-import { FrameCounter, FrameMode, TestCaseFrameCounterWithPayload, TestCaseIntegrity } from '@data-link-layer/model';
+import {
+  FrameConfig,
+  FrameCounter,
+  FrameMode,
+  TestCaseFrameCounterWithPayload,
+  TestCaseIntegrity
+} from '@data-link-layer/model';
 import { findFrameCandidates, scrambleArray } from '@data-link-layer/utils';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 import { getBytesFromHex, getHexFromBytes, getRandomBytes } from '@shared/utils';
@@ -12,7 +19,7 @@ import { getBytesFromHex, getHexFromBytes, getRandomBytes } from '@shared/utils'
 describe('FrameModesBenchmark', () => {
   describe('Integrity', () => {
     const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseIntegrity[]) => {
-      const frameConfig = frameModeToFrameConfigLookUp[frameMode];
+      const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
       testCases.forEach(testCase => {
         const frameA = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
         const rawBytes = frameA.getRawBytes().slice(0);
@@ -96,11 +103,11 @@ describe('FrameModesBenchmark', () => {
       errorCorrectionEnabled: boolean,
       testCases: TestCaseFrameCounterWithPayload[]
     ) => {
-      const frameConfig = frameModeToFrameConfigLookUp[frameMode];
+      const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
 
       testCases.forEach(testCase => {
         const start = new Date().getTime();
-        const buffer = new FixedSizeBuffer<number>(frameConfig.rawBytesLengthMax, frameConfig.rawBytesLengthMin);
+        const buffer = new FixedSizeBuffer<number>(frameConfig.rawBytesLength.max, frameConfig.rawBytesLength.min);
         const frameCounter: FrameCounter = {
           errorCorrectedInvalid: 0,
           errorCorrectedValid: 0,

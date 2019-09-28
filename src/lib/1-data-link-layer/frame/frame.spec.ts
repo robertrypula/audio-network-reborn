@@ -1,14 +1,18 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES } from '@data-link-layer/constants';
+import { getFrameConfig } from '@data-link-layer/config-utils';
+import { HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES } from '@data-link-layer/constants';
+import { Frame } from '@data-link-layer/frame/frame';
 import { FrameConfig } from '@data-link-layer/model';
+import { CheckAlgorithm } from '@shared/model';
+import { getBytesFromHex, getHexFromBytes } from '@shared/utils';
 
 /*tslint:disable:no-bitwise*/
 
-const frameConfig: FrameConfig = {
-  checkAlgorithm: null,
-  ...HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES
-};
+const frameConfig: FrameConfig = getFrameConfig({
+  checkAlgorithm: CheckAlgorithm.Crc24,
+  ...HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES
+});
 
 describe('Frame', () => {
   describe('clone', () => {
@@ -81,8 +85,13 @@ describe('Frame', () => {
   });
 
   describe('setRawBytes', () => {
-    it('should ...', () => {
-      // TODO implement
+    it('should properly set raw bytes', () => {
+      const validRawBytes = '7d 54 3e 33 41 ec 66';
+      const frame = new Frame(frameConfig);
+
+      frame.setRawBytes(getBytesFromHex(validRawBytes));
+      expect(getHexFromBytes(frame.getRawBytes())).toEqual(validRawBytes);
+      expect(frame.isValid()).toBe(true);
     });
   });
 });

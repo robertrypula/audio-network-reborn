@@ -1,62 +1,30 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FrameConfigWithoutCheckAlgorithm } from '@data-link-layer/model';
+import { FrameConfigInitializerWithoutCheckAlgorithm } from '@data-link-layer/model';
 import { getBytesFromHex } from '@shared/utils';
 
-export const HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigWithoutCheckAlgorithm = {
-  headerFirstByteCheckSequenceMask: 0x1f,
-  headerFirstBytePayloadLengthBitShift: 5,
-  headerFirstBytePayloadLengthMask: 0xe0,
+export const HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
   headerLength: 2,
-  headerPayloadLengthEnabled: true,
-  headerPayloadLengthOffset: 1,
-  payloadLengthFixed: null,
-  payloadLengthMax: 8,
-  payloadLengthMin: 1,
-  rawBytesLengthMax: 10,
-  rawBytesLengthMin: 3
+  payloadLengthBitSize: 3,
+  payloadLengthOffset: 1
 };
 
-export const HEADER_2_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigWithoutCheckAlgorithm = {
-  headerFirstByteCheckSequenceMask: null,
-  headerFirstBytePayloadLengthBitShift: null,
-  headerFirstBytePayloadLengthMask: null,
+export const HEADER_2_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
   headerLength: 2,
-  headerPayloadLengthEnabled: false,
-  headerPayloadLengthOffset: null,
-  payloadLengthFixed: 8,
-  payloadLengthMax: null,
-  payloadLengthMin: null,
-  rawBytesLengthMax: 10,
-  rawBytesLengthMin: 10
+  payloadLengthBitSize: 0,
+  payloadLengthFixed: 8
 };
 
-export const HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigWithoutCheckAlgorithm = {
-  headerFirstByteCheckSequenceMask: 0x1f,
-  headerFirstBytePayloadLengthBitShift: 5,
-  headerFirstBytePayloadLengthMask: 0xe0,
+export const HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
   headerLength: 3,
-  headerPayloadLengthEnabled: true,
-  headerPayloadLengthOffset: 1,
-  payloadLengthFixed: null,
-  payloadLengthMax: 8,
-  payloadLengthMin: 1,
-  rawBytesLengthMax: 11,
-  rawBytesLengthMin: 4
+  payloadLengthBitSize: 3,
+  payloadLengthOffset: 1
 };
 
-export const HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigWithoutCheckAlgorithm = {
-  headerFirstByteCheckSequenceMask: null,
-  headerFirstBytePayloadLengthBitShift: null,
-  headerFirstBytePayloadLengthMask: null,
+export const HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
   headerLength: 3,
-  headerPayloadLengthEnabled: false,
-  headerPayloadLengthOffset: null,
-  payloadLengthFixed: 8,
-  payloadLengthMax: null,
-  payloadLengthMin: null,
-  rawBytesLengthMax: 11,
-  rawBytesLengthMin: 11
+  payloadLengthBitSize: 0,
+  payloadLengthFixed: 8
 };
 
 // TODO check import issue when it's not function

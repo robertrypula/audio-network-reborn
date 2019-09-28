@@ -2,7 +2,7 @@
 
 import { AudioMonoIo } from '@physical-layer/model';
 
-export class AudioMonoIoWebApi implements AudioMonoIo {
+export class WebApiAudioMonoIo implements AudioMonoIo {
   protected audioContext: AudioContext;
 
   protected analyserNode: AnalyserNode;

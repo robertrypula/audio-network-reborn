@@ -10,6 +10,11 @@ export enum CheckAlgorithm {
   Sha1 = 'Sha1'
 }
 
+export interface MinMaxRange {
+  max: number;
+  min: number;
+}
+
 export interface TestCase {
   in: string;
   out: string;

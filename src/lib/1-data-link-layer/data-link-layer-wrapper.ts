@@ -58,10 +58,9 @@ export class DataLinkLayerWrapper {
 
       if (rxIntervalShouldStop) {
         this.listenStop(false);
-        return;
-      }
-      if (this.rxHandlers.next) {
-        this.dataLinkLayer.getRxBytesCollection().forEach(rxBytes => this.rxHandlers.next(rxBytes));
+      } else {
+        this.rxHandlers.next &&
+          this.dataLinkLayer.getRxBytesCollection().forEach(rxBytes => this.rxHandlers.next(rxBytes));
       }
     }, this.dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds);
   }

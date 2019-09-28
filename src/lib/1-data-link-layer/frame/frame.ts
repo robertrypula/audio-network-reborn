@@ -1,10 +1,16 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FrameConfig } from '@data-link-layer/model';
+import { FrameConfig, FrameConfigInitializer, HeaderFirstByte } from '@data-link-layer/model';
 import { getCheckAlgorithmImplementation } from '@shared/check-algorithms/check-algorithms';
 import { getFilledArray } from '@shared/utils';
 
 /*tslint:disable:no-bitwise*/
+
+const empty: HeaderFirstByte = {
+  checkSequenceMask: null,
+  payloadLengthBitShift: null,
+  payloadLengthMask: null
+};
 
 export class Frame {
   protected rawBytes: number[] = [];
@@ -26,7 +32,7 @@ export class Frame {
   }
 
   public getPayload(): number[] {
-    return this.rawBytes.slice(this.frameConfig.headerLength);
+    return this.rawBytes.slice(this.frameConfig.frameConfigInitializer.headerLength);
   }
 
   public getRawBytePosition(): number {
@@ -47,37 +53,35 @@ export class Frame {
 
   public isValid(): boolean {
     return (
-      this.rawBytes.length >= this.frameConfig.headerLength &&
+      this.rawBytes.length >= this.frameConfig.frameConfigInitializer.headerLength &&
       this.getCheckSequence(true).join(',') === this.getCheckSequence(false).join(',') &&
       this.getLengthFromRawBytes() === this.getLengthFromPayload()
     );
   }
 
   public setPayload(payload: number[]): Frame {
-    const frameConfig = this.frameConfig;
+    const { headerLength, payloadLengthBitSize, payloadLengthOffset } = this.frameConfig.frameConfigInitializer;
+    const { checkSequenceMask, payloadLengthBitShift, payloadLengthMask } = this.frameConfig.headerFirstByte
+      ? this.frameConfig.headerFirstByte
+      : empty;
+    const { max, min } = this.frameConfig.payloadLength;
     const payloadLength = payload.length;
     let fullCheckSequence: number[];
 
-    if (
-      frameConfig.headerPayloadLengthEnabled
-        ? payloadLength < frameConfig.payloadLengthMin || payloadLength > frameConfig.payloadLengthMax
-        : payloadLength !== frameConfig.payloadLengthFixed
-    ) {
+    if (payloadLength < min || payloadLength > max) {
       throw new Error('Payload length out of range');
     }
 
-    this.rawBytes = [...getFilledArray(frameConfig.headerLength), ...payload];
+    this.rawBytes = [...getFilledArray(headerLength), ...payload];
     this.rawBytePosition = 0;
 
     fullCheckSequence = this.getFullCheckSequenceFromPayload();
-    for (let i = 0; i < frameConfig.headerLength; i++) {
+    for (let i = 0; i < headerLength; i++) {
       const checkSequenceByte = i < fullCheckSequence.length ? fullCheckSequence[i] : 0x00;
       this.rawBytes[i] =
-        i === 0 && frameConfig.headerPayloadLengthEnabled
-          ? (((payloadLength - frameConfig.headerPayloadLengthOffset) <<
-              frameConfig.headerFirstBytePayloadLengthBitShift) &
-              frameConfig.headerFirstBytePayloadLengthMask) |
-            (checkSequenceByte & frameConfig.headerFirstByteCheckSequenceMask)
+        i === 0 && payloadLengthBitSize > 0
+          ? (((payloadLength - payloadLengthOffset) << payloadLengthBitShift) & payloadLengthMask) |
+            (checkSequenceByte & checkSequenceMask)
           : checkSequenceByte;
     }
 
@@ -92,32 +96,35 @@ export class Frame {
   }
 
   protected getFullCheckSequenceFromPayload(): number[] {
-    return getCheckAlgorithmImplementation(this.frameConfig.checkAlgorithm)(this.getPayload());
+    return getCheckAlgorithmImplementation(this.frameConfig.frameConfigInitializer.checkAlgorithm)(this.getPayload());
   }
 
   protected getCheckSequence(fromRawBytes: boolean): number[] {
+    const { headerLength, payloadLengthBitSize } = this.frameConfig.frameConfigInitializer;
+    const { checkSequenceMask } = this.frameConfig.headerFirstByte ? this.frameConfig.headerFirstByte : empty;
     const result = fromRawBytes
-      ? this.rawBytes.slice(0, this.frameConfig.headerLength)
-      : this.getFullCheckSequenceFromPayload().slice(0, this.frameConfig.headerLength);
+      ? this.rawBytes.slice(0, headerLength)
+      : this.getFullCheckSequenceFromPayload().slice(0, headerLength);
 
-    if (this.frameConfig.headerPayloadLengthEnabled) {
-      result[0] = result[0] & this.frameConfig.headerFirstByteCheckSequenceMask;
+    if (payloadLengthBitSize > 0) {
+      result[0] = result[0] & checkSequenceMask;
     }
 
     return result;
   }
 
   protected getLengthFromPayload(): number {
-    return this.rawBytes.length - this.frameConfig.headerLength;
+    return this.rawBytes.length - this.frameConfig.frameConfigInitializer.headerLength;
   }
 
   protected getLengthFromRawBytes(): number {
-    const frameConfig = this.frameConfig;
+    const { payloadLengthBitSize, payloadLengthFixed, payloadLengthOffset } = this.frameConfig.frameConfigInitializer;
+    const { payloadLengthMask, payloadLengthBitShift } = this.frameConfig.headerFirstByte
+      ? this.frameConfig.headerFirstByte
+      : empty;
 
-    return this.frameConfig.headerPayloadLengthEnabled
-      ? ((this.rawBytes[0] & frameConfig.headerFirstBytePayloadLengthMask) >>>
-          frameConfig.headerFirstBytePayloadLengthBitShift) +
-          this.frameConfig.headerPayloadLengthOffset
-      : this.frameConfig.payloadLengthFixed;
+    return payloadLengthBitSize > 0
+      ? ((this.rawBytes[0] & payloadLengthMask) >>> payloadLengthBitShift) + payloadLengthOffset
+      : payloadLengthFixed;
   }
 }

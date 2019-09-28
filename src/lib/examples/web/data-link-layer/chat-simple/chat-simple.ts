@@ -1,7 +1,13 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { DataLinkLayer, DataLinkLayerWrapper } from '@';
-import { getBytesFromHex, getHexFromBytes, getTextFromUtf8Bytes, getUtf8BytesFromText } from '@';
+import {
+  DataLinkLayer,
+  DataLinkLayerWrapper,
+  getBytesFromHex,
+  getHexFromBytes,
+  getTextFromUtf8Bytes,
+  getUtf8BytesFromText
+} from '@';
 
 // const getById = <T = HTMLElement>(id: string) => (document.getElementById(id) as T); TODO check why it's not working
 const getById = (id: string) => document.getElementById(id);
@@ -15,6 +21,22 @@ export class DataLinkLayerChatSimpleWebExample {
     getByTagName('html')[0].classList.add('data-link-layer-chat-simple');
     getById('audio-network-lite-root').innerHTML = require('./chat-simple.html');
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());
+    /*
+    this.dataLinkLayerWrapper.dataLinkLayer.setFrameConfigInitializer({
+      checkAlgorithm: CheckAlgorithm.Crc32,
+      headerLength: 4,
+      payloadLengthBitSize: 0,
+      payloadLengthOffset: 1,
+      payloadLengthFixed: 10
+    });
+    this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.setDspConfigInitializer({
+      fftSize: 2048,
+      frequencyEnd: 15000,
+      safeMarginFactor: 1.2
+    });
+    console.log(this.dataLinkLayerWrapper.dataLinkLayer.getFrameConfig());
+    console.log(this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.getDspConfig());
+    */
     this.initializeHtmlElements();
   }
 
@@ -27,14 +49,14 @@ export class DataLinkLayerChatSimpleWebExample {
   }
 
   public send(): void {
-    const { payloadLengthMax, payloadLengthMin } = this.dataLinkLayerWrapper.dataLinkLayer.getFrameConfig();
+    const { max, min } = this.dataLinkLayerWrapper.dataLinkLayer.getFrameConfig().payloadLength;
     const value = (getById('send-field') as HTMLInputElement).value;
     const bytes = (getById('send-as-hex-checkbox') as HTMLInputElement).checked
       ? getBytesFromHex(value)
       : getUtf8BytesFromText(value);
 
-    if (bytes.length < payloadLengthMin || payloadLengthMax < bytes.length) {
-      alert('Payload of ' + bytes.length + ' B is out of range <' + payloadLengthMin + ', ' + payloadLengthMax + '>');
+    if (bytes.length < min || max < bytes.length) {
+      alert('Payload of ' + bytes.length + ' B is out of range <' + min + ', ' + max + '>');
       return;
     }
 
