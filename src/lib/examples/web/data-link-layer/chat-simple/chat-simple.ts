@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import {
+  CheckAlgorithm,
   DataLinkLayer,
   DataLinkLayerWrapper,
   getBytesFromHex,
@@ -21,22 +22,20 @@ export class DataLinkLayerChatSimpleWebExample {
     getByTagName('html')[0].classList.add('data-link-layer-chat-simple');
     getById('audio-network-lite-root').innerHTML = require('./chat-simple.html');
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());
-    /*
     this.dataLinkLayerWrapper.dataLinkLayer.setFrameConfigInitializer({
-      checkAlgorithm: CheckAlgorithm.Crc32,
-      headerLength: 4,
+      checkAlgorithm: CheckAlgorithm.Sha1,
+      headerLength: 20,
       payloadLengthBitSize: 0,
-      payloadLengthOffset: 1,
-      payloadLengthFixed: 10
+      payloadLengthFixed: 1,
+      payloadLengthOffset: 1
     });
     this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.setDspConfigInitializer({
-      fftSize: 2048,
-      frequencyEnd: 15000,
+      fftSize: 4096,
+      frequencyEnd: 7000,
       safeMarginFactor: 1.2
     });
     console.log(this.dataLinkLayerWrapper.dataLinkLayer.getFrameConfig());
     console.log(this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.getDspConfig());
-    */
     this.initializeHtmlElements();
   }
 

@@ -15,14 +15,12 @@ export const detectFrameMode = (frameConfigInitializer: FrameConfigInitializer):
 
 export const getFrameConfig = (frameConfigInitializer: FrameConfigInitializer): FrameConfig => {
   const payloadLength: MinMaxRange = getPayloadLength(frameConfigInitializer);
+  const rawBytesLength: MinMaxRange = getRawBytesLength(frameConfigInitializer, payloadLength);
   const frameConfig: FrameConfig = {
     frameConfigInitializer,
     frameMode: detectFrameMode(frameConfigInitializer),
     payloadLength,
-    rawBytesLength: {
-      max: frameConfigInitializer.headerLength + payloadLength.max,
-      min: frameConfigInitializer.headerLength + payloadLength.min
-    }
+    rawBytesLength
   };
 
   if (frameConfigInitializer.payloadLengthBitSize > 0) {
@@ -55,8 +53,33 @@ export const getHeaderFirstByte = (frameConfigInitializer: FrameConfigInitialize
 export const getPayloadLength = (frameConfigInitializer: FrameConfigInitializer): MinMaxRange => {
   const { payloadLengthBitSize, payloadLengthFixed, payloadLengthOffset } = frameConfigInitializer;
 
+  if (payloadLengthBitSize < 0 || payloadLengthBitSize > 8) {
+    throw new Error(`Payload length bit size equal ${payloadLengthBitSize} is out of range <0, 8>`);
+  }
+
+  if (payloadLengthBitSize === 0 && payloadLengthFixed < 0) {
+    throw new Error('Payload length fixed needs to be higher than zero');
+  }
+
   return {
     max: payloadLengthBitSize > 0 ? Math.pow(2, payloadLengthBitSize) - 1 + payloadLengthOffset : payloadLengthFixed,
     min: payloadLengthBitSize > 0 ? payloadLengthOffset : payloadLengthFixed
+  };
+};
+
+export const getRawBytesLength = (
+  frameConfigInitializer: FrameConfigInitializer,
+  payloadLength: MinMaxRange
+): MinMaxRange => {
+  const { headerLength } = frameConfigInitializer;
+
+  // full Sha-1 needs 20 bytes
+  if (headerLength < 1 || headerLength > 20) {
+    throw new Error(`Header length equal ${headerLength} is out of range <1, 20>`);
+  }
+
+  return {
+    max: headerLength + payloadLength.max,
+    min: headerLength + payloadLength.min
   };
 };
