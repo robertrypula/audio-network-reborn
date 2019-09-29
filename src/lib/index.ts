@@ -54,9 +54,9 @@ import { argc, argv, isNode } from '@shared/environment-utils';
 
 let cliNodeExample: CliNodeExample;
 
-// I hope that 'run.cliNodeExample' argument will never collide
+// I hope that 'run.anl.cliNodeExample' argument will never collide
 // with some other node project that will use my library... :)
-if (isNode && argc >= 3 && argv[2] === 'run.cliNodeExample') {
+if (isNode && argc >= 3 && argv[2] === 'run.anl.cliNodeExample') {
   cliNodeExample = new CliNodeExample();
 }
 
@@ -91,7 +91,7 @@ TODO #1:
     + set methods for updating the config in the runtime (Physical Layer)
     + set methods for updating the config in the runtime (Data Link Layer)
     + object compare function with key sorting
-  - CLI 'run.cliNodeExample' run parameter needs to me more unique to avoid collision with other npm package
+  + CLI 'run.cliNodeExample' run parameter needs to me more unique to avoid collision with other npm package
   - move all document methods to dom-utils.ts
   - timeTick methods should return enum rather than boolean, for example: IDLE, SYMBOL, GUARD
   - style-loader tag ID option and finalization

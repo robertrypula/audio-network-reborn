@@ -13,11 +13,11 @@
     "prettier": "prettier src/**/*.{ts,js,html,scss} -c",
     "prettier:write": "prettier --write src/**/*.{ts,js,html,scss}",
     "start": "yarn clean && webpack-dev-server --env.DEVELOPMENT --open",
-    "start:node": "yarn clean && webpack --env.DEVELOPMENT && && node dist/audio-network-lite-v0.1.0-rc17.js run.cliNodeExample",
+    "start:node": "yarn clean && webpack --env.DEVELOPMENT && node dist/audio-network-lite-v0.1.0-rc17.js run.anl.cliNodeExample",
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "yarn-check": "yarn-check --skip-unused -u"
+    "u:i": "yarn upgrade-interactive --latest"
   },
   "main": "dist/audio-network-lite-v0.1.0-rc17.js",
   "types": "dist/lib/index.d.ts",
@@ -32,7 +32,7 @@
     "url": "https://github.com/robertrypula/audio-network-lite/issues"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.17",
+    "@types/jest": "^24.0.18",
     "@types/node": "^12.7.8",
     "coveralls": "^3.0.6",
     "css-loader": "^3.2.0",
@@ -44,13 +44,12 @@
     "rimraf": "^3.0.0",
     "sass-loader": "^8.0.0",
     "ts-jest": "^24.1.0",
-    "ts-loader": "^6.1.2",
+    "ts-loader": "6.2.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.3",
     "webpack": "^4.41.0",
     "webpack-bundle-analyzer": "^3.5.2",
     "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.8.1",
-    "yarn-check": "^0.0.3"
+    "webpack-dev-server": "^3.8.1"
   }
 }
