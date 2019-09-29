@@ -3,6 +3,8 @@
 import { FrameConfigInitializerWithoutCheckAlgorithm } from '@data-link-layer/model';
 import { getBytesFromHex } from '@shared/utils';
 
+export const GUARD_FACTOR: number = 0.25;
+
 export const HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
   headerLength: 2,
   payloadLengthBitSize: 3,

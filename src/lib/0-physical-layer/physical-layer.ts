@@ -22,9 +22,13 @@ export class PhysicalLayer {
   }
 
   public rx(currentTime: number): number {
-    return new FftResult(this.audioMonoIo.getFrequencyDomainData(currentTime), this.audioMonoIo.getSampleRate())
-      .pick(this.dspConfig.unifiedBinIndexes)
-      .getLoudestBinIndex();
+    const frequencyDomainData: Float32Array = this.audioMonoIo.getFrequencyDomainData(currentTime);
+
+    return frequencyDomainData
+      ? new FftResult(frequencyDomainData, this.audioMonoIo.getSampleRate())
+          .pick(this.dspConfig.unifiedBinIndexes)
+          .getLoudestBinIndex()
+      : null;
   }
 
   public setDspConfigInitializer(dspConfigInitializer: DspConfigInitializer): void {
@@ -38,12 +42,12 @@ export class PhysicalLayer {
     }
   }
 
-  public tx(byte: number, currentTime: number): boolean {
-    const isValidByte: boolean = byte !== null && byte >= 0 && byte < BYTE_UNIQUE_VALUES;
-    const unifiedFrequencies: number[] = this.dspConfig.unifiedFrequencies;
-
-    this.audioMonoIo.setPeriodicWave(isValidByte ? unifiedFrequencies[byte] : SILENCE_FREQUENCY, currentTime);
-
-    return isValidByte;
+  public tx(byte: number, currentTime: number): void {
+    this.audioMonoIo.setPeriodicWave(
+      byte !== null && byte >= 0 && byte < BYTE_UNIQUE_VALUES
+        ? this.dspConfig.unifiedFrequencies[byte]
+        : SILENCE_FREQUENCY,
+      currentTime
+    );
   }
 }

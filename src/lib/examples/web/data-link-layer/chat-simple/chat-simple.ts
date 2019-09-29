@@ -3,11 +3,13 @@
 import {
   DataLinkLayer,
   DataLinkLayerWrapper,
+  DspMode,
   getBytesFromHex,
   getHexFromBytes,
   getTextFromUtf8Bytes,
   getUtf8BytesFromText
 } from '@'; // in your code it would be: ... from 'audio-network-lite';
+// in your code it would be: ... from 'audio-network-lite';
 import * as domUtils from '@examples/web/dom-utils';
 
 export class DataLinkLayerChatSimpleWebExample {
@@ -30,9 +32,11 @@ export class DataLinkLayerChatSimpleWebExample {
       frequencyEnd: 7000,
       safeMarginFactor: 1.2
     });
-    console.log(this.dataLinkLayerWrapper.dataLinkLayer.getFrameConfig());
-    console.log(this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.getDspConfig());
     */
+    // this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.setDspMode(DspMode.SlimBandSlowAudibleLower);
+    // console.log(this.dataLinkLayerWrapper.dataLinkLayer.getFrameConfig());
+    // console.log(this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.getDspConfig());
+
     this.initializeHtmlElements();
   }
 

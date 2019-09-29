@@ -4,7 +4,7 @@ import { Frame } from '@data-link-layer/frame/frame';
 import { CheckAlgorithm, MinMaxRange } from '@shared/model';
 
 export interface DataLinkLayerWrapperListenHandlers {
-  next: (bytes: number[]) => void;
+  next: (bytes: number[], isErrorCorrected: boolean) => void;
   complete: () => void;
 }
 
@@ -73,4 +73,15 @@ export interface TestCaseFrameCounterWithPayload {
 export interface TestCaseIntegrity {
   payload: string;
   expectedRawBytes: string;
+}
+
+export enum RxTimeTickState {
+  Listening = 'Listening',
+  Stopped = 'Stopped'
+}
+
+export enum TxTimeTickState {
+  Guard = 'Guard',
+  Idle = 'Idle',
+  Symbol = 'Symbol'
 }

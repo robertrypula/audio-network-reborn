@@ -2,9 +2,16 @@
 
 import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
 import { getFrameConfig } from '@data-link-layer/config-utils';
-import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
+import { GUARD_FACTOR, SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
-import { FrameConfig, FrameConfigInitializer, FrameHistory, FrameMode } from '@data-link-layer/model';
+import {
+  FrameConfig,
+  FrameConfigInitializer,
+  FrameHistory,
+  FrameMode,
+  RxTimeTickState,
+  TxTimeTickState
+} from '@data-link-layer/model';
 import { findFrameCandidates, scrambleArray } from '@data-link-layer/utils';
 import { PhysicalLayer } from '@physical-layer/physical-layer';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
@@ -42,11 +49,15 @@ export class DataLinkLayer {
     return this.rxFramesErrorCorrected.length ? this.rxFramesErrorCorrected.map(item => item.getPayload()) : [];
   }
 
-  public getTxProgress(): number {
-    return this.txFrame.getRawBytePosition() / this.txFrame.getRawBytes().length;
+  public getTxGuardMilliseconds(): number {
+    return Math.floor(this.physicalLayer.getDspConfig().txIntervalMilliseconds * GUARD_FACTOR);
   }
 
-  public rxTimeTick(currentTime: number): boolean {
+  public getTxProgress(): number {
+    return this.txFrame ? this.txFrame.getRawBytePosition() / (this.txFrame.getRawBytes().length + 1) : 1;
+  }
+
+  public rxTimeTick(currentTime: number): RxTimeTickState {
     const isEven = this.rxRawBytesCounter % 2 === 0;
     const rxRawBytes = isEven ? this.rxRawBytesA : this.rxRawBytesB;
     const rxRawByte = this.physicalLayer.rx(currentTime);
@@ -54,7 +65,7 @@ export class DataLinkLayer {
     let validFramesCounter = 0; // TODO remove me
 
     if (rxRawByte === null) {
-      return false;
+      return RxTimeTickState.Stopped;
     }
 
     rxRawBytes.insert(rxRawByte);
@@ -74,7 +85,7 @@ export class DataLinkLayer {
     // validFramesCounter && console.log(new Date().getTime() - start); // TODO remove me
     this.rxRawBytesCounter++;
 
-    return true;
+    return RxTimeTickState.Listening;
   }
 
   public setFrameConfigInitializer(frameConfigInitializer: FrameConfigInitializer): void {
@@ -96,8 +107,19 @@ export class DataLinkLayer {
     this.txRawBytesCounter += this.txFrame.getRawBytes().length;
   }
 
-  public txTimeTick(currentTime: number): boolean {
-    return this.physicalLayer.tx(this.txFrame.getNextRawByte(), currentTime);
+  public txTimeTick(currentTime: number): TxTimeTickState {
+    if (this.txFrame) {
+      const nextRawByte: number = this.txFrame.getNextRawByte();
+
+      this.physicalLayer.tx(nextRawByte, currentTime);
+      if (nextRawByte === null) {
+        this.txFrame = null;
+      }
+
+      return nextRawByte !== null ? TxTimeTickState.Symbol : TxTimeTickState.Guard;
+    }
+
+    return TxTimeTickState.Idle;
   }
 
   protected tryToFindValidFrame(frameCandidate: Frame, isErrorCorrected: boolean): boolean {

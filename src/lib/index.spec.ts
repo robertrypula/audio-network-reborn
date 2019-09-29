@@ -1,6 +1,13 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { AudioMonoIoCreateMode, audioMonoIoFactory, DataLinkLayer, libraryInfo } from '@';
+import {
+  AudioMonoIoCreateMode,
+  audioMonoIoFactory,
+  DataLinkLayer,
+  libraryInfo,
+  RxTimeTickState,
+  TxTimeTickState
+} from '@';
 
 describe('Index', () => {
   describe('Library Info', () => {
@@ -22,15 +29,16 @@ describe('Index', () => {
     const dataLinkLayer = new DataLinkLayer();
 
     dataLinkLayer.setTxBytes([1, 2, 3]);
-    expect(dataLinkLayer.txTimeTick(0)).toBe(true);
-    expect(dataLinkLayer.txTimeTick(1)).toBe(true);
-    expect(dataLinkLayer.txTimeTick(2)).toBe(true);
-    expect(dataLinkLayer.txTimeTick(3)).toBe(true);
-    expect(dataLinkLayer.txTimeTick(4)).toBe(true);
-    expect(dataLinkLayer.txTimeTick(5)).toBe(true);
-    expect(dataLinkLayer.txTimeTick(6)).toBe(false);
+    expect(dataLinkLayer.txTimeTick(0)).toBe(TxTimeTickState.Symbol);
+    expect(dataLinkLayer.txTimeTick(1)).toBe(TxTimeTickState.Symbol);
+    expect(dataLinkLayer.txTimeTick(2)).toBe(TxTimeTickState.Symbol);
+    expect(dataLinkLayer.txTimeTick(3)).toBe(TxTimeTickState.Symbol);
+    expect(dataLinkLayer.txTimeTick(4)).toBe(TxTimeTickState.Symbol);
+    expect(dataLinkLayer.txTimeTick(5)).toBe(TxTimeTickState.Symbol);
+    expect(dataLinkLayer.txTimeTick(6)).toBe(TxTimeTickState.Guard);
+    expect(dataLinkLayer.txTimeTick(7)).toBe(TxTimeTickState.Idle);
 
-    dataLinkLayer.rxTimeTick(7);
+    expect(dataLinkLayer.rxTimeTick(7)).toBe(RxTimeTickState.Listening);
     expect(dataLinkLayer.getRxBytesCollection()).toEqual([]);
   });
 });

@@ -54,9 +54,9 @@ import { argc, argv, isNode } from '@shared/environment-utils';
 
 let cliNodeExample: CliNodeExample;
 
-// I hope that 'run.anl.cliNodeExample' argument will never collide
+// I hope that 'audioNetworkLite.run.nodeExample' argument will never collide
 // with some other node project that will use my library... :)
-if (isNode && argc >= 3 && argv[2] === 'run.anl.cliNodeExample') {
+if (isNode && argc >= 3 && argv[2] === 'audioNetworkLite.run.nodeExample') {
   cliNodeExample = new CliNodeExample();
 }
 
@@ -94,8 +94,8 @@ TODO #1:
   + CLI 'run.cliNodeExample' run parameter needs to me more unique to avoid collision with other npm package
   + move all document methods to dom-utils.ts
   + style-loader tag ID option and finalization
+  + timeTick methods should return enum rather than boolean, for example: IDLE, SYMBOL, GUARD
   - add types where missed
-  - timeTick methods should return enum rather than boolean, for example: IDLE, SYMBOL, GUARD
   - detect own transmitted frame caught by the microphone on the same machine
   - finalize advanced chat example
   - remove hex-bytes example
@@ -115,6 +115,7 @@ TODO #3:
   - check microphone constraints: https://github.com/quiet/quiet-js/blob/master/quiet.js#L565
   - add yarn task to output analyzer node viewer code (currently it's only running local server)
   - get rid of CRC lookup tables in order to reduce the bundle size
+  - replace css-loader with custom code
   - experiment with splitting the examples code to dedicated bundle: https://stackoverflow.com/questions/51045727
   - find alternative for coveralls
 */

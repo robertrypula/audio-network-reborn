@@ -1,7 +1,14 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 // in your code it would be: ... from 'audio-network-lite';
-import { DataLinkLayer, DspMode, getBytesFromHex, getDspConfigsFromAllDspModes, getHexFromBytes } from '@';
+import {
+  DataLinkLayer,
+  DspMode,
+  getBytesFromHex,
+  getDspConfigsFromAllDspModes,
+  getHexFromBytes,
+  TxTimeTickState
+} from '@';
 import * as domUtils from '@examples/web/dom-utils';
 import * as fromTemplate from './hex-bytes-simple.template';
 
@@ -81,9 +88,10 @@ export class DataLinkLayerHexBytesSimpleWebExample {
 
   protected handleTxInterval(): void {
     this.clearTxInterval();
-    if (this.dataLinkLayer.txTimeTick(new Date().getTime())) {
+    if (this.dataLinkLayer.txTimeTick(new Date().getTime()) === TxTimeTickState.Symbol) {
       this.txInterval = setInterval(() => {
-        !this.dataLinkLayer.txTimeTick(new Date().getTime()) && this.clearTxInterval();
+        // Example code is bad - it's not waiting for guard interval to be finished
+        this.dataLinkLayer.txTimeTick(new Date().getTime()) === TxTimeTickState.Guard && this.clearTxInterval();
       }, this.dataLinkLayer.physicalLayer.getDspConfig().txIntervalMilliseconds);
     }
   }
