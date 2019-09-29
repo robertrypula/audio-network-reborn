@@ -3,7 +3,7 @@
 export const libraryInfo = {
   author: 'Robert Rypuła',
   gitHub: 'https://github.com/robertrypula/audio-network-lite',
-  version: '0.1.0-rc17'
+  version: '0.1.0-rc18'
 };
 
 export * from '@physical-layer/audio-mono-io/audio-mono-io-factory';
