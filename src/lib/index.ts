@@ -92,10 +92,10 @@ TODO #1:
     + set methods for updating the config in the runtime (Data Link Layer)
     + object compare function with key sorting
   + CLI 'run.cliNodeExample' run parameter needs to me more unique to avoid collision with other npm package
-  - move all document methods to dom-utils.ts
-  - timeTick methods should return enum rather than boolean, for example: IDLE, SYMBOL, GUARD
+  + move all document methods to dom-utils.ts
   - style-loader tag ID option and finalization
   - add types where missed
+  - timeTick methods should return enum rather than boolean, for example: IDLE, SYMBOL, GUARD
   - detect own transmitted frame caught by the microphone on the same machine
   - finalize advanced chat example
   - remove hex-bytes example

@@ -1,13 +1,13 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+// in your code it would be: ... from 'audio-network-lite';
 import { DataLinkLayer, DspMode, getBytesFromHex, getDspConfigsFromAllDspModes, getHexFromBytes } from '@';
+import * as domUtils from '@examples/web/dom-utils';
 import * as fromTemplate from './hex-bytes-simple.template';
 
 // TODO: this example doesn't use DataLinkLayerWrapper that handles
 // TODO: all timers by the AudioNetworkLite library itself
 // TODO: -> example should be deleted or refactored soon
-
-const getById = (id: string) => document.getElementById(id);
 
 export class DataLinkLayerHexBytesSimpleWebExample {
   public dataLinkLayer: DataLinkLayer;
@@ -15,8 +15,8 @@ export class DataLinkLayerHexBytesSimpleWebExample {
   public txInterval: any;
 
   public constructor() {
-    document.getElementsByTagName('html')[0].classList.add('data-link-layer-hex-bytes-simple');
-    getById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
+    domUtils.getByTagName('html').classList.add('data-link-layer-hex-bytes-simple');
+    domUtils.getById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
     this.initializeDspModeDropdown();
   }
 
@@ -24,29 +24,29 @@ export class DataLinkLayerHexBytesSimpleWebExample {
     this.initializeDataLinkLayer();
     if (dspMode) {
       this.dataLinkLayer.physicalLayer.setDspMode(dspMode);
-      getById('controls-wrapper').style.display = 'block';
+      domUtils.getById('controls-wrapper').style.display = 'block';
       this.rxInterval && this.handleRxInterval();
       this.txInterval && this.handleTxInterval();
     } else {
-      getById('controls-wrapper').style.display = 'none';
+      domUtils.getById('controls-wrapper').style.display = 'none';
       this.clearRxInterval();
       this.clearTxInterval();
       this.dataLinkLayer.physicalLayer.audioMonoIo.inputDisable();
       this.dataLinkLayer.physicalLayer.audioMonoIo.outputDisable();
-      getById('enable-receiver-button').style.display = 'block';
-      getById('waiting-for-data-frames-label').style.display = 'none';
-      getById('rx-data').innerHTML = '';
+      domUtils.getById('enable-receiver-button').style.display = 'block';
+      domUtils.getById('waiting-for-data-frames-label').style.display = 'none';
+      domUtils.getById('rx-data').innerHTML = '';
     }
   }
 
   public receiveEnable(): void {
-    getById('enable-receiver-button').style.display = 'none';
-    getById('waiting-for-data-frames-label').style.display = 'block';
+    domUtils.getById('enable-receiver-button').style.display = 'none';
+    domUtils.getById('waiting-for-data-frames-label').style.display = 'block';
     this.handleRxInterval();
   }
 
   public transmit(): void {
-    const txBytes = getBytesFromHex((getById('tx-data') as HTMLInputElement).value);
+    const txBytes = getBytesFromHex(domUtils.getByIdInput('tx-data').value);
 
     this.dataLinkLayer.setTxBytes(txBytes);
     this.handleTxInterval();
@@ -71,10 +71,10 @@ export class DataLinkLayerHexBytesSimpleWebExample {
       rxBytesCollection = this.dataLinkLayer.getRxBytesCollection();
 
       if (rxBytesCollection.length) {
-        const div = document.createElement('div');
+        const div = domUtils.createElement('div');
 
         div.innerHTML = rxBytesCollection.map(rxBytes => getHexFromBytes(rxBytes)).join(' | ');
-        getById('rx-data').appendChild(div);
+        domUtils.getById('rx-data').appendChild(div);
       }
     }, this.dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds);
   }
@@ -92,12 +92,12 @@ export class DataLinkLayerHexBytesSimpleWebExample {
     if (!this.dataLinkLayer) {
       // AudioNetworkLite.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkLite.AudioMonoIoCreateMode.Stub;
       this.dataLinkLayer = new DataLinkLayer();
-      getById('sample-rate-label').innerHTML = fromTemplate.sampleRate(this.dataLinkLayer);
+      domUtils.getById('sample-rate-label').innerHTML = fromTemplate.sampleRate(this.dataLinkLayer);
     }
   }
 
   protected initializeDspModeDropdown(): void {
-    getById('dsp-mode-dropdown').innerHTML =
+    domUtils.getById('dsp-mode-dropdown').innerHTML =
       fromTemplate.dropdownOptionEmpty +
       getDspConfigsFromAllDspModes()
         .map(dspConfig => fromTemplate.dropdownOption(dspConfig))

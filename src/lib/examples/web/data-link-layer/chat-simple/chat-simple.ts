@@ -1,26 +1,21 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import {
-  CheckAlgorithm,
   DataLinkLayer,
   DataLinkLayerWrapper,
   getBytesFromHex,
   getHexFromBytes,
   getTextFromUtf8Bytes,
   getUtf8BytesFromText
-} from '@';
-
-// const getById = <T = HTMLElement>(id: string) => (document.getElementById(id) as T); TODO check why it's not working
-const getById = (id: string) => document.getElementById(id);
-const getByIdInput = (id: string) => document.getElementById(id) as HTMLInputElement;
-const getByTagName = (tag: string) => document.getElementsByTagName(tag);
+} from '@'; // in your code it would be: ... from 'audio-network-lite';
+import * as domUtils from '@examples/web/dom-utils';
 
 export class DataLinkLayerChatSimpleWebExample {
   public dataLinkLayerWrapper: DataLinkLayerWrapper;
 
   public constructor() {
-    getByTagName('html')[0].classList.add('data-link-layer-chat-simple');
-    getById('audio-network-lite-root').innerHTML = require('./chat-simple.html');
+    domUtils.getByTagName('html').classList.add('data-link-layer-chat-simple');
+    domUtils.getById('audio-network-lite-root').innerHTML = require('./chat-simple.html');
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());
     /*
     this.dataLinkLayerWrapper.dataLinkLayer.setFrameConfigInitializer({
@@ -42,17 +37,17 @@ export class DataLinkLayerChatSimpleWebExample {
   }
 
   public listenEnable(): void {
-    getById('listen-wrapper').classList.add('enabled');
+    domUtils.getById('listen-wrapper').classList.add('enabled');
     this.dataLinkLayerWrapper.listen({
-      complete: () => getById('listen-wrapper').classList.remove('enabled'),
+      complete: () => domUtils.getById('listen-wrapper').classList.remove('enabled'),
       next: bytes => this.logFrame(bytes, true)
     });
   }
 
   public send(): void {
     const { max, min } = this.dataLinkLayerWrapper.dataLinkLayer.getFrameConfig().payloadLength;
-    const value = (getById('send-field') as HTMLInputElement).value;
-    const bytes = (getById('send-as-hex-checkbox') as HTMLInputElement).checked
+    const value = domUtils.getByIdInput('send-field').value;
+    const bytes = domUtils.getByIdInput('send-as-hex-checkbox').checked
       ? getBytesFromHex(value)
       : getUtf8BytesFromText(value);
 
@@ -64,14 +59,14 @@ export class DataLinkLayerChatSimpleWebExample {
     this.sendStart();
     this.dataLinkLayerWrapper.send(bytes, {
       complete: () => this.sendComplete(bytes),
-      next: progress => (getById('send-progress-bar').style.width = progress * 100 + '%')
+      next: progress => (domUtils.getById('send-progress-bar').style.width = progress * 100 + '%')
     });
   }
 
   protected initializeHtmlElements(): void {
-    getById('send-button').addEventListener('click', () => this.send());
-    getById('listen-enable-button').addEventListener('click', () => this.listenEnable());
-    getById('send-field').addEventListener('keydown', (event: KeyboardEvent) => {
+    domUtils.getById('send-button').addEventListener('click', () => this.send());
+    domUtils.getById('listen-enable-button').addEventListener('click', () => this.listenEnable());
+    domUtils.getById('send-field').addEventListener('keydown', (event: KeyboardEvent) => {
       if (event.key === 'Enter') {
         event.preventDefault();
         this.send();
@@ -80,24 +75,24 @@ export class DataLinkLayerChatSimpleWebExample {
   }
 
   protected logFrame(bytes: number[], isReceived: boolean): void {
-    const div = document.createElement('div');
+    const div = domUtils.createElement('div');
 
     div.innerHTML = `<div>${getTextFromUtf8Bytes(bytes)}<br/>${getHexFromBytes(bytes)}</div>`;
     div.classList.add(isReceived ? 'received' : 'sent');
-    getById('messages-wrapper').appendChild(div);
+    domUtils.getById('messages-wrapper').appendChild(div);
   }
 
   protected sendStart(): void {
-    getById('sent-wrapper').classList.add('sending-in-progress');
-    getByIdInput('send-field').disabled = true;
-    getByIdInput('send-button').disabled = true;
+    domUtils.getById('sent-wrapper').classList.add('sending-in-progress');
+    domUtils.getByIdInput('send-field').disabled = true;
+    domUtils.getByIdInput('send-button').disabled = true;
   }
 
   protected sendComplete(bytes: number[]): void {
-    const sendField = getById('send-field') as HTMLInputElement;
+    const sendField = domUtils.getById('send-field') as HTMLInputElement;
 
-    getById('sent-wrapper').classList.remove('sending-in-progress');
-    getByIdInput('send-button').disabled = false;
+    domUtils.getById('sent-wrapper').classList.remove('sending-in-progress');
+    domUtils.getByIdInput('send-button').disabled = false;
     sendField.disabled = false;
     sendField.value = '';
     sendField.focus();
