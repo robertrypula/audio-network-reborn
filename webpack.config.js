@@ -42,7 +42,10 @@ function getConfig(env) {
         {
           test: /\.scss$/,
           use: [
-            { loader: path.resolve('src/setup/webpack-style-loader.js') }, // creates 'style' html tag from JS strings
+            {
+              loader: path.resolve('src/setup/webpack-style-loader.js'), // creates 'style' html tag from JS strings
+              options: { rootElementId: `${packageJson.name}-root` }
+            },
             'css-loader', // translates CSS into CommonJS
             'sass-loader' // compiles Sass to CSS
           ]
