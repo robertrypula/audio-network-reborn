@@ -6,24 +6,28 @@ import { getBytesFromHex } from '@shared/utils';
 export const GUARD_FACTOR: number = 0.25;
 
 export const HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
+  guardFactor: GUARD_FACTOR,
   headerLength: 2,
   payloadLengthBitSize: 3,
   payloadLengthOffset: 1
 };
 
 export const HEADER_2_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
+  guardFactor: GUARD_FACTOR,
   headerLength: 2,
   payloadLengthBitSize: 0,
   payloadLengthFixed: 8
 };
 
 export const HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
+  guardFactor: GUARD_FACTOR,
   headerLength: 3,
   payloadLengthBitSize: 3,
   payloadLengthOffset: 1
 };
 
 export const HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
+  guardFactor: GUARD_FACTOR,
   headerLength: 3,
   payloadLengthBitSize: 0,
   payloadLengthFixed: 8

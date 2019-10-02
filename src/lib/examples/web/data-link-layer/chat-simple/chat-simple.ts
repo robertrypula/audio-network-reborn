@@ -22,10 +22,11 @@ export class DataLinkLayerChatSimpleWebExample {
     /*
     this.dataLinkLayerWrapper.dataLinkLayer.setFrameConfigInitializer({
       checkAlgorithm: CheckAlgorithm.Sha1,
-      headerLength: 20,
-      payloadLengthBitSize: 0,
-      payloadLengthFixed: 1,
-      // payloadLengthOffset: 1
+      guardFactor: 0.25,
+      headerLength: 3,
+      payloadLengthBitSize: 3,
+      // payloadLengthFixed: 1
+      payloadLengthOffset: 1
     });
     this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.setDspConfigInitializer({
       fftSize: 4096,

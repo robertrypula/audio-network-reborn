@@ -50,7 +50,9 @@ export class DataLinkLayer {
   }
 
   public getTxGuardMilliseconds(): number {
-    return Math.floor(this.physicalLayer.getDspConfig().txIntervalMilliseconds * GUARD_FACTOR);
+    return Math.floor(
+      this.physicalLayer.getDspConfig().txIntervalMilliseconds * this.frameConfig.frameConfigInitializer.guardFactor
+    );
   }
 
   public getTxProgress(): number {

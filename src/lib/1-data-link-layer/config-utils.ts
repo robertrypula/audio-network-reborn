@@ -14,6 +14,7 @@ export const detectFrameMode = (frameConfigInitializer: FrameConfigInitializer):
 };
 
 export const getFrameConfig = (frameConfigInitializer: FrameConfigInitializer): FrameConfig => {
+  validateFrameConfigInitializer(frameConfigInitializer);
   const payloadLength: MinMaxRange = getPayloadLength(frameConfigInitializer);
   const rawBytesLength: MinMaxRange = getRawBytesLength(frameConfigInitializer, payloadLength);
   const frameConfig: FrameConfig = {
@@ -53,14 +54,6 @@ export const getHeaderFirstByte = (frameConfigInitializer: FrameConfigInitialize
 export const getPayloadLength = (frameConfigInitializer: FrameConfigInitializer): MinMaxRange => {
   const { payloadLengthBitSize, payloadLengthFixed, payloadLengthOffset } = frameConfigInitializer;
 
-  if (payloadLengthBitSize < 0 || payloadLengthBitSize > 8) {
-    throw new Error(`Payload length bit size equal ${payloadLengthBitSize} is out of range <0, 8>`);
-  }
-
-  if (payloadLengthBitSize === 0 && payloadLengthFixed <= 0) {
-    throw new Error(`Payload length fixed is equal to ${payloadLengthFixed} but it needs to be higher than zero`);
-  }
-
   return {
     max: payloadLengthBitSize > 0 ? Math.pow(2, payloadLengthBitSize) - 1 + payloadLengthOffset : payloadLengthFixed,
     min: payloadLengthBitSize > 0 ? payloadLengthOffset : payloadLengthFixed
@@ -73,13 +66,29 @@ export const getRawBytesLength = (
 ): MinMaxRange => {
   const { headerLength } = frameConfigInitializer;
 
+  return {
+    max: headerLength + payloadLength.max,
+    min: headerLength + payloadLength.min
+  };
+};
+
+export const validateFrameConfigInitializer = (frameConfigInitializer: FrameConfigInitializer): void => {
+  const { guardFactor, headerLength, payloadLengthBitSize, payloadLengthFixed } = frameConfigInitializer;
+
+  if (guardFactor < 0 || guardFactor > 1) {
+    throw new Error(`Guard factor equal ${guardFactor} is out of range <0, 1>`);
+  }
+
   // 20 bytes limit because the longest supported check algorithm is Sha-1
   if (headerLength < 1 || headerLength > 20) {
     throw new Error(`Header length equal ${headerLength} is out of range <1, 20>`);
   }
 
-  return {
-    max: headerLength + payloadLength.max,
-    min: headerLength + payloadLength.min
-  };
+  if (payloadLengthBitSize < 0 || payloadLengthBitSize > 8) {
+    throw new Error(`Payload length bit size equal ${payloadLengthBitSize} is out of range <0, 8>`);
+  }
+
+  if (payloadLengthBitSize === 0 && payloadLengthFixed <= 0) {
+    throw new Error(`Payload length fixed is equal to ${payloadLengthFixed} but it needs to be higher than zero`);
+  }
 };

@@ -23,10 +23,11 @@ export interface FrameConfig {
 
 export interface FrameConfigInitializer {
   checkAlgorithm: CheckAlgorithm;
+  guardFactor: number;
   headerLength: number;
   payloadLengthBitSize: number; // value in range <0, 8>
-  payloadLengthOffset?: number; // required if payloadLengthBitSize > 0
   payloadLengthFixed?: number; // required if payloadLengthBitSize === 0
+  payloadLengthOffset?: number; // required if payloadLengthBitSize > 0
 }
 
 export type FrameConfigInitializerWithoutCheckAlgorithm = Omit<FrameConfigInitializer, 'checkAlgorithm'>;
