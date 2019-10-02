@@ -54,7 +54,16 @@ export class DataLinkLayer {
   }
 
   public getTxProgress(): number {
-    return this.txFrame ? this.txFrame.getRawBytePosition() / (this.txFrame.getRawBytes().length + 1) : 1;
+    if (!this.txFrame) {
+      return 1;
+    }
+
+    const txIntervalMilliseconds = this.physicalLayer.getDspConfig().txIntervalMilliseconds;
+    const rawBytesLength = this.txFrame.getRawBytes().length;
+    const totalMilliseconds = rawBytesLength * txIntervalMilliseconds + this.getTxGuardMilliseconds();
+    const currentPositionMilliseconds = this.txFrame.getRawBytePosition() * txIntervalMilliseconds;
+
+    return currentPositionMilliseconds / totalMilliseconds;
   }
 
   public rxTimeTick(currentTime: number): RxTimeTickState {
