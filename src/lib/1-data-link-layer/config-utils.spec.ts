@@ -1,16 +1,17 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { getFrameConfigsFromAllFrameModes } from '@data-link-layer/config-utils';
-import { FrameMode } from '@data-link-layer/model';
+import { FrameConfig, FrameMode } from '@data-link-layer/model';
 import { CheckAlgorithm } from '@shared/model';
 
 describe('Config Utils', () => {
   describe('getFrameConfigsFromAllFrameModes', () => {
     it('should return valid list', () => {
-      expect(getFrameConfigsFromAllFrameModes()).toEqual([
+      const expectation: FrameConfig[] = [
         {
           frameConfigInitializer: {
             checkAlgorithm: CheckAlgorithm.Crc16,
+            guardFactor: 0.25,
             headerLength: 2,
             payloadLengthBitSize: 3,
             payloadLengthOffset: 1
@@ -23,6 +24,7 @@ describe('Config Utils', () => {
         {
           frameConfigInitializer: {
             checkAlgorithm: CheckAlgorithm.Crc16,
+            guardFactor: 0.25,
             headerLength: 2,
             payloadLengthBitSize: 0,
             payloadLengthFixed: 8
@@ -34,6 +36,7 @@ describe('Config Utils', () => {
         {
           frameConfigInitializer: {
             checkAlgorithm: CheckAlgorithm.Crc24,
+            guardFactor: 0.25,
             headerLength: 3,
             payloadLengthBitSize: 3,
             payloadLengthOffset: 1
@@ -46,6 +49,7 @@ describe('Config Utils', () => {
         {
           frameConfigInitializer: {
             checkAlgorithm: CheckAlgorithm.Crc24,
+            guardFactor: 0.25,
             headerLength: 3,
             payloadLengthBitSize: 0,
             payloadLengthFixed: 8
@@ -54,7 +58,9 @@ describe('Config Utils', () => {
           payloadLength: { max: 8, min: 8 },
           rawBytesLength: { max: 11, min: 11 }
         }
-      ]);
+      ];
+
+      expect(getFrameConfigsFromAllFrameModes()).toEqual(expectation);
     });
   });
 });
