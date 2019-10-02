@@ -67,7 +67,7 @@ export class DataLinkLayer {
   }
 
   public rxTimeTick(currentTime: number): RxTimeTickState {
-    const isEven = this.rxRawBytesCounter % 2 === 0;
+    const isEven: boolean = this.rxRawBytesCounter % 2 === 0;
     const rxRawBytes = isEven ? this.rxRawBytesA : this.rxRawBytesB;
     const rxRawByte = this.physicalLayer.rx(currentTime);
     // const start = new Date().getTime(); // TODO remove me
@@ -132,7 +132,7 @@ export class DataLinkLayer {
   }
 
   protected tryToFindValidFrame(frameCandidate: Frame, isErrorCorrected: boolean): boolean {
-    const isEven = this.rxRawBytesCounter % 2 === 0;
+    const isEven: boolean = this.rxRawBytesCounter % 2 === 0;
     const rxFrameHistory = isEven ? this.rxFrameHistoryA : this.rxFrameHistoryB;
     const rxFrameHistoryHalfStepBack = isEven ? this.rxFrameHistoryB : this.rxFrameHistoryA;
 

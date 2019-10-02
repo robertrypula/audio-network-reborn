@@ -72,19 +72,22 @@ export class DataLinkLayerWrapper {
   }
 
   protected handleTxInterval(): void {
+    const getTxGuardTimeout = () =>
+      setTimeout(() => {
+        this.txHandlers.next && this.txHandlers.next(this.dataLinkLayer.getTxProgress());
+        this.sendStop(false);
+      }, this.dataLinkLayer.getTxGuardMilliseconds());
+
     this.sendStop(false, false);
     this.txHandlers.next && this.txHandlers.next(this.dataLinkLayer.getTxProgress());
 
     switch (this.dataLinkLayer.txTimeTick(this.getCurrentTime())) {
       case TxTimeTickState.Guard:
-        this.txTimeout = setTimeout(() => {
-          this.txHandlers.next && this.txHandlers.next(this.dataLinkLayer.getTxProgress());
-          this.sendStop(false);
-        }, this.dataLinkLayer.getTxGuardMilliseconds());
+        this.txTimeout = getTxGuardTimeout();
         break;
 
       case TxTimeTickState.Idle:
-        // do nothing
+        // do nothing as intervals and timers where already stopped at this point
         break;
 
       case TxTimeTickState.Symbol:
@@ -94,18 +97,15 @@ export class DataLinkLayerWrapper {
           switch (this.dataLinkLayer.txTimeTick(this.getCurrentTime())) {
             case TxTimeTickState.Guard:
               this.sendStop(false, false);
-              this.txTimeout = setTimeout(() => {
-                this.txHandlers.next && this.txHandlers.next(this.dataLinkLayer.getTxProgress());
-                this.sendStop(false);
-              }, this.dataLinkLayer.getTxGuardMilliseconds());
+              this.txTimeout = getTxGuardTimeout();
               break;
 
             case TxTimeTickState.Idle:
-              // do nothing - it should not happen
+              this.sendStop(false, false); // probably it will never happen but stop the interval just in case...
               break;
 
             case TxTimeTickState.Symbol:
-              // do nothing
+              // do nothing as we already set interval that will handle it in next tick
               break;
           }
         }, this.dataLinkLayer.physicalLayer.getDspConfig().txIntervalMilliseconds);
