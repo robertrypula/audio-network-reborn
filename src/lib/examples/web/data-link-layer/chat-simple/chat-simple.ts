@@ -3,7 +3,6 @@
 import {
   DataLinkLayer,
   DataLinkLayerWrapper,
-  DspMode,
   getBytesFromHex,
   getHexFromBytes,
   getTextFromUtf8Bytes,
@@ -19,13 +18,14 @@ export class DataLinkLayerChatSimpleWebExample {
     domUtils.getByTagName('html').classList.add('data-link-layer-chat-simple');
     domUtils.getById('audio-network-lite-root').innerHTML = require('./chat-simple.html');
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());
+
     /*
     this.dataLinkLayerWrapper.dataLinkLayer.setFrameConfigInitializer({
       checkAlgorithm: CheckAlgorithm.Sha1,
       headerLength: 20,
       payloadLengthBitSize: 0,
       payloadLengthFixed: 1,
-      payloadLengthOffset: 1
+      // payloadLengthOffset: 1
     });
     this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.setDspConfigInitializer({
       fftSize: 4096,
@@ -33,6 +33,7 @@ export class DataLinkLayerChatSimpleWebExample {
       safeMarginFactor: 1.2
     });
     */
+
     // this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.setDspMode(DspMode.SlimBandSlowAudibleLower);
     // console.log(this.dataLinkLayerWrapper.dataLinkLayer.getFrameConfig());
     // console.log(this.dataLinkLayerWrapper.dataLinkLayer.physicalLayer.getDspConfig());

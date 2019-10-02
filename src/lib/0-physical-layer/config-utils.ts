@@ -11,11 +11,24 @@ export const detectDspMode = (dspConfigInitializer: DspConfigInitializer): DspMo
   ) as DspMode;
 };
 
+export const dspConfigInitializerValidation = (dspConfigInitializer: DspConfigInitializer): void => {
+  const { fftSize, safeMarginFactor } = dspConfigInitializer;
+
+  if (safeMarginFactor < 1) {
+    throw new Error(`Safe margin factor is equal to ${safeMarginFactor} but it needs to be higher or equal one`);
+  }
+
+  if (![32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768].includes(fftSize)) {
+    throw new Error(`Fft size is equal to ${fftSize} but it needs to be power of two in range between 32 and 32768`);
+  }
+};
+
 export const getClosestBinIndexes = (fftSize: number, sampleRate: number, frequencies: number[]): number[] => {
   return frequencies.map((frequency: number) => Math.round((frequency * fftSize) / sampleRate));
 };
 
 export const getDspConfig = (dspConfigInitializer: DspConfigInitializer, sampleRate: number = null): DspConfig => {
+  dspConfigInitializerValidation(dspConfigInitializer);
   const unifiedFrequencies = getUnifiedFrequencies(
     dspConfigInitializer.fftSize,
     dspConfigInitializer.frequencyEnd,
@@ -79,7 +92,7 @@ export const getUnifiedFrequencies = (
     throw new Error('Not implemented and will probably never be... ;)');
   }
   if (sampleRates[0] <= sampleRates[1]) {
-    throw new Error('Sample rates values ​​must be given in descending order');
+    throw new Error('Sample rates values must be given in descending order');
   }
 
   for (let binIndex0 = frequencyBinsCount - 1; binIndex0 >= 0; binIndex0--) {

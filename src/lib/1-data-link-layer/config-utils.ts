@@ -57,8 +57,8 @@ export const getPayloadLength = (frameConfigInitializer: FrameConfigInitializer)
     throw new Error(`Payload length bit size equal ${payloadLengthBitSize} is out of range <0, 8>`);
   }
 
-  if (payloadLengthBitSize === 0 && payloadLengthFixed < 0) {
-    throw new Error('Payload length fixed needs to be higher than zero');
+  if (payloadLengthBitSize === 0 && payloadLengthFixed <= 0) {
+    throw new Error(`Payload length fixed is equal to ${payloadLengthFixed} but it needs to be higher than zero`);
   }
 
   return {

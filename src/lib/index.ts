@@ -95,6 +95,9 @@ TODO #1:
   + move all document methods to dom-utils.ts
   + style-loader tag ID option and finalization
   + timeTick methods should return enum rather than boolean, for example: IDLE, SYMBOL, GUARD
+  + validation on physical layer config
+  - fix getTxProgress value (take into account that guard interval is a fraction of symbol time)
+  - add guard interval factor to frame config
   - add types where missed
   - detect own transmitted frame caught by the microphone on the same machine
   - finalize advanced chat example
