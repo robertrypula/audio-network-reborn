@@ -3,7 +3,7 @@
 export const libraryInfo = {
   author: 'Robert Rypuła',
   gitHub: 'https://github.com/robertrypula/audio-network-reborn',
-  version: '0.1.0-rc18'
+  version: '0.1.0-rc19'
 };
 
 export * from '@physical-layer/audio-mono-io/audio-mono-io-factory';
