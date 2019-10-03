@@ -54,9 +54,9 @@ import { argc, argv, isNode } from '@shared/environment-utils';
 
 let cliNodeExample: CliNodeExample;
 
-// I hope that 'audioNetworkLite.run.nodeExample' argument will never collide
+// I hope that 'audioNetworkReborn.run.nodeExample' argument will never collide
 // with some other node project that will use my library... :)
-if (isNode && argc >= 3 && argv[2] === 'audioNetworkLite.run.nodeExample') {
+if (isNode && argc >= 3 && argv[2] === 'audioNetworkReborn.run.nodeExample') {
   cliNodeExample = new CliNodeExample();
 }
 

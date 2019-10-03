@@ -14,7 +14,7 @@
     "prettier:write": "prettier --write src/**/*.{ts,js,html,scss}",
     "start": "yarn clean && webpack-dev-server --env.DEVELOPMENT --open",
     "start:node": "yarn clean && webpack --env.DEVELOPMENT && yarn start:node:existing",
-    "start:node:existing": "node dist/audio-network-reborn-v0.1.0-rc18.js audioNetworkLite.run.nodeExample",
+    "start:node:existing": "node dist/audio-network-reborn-v0.1.0-rc18.js audioNetworkReborn.run.nodeExample",
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:report-coverage": "cat ./coverage/lcov.info | coveralls",
