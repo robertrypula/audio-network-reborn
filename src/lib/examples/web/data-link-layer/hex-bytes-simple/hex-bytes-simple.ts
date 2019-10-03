@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-// in your code it would be: ... from 'audio-network-lite';
+// in your code it would be: ... from 'audio-network-reborn';
 import {
   DataLinkLayer,
   DspMode,
@@ -23,7 +23,7 @@ export class DataLinkLayerHexBytesSimpleWebExample {
 
   public constructor() {
     domUtils.getByTagName('html').classList.add('data-link-layer-hex-bytes-simple');
-    domUtils.getById('audio-network-lite-root').innerHTML = fromTemplate.mainHtml;
+    domUtils.getById('audio-network-reborn-root').innerHTML = fromTemplate.mainHtml;
     this.initializeDspModeDropdown();
   }
 

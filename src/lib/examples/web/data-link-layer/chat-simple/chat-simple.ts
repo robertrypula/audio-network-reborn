@@ -7,8 +7,8 @@ import {
   getHexFromBytes,
   getTextFromUtf8Bytes,
   getUtf8BytesFromText
-} from '@'; // in your code it would be: ... from 'audio-network-lite';
-// in your code it would be: ... from 'audio-network-lite';
+} from '@'; // in your code it would be: ... from 'audio-network-reborn';
+// in your code it would be: ... from 'audio-network-reborn';
 import * as domUtils from '@examples/web/dom-utils';
 
 export class DataLinkLayerChatSimpleWebExample {
@@ -16,7 +16,7 @@ export class DataLinkLayerChatSimpleWebExample {
 
   public constructor() {
     domUtils.getByTagName('html').classList.add('data-link-layer-chat-simple');
-    domUtils.getById('audio-network-lite-root').innerHTML = require('./chat-simple.html');
+    domUtils.getById('audio-network-reborn-root').innerHTML = require('./chat-simple.html');
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());
 
     /*

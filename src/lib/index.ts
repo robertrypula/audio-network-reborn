@@ -2,7 +2,7 @@
 
 export const libraryInfo = {
   author: 'Robert Rypuła',
-  gitHub: 'https://github.com/robertrypula/audio-network-lite',
+  gitHub: 'https://github.com/robertrypula/audio-network-reborn',
   version: '0.1.0-rc18'
 };
 
@@ -99,6 +99,7 @@ TODO #1:
   + fix getTxProgress value (take into account that guard interval is a fraction of symbol time)
   + add guard interval factor to frame config
   - add types where missed
+  - rename the project to audio-network-reborn as it wont be lite - I have big plans for this project ;)
   - detect own transmitted frame caught by the microphone on the same machine
   - finalize advanced chat example
   - remove hex-bytes example
@@ -121,4 +122,5 @@ TODO #3:
   - replace css-loader with custom code
   - experiment with splitting the examples code to dedicated bundle: https://stackoverflow.com/questions/51045727
   - find alternative for coveralls
+  - migrate FFT implementation from root AudioNetwork project, experiment with OFDM symbols
 */

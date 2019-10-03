@@ -1,5 +1,5 @@
 {
-  "name": "audio-network-lite",
+  "name": "audio-network-reborn",
   "version": "0.1.0-rc18",
   "description": "",
   "keywords": [],
@@ -14,23 +14,23 @@
     "prettier:write": "prettier --write src/**/*.{ts,js,html,scss}",
     "start": "yarn clean && webpack-dev-server --env.DEVELOPMENT --open",
     "start:node": "yarn clean && webpack --env.DEVELOPMENT && yarn start:node:existing",
-    "start:node:existing": "node dist/audio-network-lite-v0.1.0-rc18.js audioNetworkLite.run.nodeExample",
+    "start:node:existing": "node dist/audio-network-reborn-v0.1.0-rc18.js audioNetworkLite.run.nodeExample",
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:report-coverage": "cat ./coverage/lcov.info | coveralls",
     "u:i": "yarn upgrade-interactive --latest"
   },
-  "main": "dist/audio-network-lite-v0.1.0-rc18.js",
+  "main": "dist/audio-network-reborn-v0.1.0-rc18.js",
   "types": "dist/lib/index.d.ts",
   "files": [
     "dist/"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/robertrypula/audio-network-lite.git"
+    "url": "git+https://github.com/robertrypula/audio-network-reborn.git"
   },
   "bugs": {
-    "url": "https://github.com/robertrypula/audio-network-lite/issues"
+    "url": "https://github.com/robertrypula/audio-network-reborn/issues"
   },
   "devDependencies": {
     "@types/jest": "^24.0.18",
