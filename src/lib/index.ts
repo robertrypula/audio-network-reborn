@@ -98,8 +98,8 @@ TODO #1:
   + validation on physical layer config
   + fix getTxProgress value (take into account that guard interval is a fraction of symbol time)
   + add guard interval factor to frame config
+  + rename the project to audio-network-reborn as it wont be lite - I have big plans for this project ;)
   - add types where missed
-  - rename the project to audio-network-reborn as it wont be lite - I have big plans for this project ;)
   - detect own transmitted frame caught by the microphone on the same machine
   - finalize advanced chat example
   - remove hex-bytes example

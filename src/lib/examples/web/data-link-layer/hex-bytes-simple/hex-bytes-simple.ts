@@ -13,7 +13,7 @@ import * as domUtils from '@examples/web/dom-utils';
 import * as fromTemplate from './hex-bytes-simple.template';
 
 // TODO: this example doesn't use DataLinkLayerWrapper that handles
-// TODO: all timers by the AudioNetworkLite library itself
+// TODO: all timers by the AudioNetworkReborn library itself
 // TODO: -> example should be deleted or refactored soon
 
 export class DataLinkLayerHexBytesSimpleWebExample {
@@ -98,7 +98,7 @@ export class DataLinkLayerHexBytesSimpleWebExample {
 
   protected initializeDataLinkLayer(): void {
     if (!this.dataLinkLayer) {
-      // AudioNetworkLite.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkLite.AudioMonoIoCreateMode.Stub;
+      // AudioNetworkReborn.audioMonoIoFactory.audioMonoIoCreateMode = AudioNetworkReborn.AudioMonoIoCreateMode.Stub;
       this.dataLinkLayer = new DataLinkLayer();
       domUtils.getById('sample-rate-label').innerHTML = fromTemplate.sampleRate(this.dataLinkLayer);
     }

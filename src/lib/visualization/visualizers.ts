@@ -8,8 +8,8 @@ import { SimpleCanvas } from '@visualization/simple-canvas/simple-canvas';
  *
  * const fftSize = 2048;
  * const sampleRates = [48000, 44100];
- * const unifiedFrequencies = AudioNetworkLite.getUnifiedFrequencies(fftSize, 1000, 256, sampleRates);
- * AudioNetworkLite.visualizeUnifiedFrequencies(unifiedFrequencies, 'canvas', fftSize, sampleRates);
+ * const unifiedFrequencies = AudioNetworkReborn.getUnifiedFrequencies(fftSize, 1000, 256, sampleRates);
+ * AudioNetworkReborn.visualizeUnifiedFrequencies(unifiedFrequencies, 'canvas', fftSize, sampleRates);
  */
 export const visualizeUnifiedFrequencies = (
   unifiedFrequencies: number[],

@@ -23,7 +23,7 @@
           <input
             type="file"
             id="file-attachment"
-            onchange="AudioNetworkLite.fileRead(this.files[0]).then(bytes => console.log(bytes)).catch(error => console.log(error))"
+            onchange="AudioNetworkReborn.fileRead(this.files[0]).then(bytes => console.log(bytes)).catch(error => console.log(error))"
           />
           <label for="file-attachment"></label>
         </div>
@@ -131,7 +131,7 @@
     <div class="clearfix">
       <div class="bytes-received">
         some file.txt (548 bytes)
-        <button type="button" onClick="AudioNetworkLite.fileSave('test.txt', [0x61, 0x62, 0x63])">
+        <button type="button" onClick="AudioNetworkReborn.fileSave('test.txt', [0x61, 0x62, 0x63])">
           Download
         </button>
         <div style="font-family: monospace; font-size: 10px; line-height: 1em; text-align: left;">
