@@ -97,7 +97,7 @@ describe('FrameModesBenchmark', () => {
     const localExperiments = false;
     const randomBytesLength = 1000 * 1e3;
     const randomBytesLengthHalf = Math.ceil(randomBytesLength / 2);
-    const scramble: number[] = SCRAMBLE_SEQUENCE();
+    const scrambleSequence: number[] = SCRAMBLE_SEQUENCE();
     const runDetectionTestCases = (
       frameMode: FrameMode,
       errorCorrectionEnabled: boolean,
@@ -125,7 +125,7 @@ describe('FrameModesBenchmark', () => {
           const payload: number[] = getBytesFromHex(testCase.payload);
           const frame = new Frame(frameConfig).setPayload(payload);
           frameNotScrambled = frame.clone();
-          scrambleArray(frame.getRawBytes(), scramble);
+          scrambleArray(frame.getRawBytes(), scrambleSequence);
           byteStream = byteStream.concat(frame.getRawBytes());
         }
         byteStream = byteStream.concat(
@@ -139,7 +139,7 @@ describe('FrameModesBenchmark', () => {
           }
           findFrameCandidates(
             buffer.data,
-            scramble,
+            scrambleSequence,
             frameConfig,
             errorCorrectionEnabled,
             (frameCandidate, isErrorCorrected) => {

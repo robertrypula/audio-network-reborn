@@ -20,12 +20,12 @@ export const allOneItemErrors = (data: number[], callback: () => void, range = 2
 
 export const findFrameCandidates = (
   bytes: number[],
-  scramble: number[],
+  scrambleSequence: number[],
   frameConfig: FrameConfig,
   errorCorrectionEnabled: boolean,
   callback: (frameCandidate: Frame, isErrorCorrected: boolean) => void
 ): void => {
-  scrambledSubArrays(bytes, scramble, false, (rawBytesScrambled: number[]) => {
+  scrambledSubArrays(bytes, scrambleSequence, false, (rawBytesScrambled: number[]) => {
     rightAlignedSubArrays(rawBytesScrambled, frameConfig.rawBytesLength.min, (rawBytes: number[]) => {
       callback(new Frame(frameConfig).setRawBytes(rawBytes), false);
       errorCorrectionEnabled &&
@@ -46,27 +46,28 @@ export const rightAlignedSubArrays = (
 
 export const scrambleArray = (
   data: number[],
-  scramble: number[],
-  scramblePosition: number = 0,
+  scrambleSequence: number[],
+  positionInSequence: number = 0,
   add: boolean = true,
   range = 256
 ): void => {
   for (let i = 0; i < data.length; i++) {
-    const scrambleValue: number = (add ? 1 : -1) * (scramble[(scramblePosition + i) % scramble.length] % range);
-    data[i] = (data[i] + scrambleValue + range) % range;
+    const dataValueOffset: number =
+      (add ? 1 : -1) * (scrambleSequence[(positionInSequence + i) % scrambleSequence.length] % range);
+    data[i] = (data[i] + dataValueOffset + range) % range;
   }
 };
 
 export const scrambledSubArrays = (
   data: number[],
-  scramble: number[],
+  scrambleSequence: number[],
   add: boolean = true,
   callback: (subArray: number[]) => void,
   range = 256
 ): void => {
-  for (let i = 0; i < scramble.length; i++) {
+  for (let i = 0; i < scrambleSequence.length; i++) {
     const subArray: number[] = data.slice(0);
-    scrambleArray(subArray, scramble, i, add, range);
+    scrambleArray(subArray, scrambleSequence, i, add, range);
     callback(subArray);
   }
 };

@@ -34,15 +34,15 @@ describe('Utils', () => {
       const frameMode: FrameMode = FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24;
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
       const bytes = [32, 34, 242, 43, 65, 32, 65, 43, 13, 174, 52];
-      const scramble = [20, 60];
+      const scrambleSequence = [20, 60];
       const frameCounterSimple: FrameCounterSimple = { errorCorrected: 0, nonErrorCorrected: 0 };
-      const nonErrorCorrected: number = scramble.length * (bytes.length - frameConfig.rawBytesLength.min + 1);
+      const nonErrorCorrected: number = scrambleSequence.length * (bytes.length - frameConfig.rawBytesLength.min + 1);
       const errorCorrected: number = nonErrorCorrected * 0.5 * (bytes.length + frameConfig.rawBytesLength.min) * 255;
       const nonErrorCorrectedRawBytes: number[][] = [];
 
       fromUtils.findFrameCandidates(
         bytes,
-        scramble,
+        scrambleSequence,
         frameConfig,
         true,
         (frameCandidate: Frame, isErrorCorrected: boolean) => {
@@ -98,10 +98,10 @@ describe('Utils', () => {
   describe('scrambleArray', () => {
     it('should properly scramble the data in the array', () => {
       const data = [32];
-      const scramble = [10, 20, 30, 12];
+      const scrambleSequence = [10, 20, 30, 12];
 
       // TODO improve test case
-      fromUtils.scrambleArray(data, scramble, 4, true);
+      fromUtils.scrambleArray(data, scrambleSequence, 4, true);
       expect(data).toEqual([42]);
     });
   });
@@ -109,33 +109,37 @@ describe('Utils', () => {
   describe('scrambledSubArrays', () => {
     it('should properly return sub arrays with scrambled data', () => {
       const result: number[][] = [];
-      const scramble = [10, 20, 30, 12];
+      const scrambleSequence = [10, 20, 30, 12];
 
-      fromUtils.scrambledSubArrays([0, 100, 200], scramble, true, (subArray: number[]) => result.push(subArray));
+      fromUtils.scrambledSubArrays([0, 100, 200], scrambleSequence, true, (subArray: number[]) =>
+        result.push(subArray)
+      );
       expect(result).toEqual([[10, 120, 230], [20, 130, 212], [30, 112, 210], [12, 110, 220]]);
     });
 
     it('should properly return sub arrays with un-scrambled data', () => {
       const result: number[][] = [];
-      const scramble = [10, 20, 30, 12];
+      const scrambleSequence = [10, 20, 30, 12];
 
-      fromUtils.scrambledSubArrays([0, 100, 200], scramble, false, (subArray: number[]) => result.push(subArray));
+      fromUtils.scrambledSubArrays([0, 100, 200], scrambleSequence, false, (subArray: number[]) =>
+        result.push(subArray)
+      );
       expect(result).toEqual([[256 - 10, 80, 170], [256 - 20, 70, 188], [256 - 30, 88, 190], [256 - 12, 90, 180]]);
     });
 
     it('should properly return sub arrays with scrambled data (range check)', () => {
       const result: number[][] = [];
-      const scramble = [25, 26];
+      const scrambleSequence = [25, 26];
 
-      fromUtils.scrambledSubArrays([16, 2], scramble, true, (subArray: number[]) => result.push(subArray), 20);
+      fromUtils.scrambledSubArrays([16, 2], scrambleSequence, true, (subArray: number[]) => result.push(subArray), 20);
       expect(result).toEqual([[1, 8], [2, 7]]);
     });
 
     it('should properly return sub arrays with un-scrambled data (range check)', () => {
       const result: number[][] = [];
-      const scramble = [25, 26];
+      const scrambleSequence = [25, 26];
 
-      fromUtils.scrambledSubArrays([16, 2], scramble, false, (subArray: number[]) => result.push(subArray), 20);
+      fromUtils.scrambledSubArrays([16, 2], scrambleSequence, false, (subArray: number[]) => result.push(subArray), 20);
       expect(result).toEqual([[11, 16], [10, 17]]);
     });
   });

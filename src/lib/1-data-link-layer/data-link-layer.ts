@@ -29,7 +29,7 @@ export class DataLinkLayer {
   protected rxRawBytesA: FixedSizeBuffer<number>;
   protected rxRawBytesB: FixedSizeBuffer<number>;
   protected rxRawBytesCounter = 0;
-  protected scramble: number[] = SCRAMBLE_SEQUENCE();
+  protected scrambleSequence: number[] = SCRAMBLE_SEQUENCE();
   protected txFrame: Frame;
   protected txRawBytesCounter = 0;
 
@@ -88,7 +88,7 @@ export class DataLinkLayer {
 
     findFrameCandidates(
       rxRawBytes.data,
-      this.scramble,
+      this.scrambleSequence,
       this.frameConfig,
       this.rxErrorCorrectionEnabled,
       (frameCandidate: Frame, isErrorCorrected: boolean) => {
@@ -117,7 +117,7 @@ export class DataLinkLayer {
   public setTxBytes(bytes: number[]): void {
     this.txFrame = new Frame(this.frameConfig);
     this.txFrame.setPayload(bytes);
-    scrambleArray(this.txFrame.getRawBytes(), this.scramble, this.txRawBytesCounter, true);
+    scrambleArray(this.txFrame.getRawBytes(), this.scrambleSequence, this.txRawBytesCounter, true);
     this.txRawBytesCounter += this.txFrame.getRawBytes().length;
   }
 
