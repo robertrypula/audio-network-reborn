@@ -1,6 +1,8 @@
+// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+
 import { getBytesFromHex } from '@shared/utils';
 
-export const mocked512RandomBytesA = getBytesFromHex(`
+export const mocked512RandomBytesA: number[] = getBytesFromHex(`
   0f c8 e2 37 4e e1 31 e2 80 6e 66 1a ef 50 bc 47 9a 31 80 fe f1 73 78 7c 92 2a b0 fc 9b 3c a4 3f
   06 9c ec 64 6e 01 75 26 ab 65 11 b5 e3 a0 f3 64 a6 65 9a 87 a4 9f 12 06 dc 6d 49 98 da 5d 3d c3
   16 4b 9b 30 65 89 5f 7c cc 52 5b fd a0 0b a4 e8 69 2e 33 53 4d fb aa f6 81 a1 3e b2 e9 0e 89 2c
@@ -19,7 +21,7 @@ export const mocked512RandomBytesA = getBytesFromHex(`
   17 6d 51 19 25 3f bf 08 89 04 76 bb 79 d6 28 85 85 d2 2f cb 58 59 7a fe 4b 0f 07 21 95 ea fc 58
 `);
 
-export const mocked512RandomBytesB = getBytesFromHex(`
+export const mocked512RandomBytesB: number[] = getBytesFromHex(`
   27 68 48 b2 ef 44 20 ca 9b ef 60 62 54 4d 16 12 4a 6c 4c 71 91 f6 94 96 f7 19 cd 82 1f 96 16 00
   c6 95 f7 e0 7f ec d9 21 33 1e 2a ab 45 8f 86 38 3f 71 28 57 2c 80 c6 e9 e0 08 fd a6 e9 08 2d 65
   68 95 af 28 92 c1 fc 2a 9b 41 1c 67 f3 8d 97 73 87 a5 35 67 a7 7e ce 66 56 0d 17 03 a8 29 96 8d

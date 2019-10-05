@@ -99,7 +99,10 @@ TODO #1:
   + fix getTxProgress value (take into account that guard interval is a fraction of symbol time)
   + add guard interval factor to frame config
   + rename the project to audio-network-reborn as it wont be lite - I have big plans for this project ;)
-  - add types where missed
+  - add types where missed but avoid adding trivial types (const test = 324 or const frame = new Frame(frameConfig))
+    - add types to parameters at function handlers
+  - rename scramble to scrambleSequence
+  - replace true/false values passed to function with Enum
   - detect own transmitted frame caught by the microphone on the same machine
   - finalize advanced chat example
   - remove hex-bytes example

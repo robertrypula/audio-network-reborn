@@ -6,7 +6,7 @@ export class FftResult {
   public pick(binIndexes: number[]): FftResult {
     const newFrequencyDomainData = new Float32Array(binIndexes.length);
 
-    binIndexes.forEach((binIndex, index) => {
+    binIndexes.forEach((binIndex: number, index: number) => {
       newFrequencyDomainData[index] = this.frequencyDomainData[binIndex];
     });
 
@@ -17,10 +17,10 @@ export class FftResult {
   }
 
   public getLoudestBinIndex(): number {
-    let maxValue: number = -Infinity;
-    let maxIndex: number = 0;
+    let maxValue = -Infinity;
+    let maxIndex = 0;
 
-    this.frequencyDomainData.forEach((value, index) => {
+    this.frequencyDomainData.forEach((value: number, index: number) => {
       if (value > maxValue) {
         maxValue = value;
         maxIndex = index;

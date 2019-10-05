@@ -17,14 +17,14 @@ export const getClosestBinIndexes = (fftSize: number, sampleRate: number, freque
 
 export const getDspConfig = (dspConfigInitializer: DspConfigInitializer, sampleRate: number = null): DspConfig => {
   validateDspConfigInitializer(dspConfigInitializer);
-  const unifiedFrequencies = getUnifiedFrequencies(
+  const unifiedFrequencies: number[] = getUnifiedFrequencies(
     dspConfigInitializer.fftSize,
     dspConfigInitializer.frequencyEnd,
     BYTE_UNIQUE_VALUES,
     fromConfig.SUPPORTED_SAMPLE_RATES
   );
-  const rxIntervalMilliseconds = getRxIntervalMilliseconds(dspConfigInitializer);
-  const txIntervalMilliseconds = NYQUIST_TWICE * rxIntervalMilliseconds;
+  const rxIntervalMilliseconds: number = getRxIntervalMilliseconds(dspConfigInitializer);
+  const txIntervalMilliseconds: number = NYQUIST_TWICE * rxIntervalMilliseconds;
   const dspConfig: DspConfig = {
     band: {
       bandwidth: unifiedFrequencies[unifiedFrequencies.length - 1] - unifiedFrequencies[0],
@@ -73,22 +73,22 @@ export const getUnifiedFrequencies = (
   sampleRates: number[]
 ): number[] => {
   const unifiedFrequencies: number[] = [];
-  const frequencyBinsCount = 0.5 * fftSize;
-  const highestPossibleFrequency = Math.min(...sampleRates) / NYQUIST_TWICE;
+  const frequencyBinsCount: number = 0.5 * fftSize;
+  const highestPossibleFrequency: number = Math.min(...sampleRates) / NYQUIST_TWICE;
 
   if (sampleRates.length !== 2) {
-    throw new Error('Not implemented and will probably never be... ;)');
+    throw new Error('Only fixed amount of sample rates is supported (two)');
   }
   if (sampleRates[0] <= sampleRates[1]) {
     throw new Error('Sample rates values must be given in descending order');
   }
 
   for (let binIndex0 = frequencyBinsCount - 1; binIndex0 >= 0; binIndex0--) {
-    const frequency0 = (binIndex0 * sampleRates[0]) / fftSize;
-    const binIndex1ClosestToFrequency0 = (frequency0 * fftSize) / sampleRates[1];
-    const binIndex1Integer = Math.round(binIndex1ClosestToFrequency0);
-    const frequency1 = (binIndex1Integer * sampleRates[1]) / fftSize;
-    const frequencyMiddle = (frequency0 + frequency1) / 2;
+    const frequency0: number = (binIndex0 * sampleRates[0]) / fftSize;
+    const binIndex1ClosestToFrequency0: number = (frequency0 * fftSize) / sampleRates[1];
+    const binIndex1Integer: number = Math.round(binIndex1ClosestToFrequency0);
+    const frequency1: number = (binIndex1Integer * sampleRates[1]) / fftSize;
+    const frequencyMiddle: number = (frequency0 + frequency1) / 2;
 
     if (frequencyMiddle >= highestPossibleFrequency || isInsideForbiddenFrequencies(frequencyMiddle)) {
       continue;

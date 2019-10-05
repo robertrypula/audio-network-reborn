@@ -15,7 +15,7 @@ export const fileRead = (file: File): Promise<number[]> => {
 
 export const fileSave = (filename: string, bytes: number[]): void => {
   const blob = new Blob([new Uint8Array(bytes)]); // , { type: 'application/pdf' }
-  const link = document.createElement('a');
+  const link: HTMLAnchorElement = document.createElement('a');
 
   link.href = window.URL.createObjectURL(blob);
   link.download = filename;

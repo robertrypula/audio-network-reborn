@@ -7,7 +7,7 @@ import { CheckAlgorithmImplementation } from '@shared/model';
 export const getSha1: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation:
   // https://github.com/kvz/locutus/blob/master/src/php/strings/sha1.js
-  const bytesLength = bytes.length;
+  const bytesLength: number = bytes.length;
   const rotLeft = (n: number, s: number): number => (n << s) | (n >>> (32 - s));
   const split = (val: number): number[] => [(val >>> 24) & 0xff, (val >>> 16) & 0xff, (val >>> 8) & 0xff, val & 0xff];
   const W: number[] = new Array(80);
@@ -47,11 +47,11 @@ export const getSha1: CheckAlgorithmImplementation = (bytes: number[]): number[]
   words.push((bytesLength << 3) & 0x0ffffffff);
 
   for (let i = 0; i < words.length; i += 16) {
-    let A = H0;
-    let B = H1;
-    let C = H2;
-    let D = H3;
-    let E = H4;
+    let A: number = H0;
+    let B: number = H1;
+    let C: number = H2;
+    let D: number = H3;
+    let E: number = H4;
     let temp: number;
 
     for (let j = 0; j < 16; j++) {

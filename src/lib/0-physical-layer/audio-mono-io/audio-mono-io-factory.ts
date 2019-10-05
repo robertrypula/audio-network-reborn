@@ -5,7 +5,7 @@ import { WebApiAudioMonoIo } from '@physical-layer/audio-mono-io/web-api-audio-m
 import { AudioMonoIo, AudioMonoIoCreateMode } from '@physical-layer/model';
 
 export class AudioMonoIoFactory {
-  public audioMonoIoCreateMode: AudioMonoIoCreateMode = AudioMonoIoCreateMode.WebApi;
+  public audioMonoIoCreateMode = AudioMonoIoCreateMode.WebApi;
 
   public createAudioMonoIo(): AudioMonoIo {
     // TODO implement auto detection of browser/node environment

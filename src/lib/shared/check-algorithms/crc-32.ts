@@ -4,7 +4,7 @@ import { CheckAlgorithmImplementation } from '@shared/model';
 
 /*tslint:disable:no-bitwise*/
 
-const CRC_32_LOOKUP_TABLE = `
+const CRC_32_LOOKUP_TABLE: number[] = `
   00000000,77073096,ee0e612c,990951ba,076dc419,706af48f,e963a535,9e6495a3,0edb8832,79dcb8a4,e0d5e91e,97d2d988,09b64c2b,
   7eb17cbd,e7b82d07,90bf1d91,1db71064,6ab020f2,f3b97148,84be41de,1adad47d,6ddde4eb,f4d4b551,83d385c7,136c9856,646ba8c0,
   fd62f97a,8a65c9ec,14015c4f,63066cd9,fa0f3d63,8d080df5,3b6e20c8,4c69105e,d56041e4,a2677172,3c03e4d1,4b04d447,d20d85fd,
@@ -26,7 +26,7 @@ const CRC_32_LOOKUP_TABLE = `
   40df0b66,37d83bf0,a9bcae53,debb9ec5,47b2cf7f,30b5ffe9,bdbdf21c,cabac28a,53b39330,24b4a3a6,bad03605,cdd70693,54de5729,
   23d967bf,b3667a2e,c4614ab8,5d681b02,2a6f2b94,b40bbe37,c30c8ea1,5a05df1b,2d02ef8d`
   .split(',')
-  .map(value => parseInt(value, 16));
+  .map((value: string) => parseInt(value, 16));
 
 export const getCrc32: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation:

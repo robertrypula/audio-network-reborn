@@ -5,7 +5,7 @@ import * as fromUtils from '@shared/utils';
 describe('Utils', () => {
   describe('getBytesFromHex', () => {
     it('should properly extract bytes array', () => {
-      const result = fromUtils.getBytesFromHex('ab cd   \n ef43  01 2 3456 78 9a bc de f');
+      const result: number[] = fromUtils.getBytesFromHex('ab cd   \n ef43  01 2 3456 78 9a bc de f');
 
       expect(result).toEqual([0xab, 0xcd, 0xef, 0x43, 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]);
     });

@@ -41,6 +41,11 @@ export interface FrameCounter {
   validFake?: number;
 }
 
+export interface FrameCounterSimple {
+  errorCorrected: number;
+  nonErrorCorrected: number;
+}
+
 export type FrameHistory = FrameHistoryEntry[];
 
 export interface FrameHistoryEntry {

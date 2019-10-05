@@ -7,8 +7,8 @@ import { AudioMonoIo } from '@physical-layer/model';
 const CONSOLE = false;
 
 export class StubAudioMonoIo implements AudioMonoIo {
-  protected fftSize: number = 4096;
-  protected sampleRate: number = 48000;
+  protected fftSize = 4096;
+  protected sampleRate = 48000;
 
   public getFftSize(): number {
     CONSOLE && console.info('StubAudioMonoIo.getFftSize -> ' + this.fftSize);

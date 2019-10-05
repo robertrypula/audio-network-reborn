@@ -1,14 +1,14 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-// in your code it would be: ... from 'audio-network-reborn';
 import {
   DataLinkLayer,
+  DspConfig,
   DspMode,
   getBytesFromHex,
   getDspConfigsFromAllDspModes,
   getHexFromBytes,
   TxTimeTickState
-} from '@';
+} from '@'; // in your code it would be: ... from 'audio-network-reborn';
 import * as domUtils from '@examples/web/dom-utils';
 import * as fromTemplate from './hex-bytes-simple.template';
 
@@ -78,9 +78,9 @@ export class DataLinkLayerHexBytesSimpleWebExample {
       rxBytesCollection = this.dataLinkLayer.getRxBytesCollection();
 
       if (rxBytesCollection.length) {
-        const div = domUtils.createElement('div');
+        const div: HTMLElement = domUtils.createElement('div');
 
-        div.innerHTML = rxBytesCollection.map(rxBytes => getHexFromBytes(rxBytes)).join(' | ');
+        div.innerHTML = rxBytesCollection.map((rxBytes: number[]) => getHexFromBytes(rxBytes)).join(' | ');
         domUtils.getById('rx-data').appendChild(div);
       }
     }, this.dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds);
@@ -108,7 +108,7 @@ export class DataLinkLayerHexBytesSimpleWebExample {
     domUtils.getById('dsp-mode-dropdown').innerHTML =
       fromTemplate.dropdownOptionEmpty +
       getDspConfigsFromAllDspModes()
-        .map(dspConfig => fromTemplate.dropdownOption(dspConfig))
+        .map((dspConfig: DspConfig) => fromTemplate.dropdownOption(dspConfig))
         .join('');
   }
 }

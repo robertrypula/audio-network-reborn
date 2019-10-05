@@ -65,14 +65,16 @@ export class DataLinkLayerWrapper {
       if (this.dataLinkLayer.rxTimeTick(this.getCurrentTime()) === RxTimeTickState.Stopped) {
         this.listenStop(false);
       } else if (this.rxHandlers.next) {
-        this.dataLinkLayer.getRxBytesCollection().forEach(rxBytes => this.rxHandlers.next(rxBytes, false));
-        this.dataLinkLayer.getRxBytesErrorCorrectedCollection().forEach(rxBytes => this.rxHandlers.next(rxBytes, true));
+        this.dataLinkLayer.getRxBytesCollection().forEach((rxBytes: number[]) => this.rxHandlers.next(rxBytes, false));
+        this.dataLinkLayer
+          .getRxBytesErrorCorrectedCollection()
+          .forEach((rxBytes: number[]) => this.rxHandlers.next(rxBytes, true));
       }
     }, this.dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds);
   }
 
   protected handleTxInterval(): void {
-    const getTxGuardTimeout = () =>
+    const getTxGuardTimeout = (): any =>
       setTimeout(() => {
         this.txHandlers.next && this.txHandlers.next(this.dataLinkLayer.getTxProgress());
         this.sendStop(false);

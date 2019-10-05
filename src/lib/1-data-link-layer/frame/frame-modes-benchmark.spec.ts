@@ -20,9 +20,9 @@ describe('FrameModesBenchmark', () => {
   describe('Integrity', () => {
     const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseIntegrity[]) => {
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
-      testCases.forEach(testCase => {
+      testCases.forEach((testCase: TestCaseIntegrity) => {
         const frameA = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
-        const rawBytes = frameA.getRawBytes().slice(0);
+        const rawBytes: number[] = frameA.getRawBytes().slice(0);
         const frameB = new Frame(frameConfig).setRawBytes(rawBytes);
 
         expect({ isValid: frameB.isValid(), rawBytes: getHexFromBytes(rawBytes) }).toEqual({
@@ -97,7 +97,7 @@ describe('FrameModesBenchmark', () => {
     const localExperiments = false;
     const randomBytesLength = 1000 * 1e3;
     const randomBytesLengthHalf = Math.ceil(randomBytesLength / 2);
-    const scramble = SCRAMBLE_SEQUENCE();
+    const scramble: number[] = SCRAMBLE_SEQUENCE();
     const runDetectionTestCases = (
       frameMode: FrameMode,
       errorCorrectionEnabled: boolean,
@@ -105,7 +105,7 @@ describe('FrameModesBenchmark', () => {
     ) => {
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
 
-      testCases.forEach(testCase => {
+      testCases.forEach((testCase: TestCaseFrameCounterWithPayload) => {
         const start = new Date().getTime();
         const buffer = new FixedSizeBuffer<number>(frameConfig.rawBytesLength.max, frameConfig.rawBytesLength.min);
         const frameCounter: FrameCounter = {
@@ -116,11 +116,13 @@ describe('FrameModesBenchmark', () => {
           valid: 0,
           validFake: 0
         };
-        let byteStream = localExperiments ? getRandomBytes(randomBytesLengthHalf) : mocked512RandomBytesA.slice(0);
+        let byteStream: number[] = localExperiments
+          ? getRandomBytes(randomBytesLengthHalf)
+          : mocked512RandomBytesA.slice(0);
         let frameNotScrambled: Frame;
 
         if (testCase.payload) {
-          const payload = getBytesFromHex(testCase.payload);
+          const payload: number[] = getBytesFromHex(testCase.payload);
           const frame = new Frame(frameConfig).setPayload(payload);
           frameNotScrambled = frame.clone();
           scrambleArray(frame.getRawBytes(), scramble);

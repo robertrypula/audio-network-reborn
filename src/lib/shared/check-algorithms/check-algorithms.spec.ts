@@ -6,7 +6,7 @@ import { getBytesFromText, getHexFromBytes } from '@shared/utils';
 
 describe('CheckAlgorithms', () => {
   const runTestCases = (checkAlgorithmImplementation: CheckAlgorithmImplementation, testCases: TestCase[]) => {
-    testCases.forEach(testCase =>
+    testCases.forEach((testCase: TestCase) =>
       expect(getHexFromBytes(checkAlgorithmImplementation(getBytesFromText(testCase.in)))).toEqual(testCase.out)
     );
   };

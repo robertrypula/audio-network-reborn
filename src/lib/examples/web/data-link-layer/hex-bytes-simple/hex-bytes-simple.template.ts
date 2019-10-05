@@ -2,7 +2,7 @@
 
 import { DataLinkLayer, DspConfig } from '../../../../index';
 
-export const mainHtml = `
+export const mainHtml: string = `
   <div class="section">
     <select id="dsp-mode-dropdown" onchange="example.onDspModeChange(this.value)"></select>
   </div>
@@ -26,23 +26,23 @@ export const mainHtml = `
 `;
 
 const kHzPipe = (value: number): string => {
-  const s = (value / 1000).toFixed(1);
+  const s: string = (value / 1000).toFixed(1);
 
   return s.indexOf('.') === 1 ? '&nbsp;' + s : s;
 };
 
 const byteRatePipe = (value: number): string => {
-  const s = value.toFixed(1);
+  const s: string = value.toFixed(1);
 
   return s.indexOf('.') === 1 ? '&nbsp;' + s : s;
 };
 
-export const sampleRate = (dataLinkLayer: DataLinkLayer) =>
+export const sampleRate = (dataLinkLayer: DataLinkLayer): string =>
   (dataLinkLayer.physicalLayer.audioMonoIo.getSampleRate() / 1000).toFixed(1);
 
 export const dropdownOptionEmpty = '<option value="">--- Select Dsp Mode ---</option>';
 
-export const dropdownOption = (dspConfig: DspConfig) =>
+export const dropdownOption = (dspConfig: DspConfig): string =>
   `<option value="${dspConfig.dspMode}">` +
   `${byteRatePipe(dspConfig.rawByteRate)} B/s | ${kHzPipe(dspConfig.band.begin)}-${kHzPipe(dspConfig.band.end)} kHz ` +
   `(${(dspConfig.band.bandwidth / 1000).toFixed(1)} kHz)` +

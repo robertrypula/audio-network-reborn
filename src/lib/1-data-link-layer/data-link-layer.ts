@@ -2,12 +2,13 @@
 
 import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
 import { getFrameConfig } from '@data-link-layer/config-utils';
-import { GUARD_FACTOR, SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
+import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
 import {
   FrameConfig,
   FrameConfigInitializer,
   FrameHistory,
+  FrameHistoryEntry,
   FrameMode,
   RxTimeTickState,
   TxTimeTickState
@@ -42,11 +43,13 @@ export class DataLinkLayer {
   }
 
   public getRxBytesCollection(): number[][] {
-    return this.rxFrames.length ? this.rxFrames.map(item => item.getPayload()) : [];
+    return this.rxFrames.length ? this.rxFrames.map((frame: Frame) => frame.getPayload()) : [];
   }
 
   public getRxBytesErrorCorrectedCollection(): number[][] {
-    return this.rxFramesErrorCorrected.length ? this.rxFramesErrorCorrected.map(item => item.getPayload()) : [];
+    return this.rxFramesErrorCorrected.length
+      ? this.rxFramesErrorCorrected.map((frame: Frame) => frame.getPayload())
+      : [];
   }
 
   public getTxGuardMilliseconds(): number {
@@ -60,18 +63,18 @@ export class DataLinkLayer {
       return 1;
     }
 
-    const txIntervalMilliseconds = this.physicalLayer.getDspConfig().txIntervalMilliseconds;
-    const rawBytesLength = this.txFrame.getRawBytes().length;
-    const totalMilliseconds = rawBytesLength * txIntervalMilliseconds + this.getTxGuardMilliseconds();
-    const currentPositionMilliseconds = this.txFrame.getRawBytePosition() * txIntervalMilliseconds;
+    const txIntervalMilliseconds: number = this.physicalLayer.getDspConfig().txIntervalMilliseconds;
+    const rawBytesLength: number = this.txFrame.getRawBytes().length;
+    const totalMilliseconds: number = rawBytesLength * txIntervalMilliseconds + this.getTxGuardMilliseconds();
+    const currentPositionMilliseconds: number = this.txFrame.getRawBytePosition() * txIntervalMilliseconds;
 
     return currentPositionMilliseconds / totalMilliseconds;
   }
 
   public rxTimeTick(currentTime: number): RxTimeTickState {
     const isEven: boolean = this.rxRawBytesCounter % 2 === 0;
-    const rxRawBytes = isEven ? this.rxRawBytesA : this.rxRawBytesB;
-    const rxRawByte = this.physicalLayer.rx(currentTime);
+    const rxRawBytes: FixedSizeBuffer<number> = isEven ? this.rxRawBytesA : this.rxRawBytesB;
+    const rxRawByte: number = this.physicalLayer.rx(currentTime);
     // const start = new Date().getTime(); // TODO remove me
     let validFramesCounter = 0; // TODO remove me
 
@@ -88,7 +91,7 @@ export class DataLinkLayer {
       this.scramble,
       this.frameConfig,
       this.rxErrorCorrectionEnabled,
-      (frameCandidate, isErrorCorrected) => {
+      (frameCandidate: Frame, isErrorCorrected: boolean) => {
         this.tryToFindValidFrame(frameCandidate, isErrorCorrected) && validFramesCounter++;
       }
     );
@@ -135,13 +138,14 @@ export class DataLinkLayer {
 
   protected tryToFindValidFrame(frameCandidate: Frame, isErrorCorrected: boolean): boolean {
     const isEven: boolean = this.rxRawBytesCounter % 2 === 0;
-    const rxFrameHistory = isEven ? this.rxFrameHistoryA : this.rxFrameHistoryB;
-    const rxFrameHistoryHalfStepBack = isEven ? this.rxFrameHistoryB : this.rxFrameHistoryA;
+    const rxFrameHistory: FrameHistory = isEven ? this.rxFrameHistoryA : this.rxFrameHistoryB;
+    const rxFrameHistoryHalfStepBack: FrameHistory = isEven ? this.rxFrameHistoryB : this.rxFrameHistoryA;
 
     if (frameCandidate.isValid()) {
-      const frame = isErrorCorrected ? frameCandidate.clone() : frameCandidate;
-      const equalFramesHalfStepBack = rxFrameHistoryHalfStepBack.filter(
-        item => item.rawBytePosition >= this.rxRawBytesCounter - 1 && item.frame.isEqualTo(frame)
+      const frame: Frame = isErrorCorrected ? frameCandidate.clone() : frameCandidate;
+      const equalFramesHalfStepBack: FrameHistory = rxFrameHistoryHalfStepBack.filter(
+        (frameHistoryEntry: FrameHistoryEntry) =>
+          frameHistoryEntry.rawBytePosition >= this.rxRawBytesCounter - 1 && frameHistoryEntry.frame.isEqualTo(frame)
       );
 
       if (equalFramesHalfStepBack.length === 0) {

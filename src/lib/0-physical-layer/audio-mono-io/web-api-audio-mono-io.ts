@@ -11,7 +11,7 @@ export class WebApiAudioMonoIo implements AudioMonoIo {
   protected microphoneVirtualNode: GainNode;
   protected oscillatorNode: OscillatorNode;
 
-  protected fftSize: number = 256;
+  protected fftSize = 256;
 
   public constructor() {
     this.audioContext = new AudioContext();
@@ -87,7 +87,7 @@ export class WebApiAudioMonoIo implements AudioMonoIo {
         this.microphoneRealNode = this.audioContext.createMediaStreamSource(mediaStream);
         this.microphoneRealNode.connect(node);
       })
-      .catch(error => {
+      .catch((error: any) => {
         throw new Error(error);
       });
   }

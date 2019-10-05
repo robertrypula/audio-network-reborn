@@ -7,9 +7,9 @@
   - https://stackoverflow.com/a/48536881
 */
 
-export const isNode = typeof global !== 'undefined' && toString.call(global) === '[object global]';
+export const isNode: boolean = typeof global !== 'undefined' && toString.call(global) === '[object global]';
 
-export const isBrowser =
+export const isBrowser: boolean =
   !isNode && typeof navigator !== 'undefined' && typeof document !== 'undefined' && typeof window !== 'undefined';
 
 export const argv: string[] = isNode ? global.process.argv : [];

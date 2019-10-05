@@ -3,7 +3,7 @@
 import { FrameConfigInitializerWithoutCheckAlgorithm } from '@data-link-layer/model';
 import { getBytesFromHex } from '@shared/utils';
 
-export const GUARD_FACTOR: number = 0.25;
+export const GUARD_FACTOR = 0.25;
 
 export const HEADER_2_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES: FrameConfigInitializerWithoutCheckAlgorithm = {
   guardFactor: GUARD_FACTOR,
@@ -34,4 +34,4 @@ export const HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigInitiali
 };
 
 // TODO check import issue when it's not function
-export const SCRAMBLE_SEQUENCE = () => getBytesFromHex('f9 cb 5d b3 ce 5a 88 5e e6 aa d3 3f bc 60 0e 8d b5');
+export const SCRAMBLE_SEQUENCE = (): number[] => getBytesFromHex('f9 cb 5d b3 ce 5a 88 5e e6 aa d3 3f bc 60 0e 8d b5');

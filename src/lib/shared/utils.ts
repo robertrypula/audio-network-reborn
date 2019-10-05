@@ -4,17 +4,17 @@
 
 export const getBytesFromHex = (hex: string): number[] => {
   const bytes: number[] = [];
-  const aCode = 'a'.charCodeAt(0);
-  const fCode = 'f'.charCodeAt(0);
-  const zeroCode = '0'.charCodeAt(0);
-  const nineCode = '9'.charCodeAt(0);
-  let byte: number = 0;
+  const aCode: number = 'a'.charCodeAt(0);
+  const fCode: number = 'f'.charCodeAt(0);
+  const zeroCode: number = '0'.charCodeAt(0);
+  const nineCode: number = '9'.charCodeAt(0);
+  let byte = 0;
   let halfByteCounter = 0;
 
   hex = hex.toLowerCase();
   for (let i = 0, iMax = hex.length; i < iMax; i++) {
-    const charCode = hex.charCodeAt(i);
-    const halfByte =
+    const charCode: number = hex.charCodeAt(i);
+    const halfByte: number =
       aCode <= charCode && charCode <= fCode
         ? charCode - aCode + 0xa
         : zeroCode <= charCode && charCode <= nineCode
@@ -36,7 +36,7 @@ export const getBytesFromHex = (hex: string): number[] => {
 };
 
 export const getBytesFromText = (text: string): number[] => {
-  return text.split('').map(item => item.charCodeAt(0) % 256);
+  return text.split('').map((char: string) => char.charCodeAt(0) % 256);
 };
 
 export const getFilledArray = (length: number, fillWith = 0): number[] => {
@@ -45,7 +45,7 @@ export const getFilledArray = (length: number, fillWith = 0): number[] => {
 };
 
 export const getHexFromBytes = (bytes: number[], joinWith = ' '): string => {
-  return bytes.map(byte => ((byte & 0xff) < 16 ? '0' : '') + (byte & 0xff).toString(16)).join(joinWith);
+  return bytes.map((byte: number) => ((byte & 0xff) < 16 ? '0' : '') + (byte & 0xff).toString(16)).join(joinWith);
 };
 
 export const getRandomBytes = (length: number): number[] => {
@@ -66,8 +66,8 @@ export const getTextFromBytes = (bytes: number[]): string => {
 };
 
 export const isEqual = (a: any, b: any): boolean => {
-  const aClone = JSON.parse(JSON.stringify(a));
-  const bClone = JSON.parse(JSON.stringify(b));
+  const aClone: any = JSON.parse(JSON.stringify(a));
+  const bClone: any = JSON.parse(JSON.stringify(b));
 
   sortKeys(aClone);
   sortKeys(bClone);
@@ -76,15 +76,17 @@ export const isEqual = (a: any, b: any): boolean => {
 };
 
 export const sortKeys = (object: any): void => {
+  const someAlmostRandomValue = '_sortKeys_I_am_almost_random_';
+
   typeof object === 'object' &&
     object !== null &&
     Object.keys(object)
       .sort()
       .forEach((key: string) => {
-        object['_' + key] = object[key];
+        object[someAlmostRandomValue + key] = object[key];
         delete object[key];
-        object[key] = object['_' + key];
-        delete object['_' + key];
+        object[key] = object[someAlmostRandomValue + key];
+        delete object[someAlmostRandomValue + key];
         sortKeys(object[key]);
       });
 };

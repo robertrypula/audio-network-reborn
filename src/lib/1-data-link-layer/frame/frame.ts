@@ -14,7 +14,7 @@ const empty: HeaderFirstByte = {
 
 export class Frame {
   protected rawBytes: number[] = [];
-  protected rawBytePosition: number = 0;
+  protected rawBytePosition = 0;
 
   public constructor(protected readonly frameConfig: FrameConfig) {}
 
@@ -102,7 +102,7 @@ export class Frame {
   protected getCheckSequence(fromRawBytes: boolean): number[] {
     const { headerLength, payloadLengthBitSize } = this.frameConfig.frameConfigInitializer;
     const { checkSequenceMask } = this.frameConfig.headerFirstByte ? this.frameConfig.headerFirstByte : empty;
-    const result = fromRawBytes
+    const result: number[] = fromRawBytes
       ? this.rawBytes.slice(0, headerLength)
       : this.getFullCheckSequenceFromPayload().slice(0, headerLength);
 

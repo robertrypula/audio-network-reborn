@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-// TODO migrate the code from ES5
+// TODO finalize the migration process from the ES5 code
 
 /*
 const getKey = function (frequencyData, indexMin, indexMax, frequencySpacing) {

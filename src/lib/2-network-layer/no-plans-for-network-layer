@@ -1,7 +1,12 @@
 Currently I'm not planning to implement network layer but sonic router would be nice! ;)
 
-Some ideas
+UPDATE 2019.10.05:
+
+A real router would be too complex as Network Layer would need to be
+active (receive and resend data). Some ideas to make it simpler:
+
   - quite feasible would be to create one local network where every device hears all devices (no router needed)
-  - 'IP' addresses from  0 to 254 (255 devices) and one 255 for broadcast
-  - it would require one additional byte in Data Link Layer frame so a bit waste of bandwidth...
-  - router to complex as Network Layer would need to be active (receive and resend data)
+  - destination 'IP' addresses stored in 4 bits will give 16 unique values
+  - source 'IP' addresses stored in 4 bits will give 16 unique values
+  - it would require one additional byte in Data Link Layer frame
+

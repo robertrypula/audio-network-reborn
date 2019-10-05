@@ -4,7 +4,7 @@ import { FREQUENCY_08_0_KHZ, FREQUENCY_16_0_KHZ, FREQUENCY_19_5_KHZ } from '@phy
 import { DspModeToDspConfigInitializerLookUp } from '@physical-layer/model';
 
 export const FREQUENCY_MARGIN = 800;
-export const FREQUENCY_FORBIDDEN_RANGE = [
+export const FREQUENCY_FORBIDDEN_RANGE: Array<[number, number]> = [
   [FREQUENCY_08_0_KHZ - FREQUENCY_MARGIN, FREQUENCY_08_0_KHZ + FREQUENCY_MARGIN],
   [FREQUENCY_16_0_KHZ - FREQUENCY_MARGIN, FREQUENCY_16_0_KHZ + FREQUENCY_MARGIN],
   [FREQUENCY_19_5_KHZ - FREQUENCY_MARGIN, +Infinity]
@@ -168,4 +168,4 @@ export const DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP: DspModeToDspConfigIniti
   }
 };
 
-export const SUPPORTED_SAMPLE_RATES = [48000, 44100];
+export const SUPPORTED_SAMPLE_RATES: [number, number] = [48000, 44100]; // only these two samples rates are supported

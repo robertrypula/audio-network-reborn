@@ -11,8 +11,8 @@ export const getUtf8BytesFromText = (text: string): number[] => {
   let utf8Text = '';
 
   for (let n = 0; n < text.length; n++) {
-    let charCode = text.charCodeAt(n);
-    let utf8TextPart = null;
+    let charCode: number = text.charCodeAt(n);
+    let utf8TextPart: string = null;
 
     if (charCode < 128) {
       end++;

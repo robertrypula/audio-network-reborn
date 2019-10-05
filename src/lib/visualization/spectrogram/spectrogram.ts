@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-// TODO migrate the code from ES5
+// TODO finalize the migration process from the ES5 code
 
 /*tslint:disable*/
 
@@ -82,7 +82,7 @@ export class Spectrogram {
     };
 
     public clear = function () {
-      // TODO this is temporary code and acctually it's not clearing anything... REFACTOR!
+      // TODO this is temporary code and actually it's not clearing anything... REFACTOR!
       this.add([0, 1, 2], 0, 1, 1, 0, 0);
     };
 
