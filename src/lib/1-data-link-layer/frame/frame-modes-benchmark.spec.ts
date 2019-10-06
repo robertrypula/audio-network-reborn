@@ -2,7 +2,7 @@
 
 import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
 import { getFrameConfig } from '@data-link-layer/config-utils';
-import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
+import { FRAME_COUNTER_WITH_ZEROS, SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
 import { mocked512RandomBytesA, mocked512RandomBytesB } from '@data-link-layer/frame/frame-modes-benchmark.spec-data';
 import {
@@ -12,7 +12,7 @@ import {
   TestCaseFrameCounterWithPayload,
   TestCaseIntegrity
 } from '@data-link-layer/model';
-import { findFrameCandidates, scrambleArray } from '@data-link-layer/utils';
+import { findFrameCandidates, scrambler } from '@data-link-layer/utils';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 import { getBytesFromHex, getHexFromBytes, getRandomBytes } from '@shared/utils';
 
@@ -98,6 +98,11 @@ describe('FrameModesBenchmark', () => {
     const randomBytesLength = 1000 * 1e3;
     const randomBytesLengthHalf = Math.ceil(randomBytesLength / 2);
     const scrambleSequence: number[] = SCRAMBLE_SEQUENCE();
+    const getRandomRawBytes = (firstPart: boolean): number[] => {
+      return localExperiments
+        ? getRandomBytes(randomBytesLengthHalf)
+        : (firstPart ? mocked512RandomBytesA : mocked512RandomBytesB).slice(0);
+    };
     const runDetectionTestCases = (
       frameMode: FrameMode,
       errorCorrectionEnabled: boolean,
@@ -106,39 +111,29 @@ describe('FrameModesBenchmark', () => {
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
 
       testCases.forEach((testCase: TestCaseFrameCounterWithPayload) => {
+        const { max, min } = frameConfig.rawBytesLength;
+        const frameCounter: FrameCounter = { ...FRAME_COUNTER_WITH_ZEROS };
+        const rawBytes = new FixedSizeBuffer<number>(max, min);
         const start = new Date().getTime();
-        const buffer = new FixedSizeBuffer<number>(frameConfig.rawBytesLength.max, frameConfig.rawBytesLength.min);
-        const frameCounter: FrameCounter = {
-          errorCorrectedInvalid: 0,
-          errorCorrectedValid: 0,
-          errorCorrectedValidFake: 0,
-          invalid: 0,
-          valid: 0,
-          validFake: 0
-        };
-        let byteStream: number[] = localExperiments
-          ? getRandomBytes(randomBytesLengthHalf)
-          : mocked512RandomBytesA.slice(0);
         let frameNotScrambled: Frame;
+        let rawBytesLongStream: number[] = [];
 
+        rawBytesLongStream = rawBytesLongStream.concat(getRandomRawBytes(true));
         if (testCase.payload) {
-          const payload: number[] = getBytesFromHex(testCase.payload);
-          const frame = new Frame(frameConfig).setPayload(payload);
+          const frame = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
           frameNotScrambled = frame.clone();
-          scrambleArray(frame.getRawBytes(), scrambleSequence);
-          byteStream = byteStream.concat(frame.getRawBytes());
+          scrambler(frame.getRawBytes(), true, scrambleSequence);
+          rawBytesLongStream = rawBytesLongStream.concat(frame.getRawBytes());
         }
-        byteStream = byteStream.concat(
-          localExperiments ? getRandomBytes(randomBytesLengthHalf) : mocked512RandomBytesB.slice(0)
-        );
+        rawBytesLongStream = rawBytesLongStream.concat(getRandomRawBytes(false));
 
-        for (let i = 0; i < byteStream.length; i++) {
-          buffer.insert(byteStream[i]);
-          if (buffer.isBelowMinimalLength()) {
+        for (let i = 0; i < rawBytesLongStream.length; i++) {
+          rawBytes.insert(rawBytesLongStream[i]);
+          if (rawBytes.isBelowMinimalLength()) {
             continue;
           }
           findFrameCandidates(
-            buffer.data,
+            rawBytes.data,
             scrambleSequence,
             frameConfig,
             errorCorrectionEnabled,
@@ -162,11 +157,11 @@ describe('FrameModesBenchmark', () => {
 
         if (localExperiments) {
           expect({
-            byteStreamLength: byteStream.length,
-            errorCorrectedInvalidFrameEvery: byteStream.length / frameCounter.errorCorrectedInvalid,
+            byteStreamLength: rawBytesLongStream.length,
+            errorCorrectedInvalidFrameEvery: rawBytesLongStream.length / frameCounter.errorCorrectedInvalid,
             executionTime: ((new Date().getTime() - start) / 1000).toFixed(1) + ' s',
             frameCounter,
-            validFakeFrameEvery: byteStream.length / frameCounter.validFake
+            validFakeFrameEvery: rawBytesLongStream.length / frameCounter.validFake
           }).toEqual({});
         } else {
           expect(frameCounter).toEqual(testCase.frameCounter);

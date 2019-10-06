@@ -1,7 +1,18 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FrameConfigInitializerWithoutCheckAlgorithm } from '@data-link-layer/model';
+import { FrameConfigInitializerWithoutCheckAlgorithm, FrameCounter, FrameCounterSimple } from '@data-link-layer/model';
 import { getBytesFromHex } from '@shared/utils';
+
+export const FRAME_COUNTER_WITH_ZEROS: FrameCounter = {
+  errorCorrectedInvalid: 0,
+  errorCorrectedValid: 0,
+  errorCorrectedValidFake: 0,
+  invalid: 0,
+  valid: 0,
+  validFake: 0
+};
+
+export const FRAME_COUNTER_SIMPLE_WITH_ZEROS: FrameCounterSimple = { errorCorrected: 0, nonErrorCorrected: 0 };
 
 export const GUARD_FACTOR = 0.25;
 

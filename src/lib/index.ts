@@ -102,9 +102,15 @@ TODO #1:
   + add types where missed but avoid adding trivial types (const test = 324 or const frame = new Frame(frameConfig))
     + add types to parameters at function handlers
   + rename scramble to scrambleSequence
-  - find better names for rightAlignedSubArrays, scrambledSubArrays methods
-  - replace true/false values passed to function with Enum
-  - detect own transmitted frame caught by the microphone on the same machine
+  + find better names for allOneItemErrors, rightAlignedSubArrays and scrambledSubArrays methods
+  - finalize unit tests for scrambler method
+  - replace true/false values passed to functions with Enum (mostly in src/lib/1-data-link-layer/utils.ts)
+  - group interfaces, types and enums in model.ts files & check if all all methods and functions are AZ sorted
+  - add safety condition to findFrameCandidates & prevent uncompleted rxRawBytes buffer from being processed
+  - detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
+      - we don't need separate history for odd & even rxRawBytes,
+      - we can return frames at getRxBytesCollection/getRxBytesErrorCorrectedCollection directly from history
+      - probably extract history logic to separate class or utils
   - finalize advanced chat example
   - remove hex-bytes example
   - update README: add example

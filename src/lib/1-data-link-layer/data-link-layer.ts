@@ -13,7 +13,7 @@ import {
   RxTimeTickState,
   TxTimeTickState
 } from '@data-link-layer/model';
-import { findFrameCandidates, scrambleArray } from '@data-link-layer/utils';
+import { findFrameCandidates, scrambler } from '@data-link-layer/utils';
 import { PhysicalLayer } from '@physical-layer/physical-layer';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 
@@ -103,9 +103,12 @@ export class DataLinkLayer {
   }
 
   public setFrameConfigInitializer(frameConfigInitializer: FrameConfigInitializer): void {
+    let lengthMax: number;
+
     this.frameConfig = getFrameConfig(frameConfigInitializer);
-    this.rxRawBytesA = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLength.max);
-    this.rxRawBytesB = new FixedSizeBuffer<number>(this.frameConfig.rawBytesLength.max);
+    lengthMax = this.frameConfig.rawBytesLength.max;
+    this.rxRawBytesA = new FixedSizeBuffer<number>(lengthMax);
+    this.rxRawBytesB = new FixedSizeBuffer<number>(lengthMax);
   }
 
   public setFrameMode(frameMode: FrameMode): void {
@@ -117,7 +120,7 @@ export class DataLinkLayer {
   public setTxBytes(bytes: number[]): void {
     this.txFrame = new Frame(this.frameConfig);
     this.txFrame.setPayload(bytes);
-    scrambleArray(this.txFrame.getRawBytes(), this.scrambleSequence, this.txRawBytesCounter, true);
+    scrambler(this.txFrame.getRawBytes(), true, this.scrambleSequence, this.txRawBytesCounter);
     this.txRawBytesCounter += this.txFrame.getRawBytes().length;
   }
 
