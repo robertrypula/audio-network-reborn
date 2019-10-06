@@ -130,13 +130,39 @@ describe('Utils', () => {
 
   describe('scrambler', () => {
     it('should properly scramble the data in the array', () => {
-      const data = [32];
+      const data = [32, 10, 20, 30, 100, 200];
       const scrambleSequence = [10, 20, 30, 12];
-      const offset = 4;
 
-      // TODO improve test case
-      fromUtils.scrambler(data, true, scrambleSequence, offset);
-      expect(data).toEqual([42]);
+      fromUtils.scrambler(data, true, scrambleSequence);
+      expect(data).toEqual([42, 30, 50, 42, 110, 220]);
+    });
+
+    it('should properly un-scramble the data in the array', () => {
+      const data = [42, 30, 50, 42, 110, 220];
+      const scrambleSequence = [10, 20, 30, 12];
+
+      fromUtils.scrambler(data, false, scrambleSequence);
+      expect(data).toEqual([32, 10, 20, 30, 100, 200]);
+    });
+
+    it('should properly scramble the data in the array (range and offset test)', () => {
+      const range = 50;
+      const data = [45, 5, 15, range + 49];
+      const scrambleSequence = [20, 5, range + 1];
+      const offset = scrambleSequence.length + 1;
+
+      fromUtils.scrambler(data, true, scrambleSequence, offset, range);
+      expect(data).toEqual([0, 6, 35, 4]);
+    });
+
+    it('should properly un-scramble the data in the array (range and offset test)', () => {
+      const range = 50;
+      const data = [0, 6, 35, range + 4];
+      const scrambleSequence = [20, 5, range + 1];
+      const offset = scrambleSequence.length + 1;
+
+      fromUtils.scrambler(data, false, scrambleSequence, offset, range);
+      expect(data).toEqual([45, 5, 15, 49]);
     });
   });
 });

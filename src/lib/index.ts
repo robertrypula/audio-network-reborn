@@ -103,7 +103,7 @@ TODO #1:
     + add types to parameters at function handlers
   + rename scramble to scrambleSequence
   + find better names for allOneItemErrors, rightAlignedSubArrays and scrambledSubArrays methods
-  - finalize unit tests for scrambler method
+  + finalize unit tests for scrambler method
   - replace true/false values passed to functions with Enum (mostly in src/lib/1-data-link-layer/utils.ts)
   - group interfaces, types and enums in model.ts files & check if all all methods and functions are AZ sorted
   - add safety condition to findFrameCandidates & prevent uncompleted rxRawBytes buffer from being processed
