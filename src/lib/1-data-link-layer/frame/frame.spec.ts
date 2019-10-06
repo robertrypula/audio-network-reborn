@@ -20,6 +20,7 @@ describe('Frame', () => {
       // TODO implement
     });
   });
+
   describe('getNextRawByte', () => {
     it('should ...', () => {
       // TODO implement

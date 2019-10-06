@@ -4,6 +4,7 @@ import { AudioMonoIo } from '@physical-layer/model';
 
 export class WebApiAudioMonoIo implements AudioMonoIo {
   protected audioContext: AudioContext;
+  protected fftSize = 256;
 
   protected analyserNode: AnalyserNode;
   protected microphoneMediaStream: MediaStream;
@@ -11,18 +12,12 @@ export class WebApiAudioMonoIo implements AudioMonoIo {
   protected microphoneVirtualNode: GainNode;
   protected oscillatorNode: OscillatorNode;
 
-  protected fftSize = 256;
-
   public constructor() {
     this.audioContext = new AudioContext();
   }
 
   public getFftSize(): number {
     return this.fftSize;
-  }
-
-  public getSampleRate(): number {
-    return this.audioContext.sampleRate;
   }
 
   public getFrequencyDomainData(currentTime: number): Float32Array {
@@ -33,6 +28,10 @@ export class WebApiAudioMonoIo implements AudioMonoIo {
     this.analyserNode.getFloatFrequencyData(data);
 
     return data;
+  }
+
+  public getSampleRate(): number {
+    return this.audioContext.sampleRate;
   }
 
   public inputDisable(): void {
@@ -57,6 +56,14 @@ export class WebApiAudioMonoIo implements AudioMonoIo {
     }
   }
 
+  public outputDisable(): void {
+    if (this.oscillatorNode) {
+      this.oscillatorNode.stop();
+      this.oscillatorNode.disconnect(this.audioContext.destination);
+      this.oscillatorNode = null;
+    }
+  }
+
   public setFftSize(fftSize: number): void {
     this.fftSize = fftSize;
     if (this.analyserNode) {
@@ -68,14 +75,6 @@ export class WebApiAudioMonoIo implements AudioMonoIo {
     this.outputEnable();
     this.oscillatorNode.frequency.value = frequency;
     this.oscillatorNode.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-  }
-
-  public outputDisable(): void {
-    if (this.oscillatorNode) {
-      this.oscillatorNode.stop();
-      this.oscillatorNode.disconnect(this.audioContext.destination);
-      this.oscillatorNode = null;
-    }
   }
 
   protected connectMicrophoneTo(node: AudioNode): void {

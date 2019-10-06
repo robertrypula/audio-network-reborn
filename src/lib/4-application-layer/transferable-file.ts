@@ -1,18 +1,16 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 export class TransferableFile {
-  protected rawBytes: number[];
-  protected sha1: number[];
   protected bytes: number[];
   protected isValid: boolean;
   protected name: string;
+  protected rawBytes: number[];
+  protected sha1: number[];
 
   public constructor(protected isSha1Enabled = false) {}
 
-  public setRawBytes(rawBytes: number[]): TransferableFile {
-    this.rawBytes = rawBytes;
-
-    return this;
+  public getRawBytes(): number[] {
+    return this.rawBytes;
   }
 
   public setFile(name: string, bytes: number[]): TransferableFile {
@@ -21,8 +19,10 @@ export class TransferableFile {
     return this;
   }
 
-  public getRawBytes(): number[] {
-    return this.rawBytes;
+  public setRawBytes(rawBytes: number[]): TransferableFile {
+    this.rawBytes = rawBytes;
+
+    return this;
   }
 
   // TODO implement rest of the code

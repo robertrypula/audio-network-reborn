@@ -104,8 +104,8 @@ TODO #1:
   + rename scramble to scrambleSequence
   + find better names for allOneItemErrors, rightAlignedSubArrays and scrambledSubArrays methods
   + finalize unit tests for scrambler method
+  + group interfaces, types and enums in model.ts files & check if all all methods and functions are AZ sorted
   - replace true/false values passed to functions with Enum (mostly in src/lib/1-data-link-layer/utils.ts)
-  - group interfaces, types and enums in model.ts files & check if all all methods and functions are AZ sorted
   - add safety condition to findFrameCandidates & prevent uncompleted rxRawBytes buffer from being processed
   - detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
       - we don't need separate history for odd & even rxRawBytes,

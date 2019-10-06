@@ -87,12 +87,6 @@ export class DataLinkLayerChatSimpleWebExample {
     domUtils.getById('messages-wrapper').appendChild(div);
   }
 
-  protected sendStart(): void {
-    domUtils.getById('sent-wrapper').classList.add('sending-in-progress');
-    domUtils.getByIdInput('send-field').disabled = true;
-    domUtils.getByIdInput('send-button').disabled = true;
-  }
-
   protected sendComplete(bytes: number[]): void {
     const sendField: HTMLInputElement = domUtils.getByIdInput('send-field');
 
@@ -102,5 +96,11 @@ export class DataLinkLayerChatSimpleWebExample {
     sendField.value = '';
     sendField.focus();
     this.logFrame(bytes, false);
+  }
+
+  protected sendStart(): void {
+    domUtils.getById('sent-wrapper').classList.add('sending-in-progress');
+    domUtils.getByIdInput('send-field').disabled = true;
+    domUtils.getByIdInput('send-button').disabled = true;
   }
 }

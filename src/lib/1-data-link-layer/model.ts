@@ -3,6 +3,26 @@
 import { Frame } from '@data-link-layer/frame/frame';
 import { CheckAlgorithm, MinMaxRange } from '@shared/model';
 
+export enum FrameMode {
+  Header2BytesPayloadLengthBetween1And8BytesCrc16 = 'Header2BytesPayloadLengthBetween1And8BytesCrc16',
+  Header2BytesPayloadLengthFixedAt8BytesCrc16 = 'Header2BytesPayloadLengthFixedAt8BytesCrc16',
+  Header3BytesPayloadLengthBetween1And8BytesCrc24 = 'Header3BytesPayloadLengthBetween1And8BytesCrc24',
+  Header3BytesPayloadLengthFixedAt8BytesCrc24 = 'Header3BytesPayloadLengthFixedAt8BytesCrc24'
+}
+
+export enum RxTimeTickState {
+  Listening = 'Listening',
+  Stopped = 'Stopped'
+}
+
+export enum TxTimeTickState {
+  Guard = 'Guard',
+  Idle = 'Idle',
+  Symbol = 'Symbol'
+}
+
+// -----------------------------------------------------------------------------
+
 export interface DataLinkLayerWrapperListenHandlers {
   next: (bytes: number[], isErrorCorrected: boolean) => void;
   complete: () => void;
@@ -30,8 +50,6 @@ export interface FrameConfigInitializer {
   payloadLengthOffset?: number; // required if payloadLengthBitSize > 0
 }
 
-export type FrameConfigInitializerWithoutCheckAlgorithm = Omit<FrameConfigInitializer, 'checkAlgorithm'>;
-
 export interface FrameCounter {
   errorCorrectedInvalid?: number;
   errorCorrectedValid?: number;
@@ -46,24 +64,11 @@ export interface FrameCounterSimple {
   nonErrorCorrected: number;
 }
 
-export type FrameHistory = FrameHistoryEntry[];
-
 export interface FrameHistoryEntry {
   frame: Frame;
   isErrorCorrected: boolean;
   rawBytePosition: number;
 }
-
-export enum FrameMode {
-  Header2BytesPayloadLengthBetween1And8BytesCrc16 = 'Header2BytesPayloadLengthBetween1And8BytesCrc16',
-  Header2BytesPayloadLengthFixedAt8BytesCrc16 = 'Header2BytesPayloadLengthFixedAt8BytesCrc16',
-  Header3BytesPayloadLengthBetween1And8BytesCrc24 = 'Header3BytesPayloadLengthBetween1And8BytesCrc24',
-  Header3BytesPayloadLengthFixedAt8BytesCrc24 = 'Header3BytesPayloadLengthFixedAt8BytesCrc24'
-}
-
-export type FrameModeToFrameConfigInitializerLookUp = {
-  [key in keyof typeof FrameMode]: FrameConfigInitializer;
-};
 
 export interface HeaderFirstByte {
   checkSequenceMask: number;
@@ -76,18 +81,17 @@ export interface TestCaseFrameCounterWithPayload {
   payload: string;
 }
 
-export interface TestCaseIntegrity {
+export interface TestCaseFrameIntegrity {
   payload: string;
   expectedRawBytes: string;
 }
 
-export enum RxTimeTickState {
-  Listening = 'Listening',
-  Stopped = 'Stopped'
-}
+// -----------------------------------------------------------------------------
 
-export enum TxTimeTickState {
-  Guard = 'Guard',
-  Idle = 'Idle',
-  Symbol = 'Symbol'
-}
+export type FrameConfigInitializerWithoutCheckAlgorithm = Omit<FrameConfigInitializer, 'checkAlgorithm'>;
+
+export type FrameHistory = FrameHistoryEntry[];
+
+export type FrameModeToFrameConfigInitializerLookUp = {
+  [key in keyof typeof FrameMode]: FrameConfigInitializer;
+};

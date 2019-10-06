@@ -9,11 +9,11 @@
 
 export const isNode: boolean = typeof global !== 'undefined' && toString.call(global) === '[object global]';
 
-export const isBrowser: boolean =
-  !isNode && typeof navigator !== 'undefined' && typeof document !== 'undefined' && typeof window !== 'undefined';
-
 export const argv: string[] = isNode ? global.process.argv : [];
 
 export const argc: number = isNode ? argv.length : 0;
+
+export const isBrowser: boolean =
+  !isNode && typeof navigator !== 'undefined' && typeof document !== 'undefined' && typeof window !== 'undefined';
 
 export const process: NodeJS.Process = isNode ? global.process : null;

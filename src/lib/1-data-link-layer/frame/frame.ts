@@ -95,10 +95,6 @@ export class Frame {
     return this;
   }
 
-  protected getFullCheckSequenceFromPayload(): number[] {
-    return getCheckAlgorithmImplementation(this.frameConfig.frameConfigInitializer.checkAlgorithm)(this.getPayload());
-  }
-
   protected getCheckSequence(fromRawBytes: boolean): number[] {
     const { headerLength, payloadLengthBitSize } = this.frameConfig.frameConfigInitializer;
     const { checkSequenceMask } = this.frameConfig.headerFirstByte ? this.frameConfig.headerFirstByte : empty;
@@ -111,6 +107,10 @@ export class Frame {
     }
 
     return result;
+  }
+
+  protected getFullCheckSequenceFromPayload(): number[] {
+    return getCheckAlgorithmImplementation(this.frameConfig.frameConfigInitializer.checkAlgorithm)(this.getPayload());
   }
 
   protected getLengthFromPayload(): number {

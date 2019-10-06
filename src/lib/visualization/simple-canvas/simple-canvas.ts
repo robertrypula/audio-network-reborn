@@ -13,6 +13,10 @@ export class SimpleCanvas {
     this.ctx.strokeStyle = 'black';
   }
 
+  public clear(): void {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+  }
+
   public line(x1: number, y1: number, x2: number, y2: number): void {
     this.ctx.beginPath();
     this.ctx.moveTo(x1, y1);
@@ -26,9 +30,5 @@ export class SimpleCanvas {
     this.line(x1, y2, x2, y2);
     this.line(x1, y1, x1, y2);
     this.line(x2, y1, x2, y2);
-  }
-
-  public clear(): void {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
   }
 }

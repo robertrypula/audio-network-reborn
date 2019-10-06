@@ -110,7 +110,7 @@ export const getUnifiedFrequencies = (
   return unifiedFrequencies;
 };
 
-const isInsideForbiddenFrequencies = (frequency: number): boolean => {
+export const isInsideForbiddenFrequencies = (frequency: number): boolean => {
   return fromConfig.FREQUENCY_FORBIDDEN_RANGE.some((range: number[]) => range[0] < frequency && frequency < range[1]);
 };
 

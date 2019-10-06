@@ -1,13 +1,13 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { TestCase } from '@shared/model';
+import { TestCaseInOut } from '@shared/model';
 import { getTextFromUtf8Bytes } from '@shared/utf8/decode';
 import { getBytesFromHex } from '@shared/utils';
 
 describe('Utf8 decode', () => {
   describe('getTextFromUtf8Bytes', () => {
-    const runTestCases = (testCases: TestCase[]) => {
-      testCases.forEach((testCase: TestCase) =>
+    const runTestCases = (testCases: TestCaseInOut[]) => {
+      testCases.forEach((testCase: TestCaseInOut) =>
         expect(getTextFromUtf8Bytes(getBytesFromHex(testCase.in))).toEqual(testCase.out)
       );
     };

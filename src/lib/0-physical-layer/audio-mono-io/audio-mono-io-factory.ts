@@ -8,7 +8,6 @@ export class AudioMonoIoFactory {
   public audioMonoIoCreateMode = AudioMonoIoCreateMode.WebApi;
 
   public createAudioMonoIo(): AudioMonoIo {
-    // TODO implement auto detection of browser/node environment
     switch (this.audioMonoIoCreateMode) {
       case AudioMonoIoCreateMode.Stub:
         return new StubAudioMonoIo();

@@ -28,13 +28,13 @@ describe('Index', () => {
     audioMonoIoFactory.audioMonoIoCreateMode = AudioMonoIoCreateMode.Stub;
     const dataLinkLayer = new DataLinkLayer();
 
-    dataLinkLayer.setTxBytes([1, 2, 3]);
-    expect(dataLinkLayer.txTimeTick(0)).toBe(TxTimeTickState.Symbol);
-    expect(dataLinkLayer.txTimeTick(1)).toBe(TxTimeTickState.Symbol);
-    expect(dataLinkLayer.txTimeTick(2)).toBe(TxTimeTickState.Symbol);
-    expect(dataLinkLayer.txTimeTick(3)).toBe(TxTimeTickState.Symbol);
-    expect(dataLinkLayer.txTimeTick(4)).toBe(TxTimeTickState.Symbol);
-    expect(dataLinkLayer.txTimeTick(5)).toBe(TxTimeTickState.Symbol);
+    dataLinkLayer.setTxBytes([0x01, 0x02, 0x03]);
+    expect(dataLinkLayer.txTimeTick(0)).toBe(TxTimeTickState.Symbol); // header
+    expect(dataLinkLayer.txTimeTick(1)).toBe(TxTimeTickState.Symbol); // header
+    expect(dataLinkLayer.txTimeTick(2)).toBe(TxTimeTickState.Symbol); // header
+    expect(dataLinkLayer.txTimeTick(3)).toBe(TxTimeTickState.Symbol); // data: 0x01
+    expect(dataLinkLayer.txTimeTick(4)).toBe(TxTimeTickState.Symbol); // data: 0x02
+    expect(dataLinkLayer.txTimeTick(5)).toBe(TxTimeTickState.Symbol); // data: 0x03
     expect(dataLinkLayer.txTimeTick(6)).toBe(TxTimeTickState.Guard);
     expect(dataLinkLayer.txTimeTick(7)).toBe(TxTimeTickState.Idle);
 

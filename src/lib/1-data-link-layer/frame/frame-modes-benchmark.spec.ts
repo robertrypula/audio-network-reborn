@@ -10,17 +10,17 @@ import {
   FrameCounter,
   FrameMode,
   TestCaseFrameCounterWithPayload,
-  TestCaseIntegrity
+  TestCaseFrameIntegrity
 } from '@data-link-layer/model';
 import { findFrameCandidates, scrambler } from '@data-link-layer/utils';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 import { getBytesFromHex, getHexFromBytes, getRandomBytes } from '@shared/utils';
 
 describe('FrameModesBenchmark', () => {
-  describe('Integrity', () => {
-    const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseIntegrity[]) => {
+  describe('Frame integrity', () => {
+    const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseFrameIntegrity[]) => {
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
-      testCases.forEach((testCase: TestCaseIntegrity) => {
+      testCases.forEach((testCase: TestCaseFrameIntegrity) => {
         const frameA = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
         const rawBytes: number[] = frameA.getRawBytes().slice(0);
         const frameB = new Frame(frameConfig).setRawBytes(rawBytes);
@@ -93,7 +93,7 @@ describe('FrameModesBenchmark', () => {
     });
   });
 
-  describe('Frame detection in long random stream', () => {
+  describe('Frame detection in long raw bytes random stream', () => {
     const localExperiments = false;
     const randomBytesLength = 1000 * 1e3;
     const randomBytesLengthHalf = Math.ceil(randomBytesLength / 2);

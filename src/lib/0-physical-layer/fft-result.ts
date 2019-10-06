@@ -3,19 +3,6 @@
 export class FftResult {
   public constructor(protected frequencyDomainData: Float32Array, protected sampleRate: number) {}
 
-  public pick(binIndexes: number[]): FftResult {
-    const newFrequencyDomainData = new Float32Array(binIndexes.length);
-
-    binIndexes.forEach((binIndex: number, index: number) => {
-      newFrequencyDomainData[index] = this.frequencyDomainData[binIndex];
-    });
-
-    this.frequencyDomainData = newFrequencyDomainData;
-    this.sampleRate = 0; // after this conversion it's not true anymore
-
-    return this;
-  }
-
   public getLoudestBinIndex(): number {
     let maxValue = -Infinity;
     let maxIndex = 0;
@@ -28,5 +15,18 @@ export class FftResult {
     });
 
     return maxIndex;
+  }
+
+  public pick(binIndexes: number[]): FftResult {
+    const newFrequencyDomainData = new Float32Array(binIndexes.length);
+
+    binIndexes.forEach((binIndex: number, index: number) => {
+      newFrequencyDomainData[index] = this.frequencyDomainData[binIndex];
+    });
+
+    this.frequencyDomainData = newFrequencyDomainData;
+    this.sampleRate = 0; // after this conversion it's not true anymore
+
+    return this;
   }
 }

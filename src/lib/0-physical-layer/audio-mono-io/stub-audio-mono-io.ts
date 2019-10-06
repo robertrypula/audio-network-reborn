@@ -15,19 +15,23 @@ export class StubAudioMonoIo implements AudioMonoIo {
     return this.fftSize;
   }
 
-  public getSampleRate(): number {
-    CONSOLE && console.info('StubAudioMonoIo.getSampleRate -> ' + this.sampleRate);
-    return this.sampleRate;
-  }
-
   public getFrequencyDomainData(currentTime: number): Float32Array {
     const length = 0.5 * this.fftSize;
     CONSOLE && console.info('StubAudioMonoIo.getFrequencyDomainData -> [arrayLength=' + length + ']', currentTime);
     return new Float32Array(length);
   }
 
+  public getSampleRate(): number {
+    CONSOLE && console.info('StubAudioMonoIo.getSampleRate -> ' + this.sampleRate);
+    return this.sampleRate;
+  }
+
   public inputDisable(): void {
     CONSOLE && console.info('StubAudioMonoIo.inputDisable');
+  }
+
+  public outputDisable(): void {
+    CONSOLE && console.info('StubAudioMonoIo.outputDisable');
   }
 
   public setFftSize(fftSize: number): void {
@@ -37,9 +41,5 @@ export class StubAudioMonoIo implements AudioMonoIo {
 
   public setPeriodicWave(frequency: number, currentTime: number): void {
     CONSOLE && console.info('StubAudioMonoIo.setPeriodicWave -> ' + frequency.toFixed(6), currentTime);
-  }
-
-  public outputDisable(): void {
-    CONSOLE && console.info('StubAudioMonoIo.outputDisable');
   }
 }
