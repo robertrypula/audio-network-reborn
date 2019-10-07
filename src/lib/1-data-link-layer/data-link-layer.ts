@@ -11,6 +11,7 @@ import {
   FrameHistoryEntry,
   FrameMode,
   RxTimeTickState,
+  ScramblerMode,
   TxTimeTickState
 } from '@data-link-layer/model';
 import { findFrameCandidates, scrambler } from '@data-link-layer/utils';
@@ -120,7 +121,7 @@ export class DataLinkLayer {
   public setTxBytes(bytes: number[]): void {
     this.txFrame = new Frame(this.frameConfig);
     this.txFrame.setPayload(bytes);
-    scrambler(this.txFrame.getRawBytes(), true, this.scrambleSequence, this.txRawBytesCounter);
+    scrambler(this.txFrame.getRawBytes(), ScramblerMode.Scramble, this.scrambleSequence, this.txRawBytesCounter);
     this.txRawBytesCounter += this.txFrame.getRawBytes().length;
   }
 

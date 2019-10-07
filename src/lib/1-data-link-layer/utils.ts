@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { Frame } from '@data-link-layer/frame/frame';
-import { FrameConfig } from '@data-link-layer/model';
+import { FrameConfig, ScramblerMode } from '@data-link-layer/model';
 
 export const allPossibleRightAlignedArrays = (
   input: number[],
@@ -34,7 +34,7 @@ export const allPossibleUnScrambledArrays = (
 ): void => {
   for (let offset = 0; offset < scrambleSequence.length; offset++) {
     const output: number[] = input.slice(0);
-    scrambler(output, false, scrambleSequence, offset, range);
+    scrambler(output, ScramblerMode.UnScramble, scrambleSequence, offset, range);
     callback(output);
   }
 };
@@ -57,9 +57,19 @@ export const findFrameCandidates = (
   });
 };
 
-export const scrambler = (data: number[], add: boolean, scrambleSequence: number[], offset = 0, range = 256): void => {
+export const scrambler = (
+  data: number[],
+  scrambleMode: ScramblerMode,
+  scrambleSequence: number[],
+  offset = 0,
+  range = 256
+): void => {
   for (let i = 0; i < data.length; i++) {
-    const dataItemOffset: number = (add ? 1 : -1) * (scrambleSequence[(offset + i) % scrambleSequence.length] % range);
+    let dataItemOffset: number = scrambleSequence[(offset + i) % scrambleSequence.length] % range;
+
+    if (scrambleMode === ScramblerMode.UnScramble) {
+      dataItemOffset *= -1;
+    }
     data[i] = (data[i] + dataItemOffset + range) % range;
   }
 };

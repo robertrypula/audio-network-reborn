@@ -4,7 +4,7 @@ import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer
 import { getFrameConfig } from '@data-link-layer/config-utils';
 import { FRAME_COUNTER_SIMPLE_WITH_ZEROS } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
-import { FrameConfig, FrameCounterSimple, FrameMode } from '@data-link-layer/model';
+import { FrameConfig, FrameCounterSimple, FrameMode, ScramblerMode } from '@data-link-layer/model';
 import * as fromUtils from '@data-link-layer/utils';
 
 describe('Utils', () => {
@@ -133,7 +133,7 @@ describe('Utils', () => {
       const data = [32, 10, 20, 30, 100, 200];
       const scrambleSequence = [10, 20, 30, 12];
 
-      fromUtils.scrambler(data, true, scrambleSequence);
+      fromUtils.scrambler(data, ScramblerMode.Scramble, scrambleSequence);
       expect(data).toEqual([42, 30, 50, 42, 110, 220]);
     });
 
@@ -141,7 +141,7 @@ describe('Utils', () => {
       const data = [42, 30, 50, 42, 110, 220];
       const scrambleSequence = [10, 20, 30, 12];
 
-      fromUtils.scrambler(data, false, scrambleSequence);
+      fromUtils.scrambler(data, ScramblerMode.UnScramble, scrambleSequence);
       expect(data).toEqual([32, 10, 20, 30, 100, 200]);
     });
 
@@ -151,7 +151,7 @@ describe('Utils', () => {
       const scrambleSequence = [20, 5, range + 1];
       const offset = scrambleSequence.length + 1;
 
-      fromUtils.scrambler(data, true, scrambleSequence, offset, range);
+      fromUtils.scrambler(data, ScramblerMode.Scramble, scrambleSequence, offset, range);
       expect(data).toEqual([0, 6, 35, 4]);
     });
 
@@ -161,7 +161,7 @@ describe('Utils', () => {
       const scrambleSequence = [20, 5, range + 1];
       const offset = scrambleSequence.length + 1;
 
-      fromUtils.scrambler(data, false, scrambleSequence, offset, range);
+      fromUtils.scrambler(data, ScramblerMode.UnScramble, scrambleSequence, offset, range);
       expect(data).toEqual([45, 5, 15, 49]);
     });
   });

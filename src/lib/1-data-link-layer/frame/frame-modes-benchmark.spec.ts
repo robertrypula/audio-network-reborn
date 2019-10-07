@@ -9,6 +9,7 @@ import {
   FrameConfig,
   FrameCounter,
   FrameMode,
+  ScramblerMode,
   TestCaseFrameCounterWithPayload,
   TestCaseFrameIntegrity
 } from '@data-link-layer/model';
@@ -122,7 +123,7 @@ describe('FrameModesBenchmark', () => {
         if (testCase.payload) {
           const frame = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
           frameNotScrambled = frame.clone();
-          scrambler(frame.getRawBytes(), true, scrambleSequence);
+          scrambler(frame.getRawBytes(), ScramblerMode.Scramble, scrambleSequence);
           rawBytesLongStream = rawBytesLongStream.concat(frame.getRawBytes());
         }
         rawBytesLongStream = rawBytesLongStream.concat(getRandomRawBytes(false));

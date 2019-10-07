@@ -15,6 +15,11 @@ export enum RxTimeTickState {
   Stopped = 'Stopped'
 }
 
+export enum ScramblerMode {
+  Scramble = 'Scramble',
+  UnScramble = 'UnScramble'
+}
+
 export enum TxTimeTickState {
   Guard = 'Guard',
   Idle = 'Idle',
