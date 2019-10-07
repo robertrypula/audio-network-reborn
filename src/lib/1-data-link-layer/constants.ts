@@ -1,6 +1,11 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FrameConfigInitializerWithoutCheckAlgorithm, FrameCounter, FrameCounterSimple } from '@data-link-layer/model';
+import {
+  FrameConfigInitializerWithoutCheckAlgorithm,
+  FrameCounter,
+  FrameCounterSimple,
+  HeaderFirstByte
+} from '@data-link-layer/model';
 import { getBytesFromHex } from '@shared/utils';
 
 export const FRAME_COUNTER_WITH_ZEROS: FrameCounter = {
@@ -42,6 +47,12 @@ export const HEADER_3_BYTES_PAYLOAD_LENGTH_FIXED_AT_8_BYTES: FrameConfigInitiali
   headerLength: 3,
   payloadLengthBitSize: 0,
   payloadLengthFixed: 8
+};
+
+export const HEADER_FIRST_BYTE_EMPTY: HeaderFirstByte = {
+  checkSequenceMask: null,
+  payloadLengthBitShift: null,
+  payloadLengthMask: null
 };
 
 // TODO check import issue when it's not function

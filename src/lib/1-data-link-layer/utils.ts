@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { Frame } from '@data-link-layer/frame/frame';
-import { FrameConfig, ScramblerMode } from '@data-link-layer/model';
+import { ErrorCorrection, FrameConfig, ScramblerMode } from '@data-link-layer/model';
 
 export const allPossibleRightAlignedArrays = (
   input: number[],
@@ -43,7 +43,7 @@ export const findFrameCandidates = (
   input: number[],
   scrambleSequence: number[],
   frameConfig: FrameConfig,
-  errorCorrectionEnabled: boolean,
+  errorCorrection: ErrorCorrection,
   callback: (frameCandidate: Frame, isErrorCorrected: boolean) => void
 ): void => {
   const { min } = frameConfig.rawBytesLength;
@@ -51,7 +51,7 @@ export const findFrameCandidates = (
   allPossibleUnScrambledArrays(input, scrambleSequence, (unScrambled: number[]) => {
     allPossibleRightAlignedArrays(unScrambled, min, (rawBytes: number[]) => {
       callback(new Frame(frameConfig).setRawBytes(rawBytes), false);
-      errorCorrectionEnabled &&
+      errorCorrection === ErrorCorrection.On &&
         allPossibleSinglePositionErrors(rawBytes, () => callback(new Frame(frameConfig).setRawBytes(rawBytes), true));
     });
   });

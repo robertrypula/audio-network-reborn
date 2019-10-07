@@ -5,6 +5,7 @@ import { getFrameConfig } from '@data-link-layer/config-utils';
 import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
 import {
+  ErrorCorrection,
   FrameConfig,
   FrameConfigInitializer,
   FrameHistory,
@@ -22,7 +23,7 @@ export class DataLinkLayer {
   public readonly physicalLayer: PhysicalLayer;
 
   protected frameConfig: FrameConfig;
-  protected rxErrorCorrectionEnabled = false; // keep false, current 'brute-force' solution is just bad... :)
+  protected rxErrorCorrection = ErrorCorrection.Off; // keep 'off' as current 'brute-force' solution is just bad... :)
   protected rxFrameHistoryA: FrameHistory = [];
   protected rxFrameHistoryB: FrameHistory = [];
   protected rxFrames: Frame[];
@@ -91,7 +92,7 @@ export class DataLinkLayer {
       rxRawBytes.data,
       this.scrambleSequence,
       this.frameConfig,
-      this.rxErrorCorrectionEnabled,
+      this.rxErrorCorrection,
       (frameCandidate: Frame, isErrorCorrected: boolean) => {
         this.tryToFindValidFrame(frameCandidate, isErrorCorrected) && validFramesCounter++;
       }

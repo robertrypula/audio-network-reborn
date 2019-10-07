@@ -4,7 +4,7 @@ import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer
 import { getFrameConfig } from '@data-link-layer/config-utils';
 import { FRAME_COUNTER_SIMPLE_WITH_ZEROS } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
-import { FrameConfig, FrameCounterSimple, FrameMode, ScramblerMode } from '@data-link-layer/model';
+import { ErrorCorrection, FrameConfig, FrameCounterSimple, FrameMode, ScramblerMode } from '@data-link-layer/model';
 import * as fromUtils from '@data-link-layer/utils';
 
 describe('Utils', () => {
@@ -98,7 +98,7 @@ describe('Utils', () => {
         rawBytes,
         scrambleSequence,
         frameConfig,
-        true,
+        ErrorCorrection.On,
         (frameCandidate: Frame, isErrorCorrected: boolean) => {
           isErrorCorrected ? frameCounterSimple.errorCorrected++ : frameCounterSimple.nonErrorCorrected++;
           if (!isErrorCorrected) {

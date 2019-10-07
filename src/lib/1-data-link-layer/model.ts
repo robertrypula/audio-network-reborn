@@ -3,6 +3,11 @@
 import { Frame } from '@data-link-layer/frame/frame';
 import { CheckAlgorithm, MinMaxRange } from '@shared/model';
 
+export enum ErrorCorrection {
+  Off = 'Off',
+  On = 'On'
+}
+
 export enum FrameMode {
   Header2BytesPayloadLengthBetween1And8BytesCrc16 = 'Header2BytesPayloadLengthBetween1And8BytesCrc16',
   Header2BytesPayloadLengthFixedAt8BytesCrc16 = 'Header2BytesPayloadLengthFixedAt8BytesCrc16',

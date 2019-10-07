@@ -1,16 +1,11 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { FrameConfig, FrameConfigInitializer, HeaderFirstByte } from '@data-link-layer/model';
+import { HEADER_FIRST_BYTE_EMPTY } from '@data-link-layer/constants';
+import { FrameConfig } from '@data-link-layer/model';
 import { getCheckAlgorithmImplementation } from '@shared/check-algorithms/check-algorithms';
 import { getFilledArray } from '@shared/utils';
 
 /*tslint:disable:no-bitwise*/
-
-const empty: HeaderFirstByte = {
-  checkSequenceMask: null,
-  payloadLengthBitShift: null,
-  payloadLengthMask: null
-};
 
 export class Frame {
   protected rawBytes: number[] = [];
@@ -63,7 +58,7 @@ export class Frame {
     const { headerLength, payloadLengthBitSize, payloadLengthOffset } = this.frameConfig.frameConfigInitializer;
     const { checkSequenceMask, payloadLengthBitShift, payloadLengthMask } = this.frameConfig.headerFirstByte
       ? this.frameConfig.headerFirstByte
-      : empty;
+      : HEADER_FIRST_BYTE_EMPTY;
     const { max, min } = this.frameConfig.payloadLength;
     const payloadLength = payload.length;
     let fullCheckSequence: number[];
@@ -97,7 +92,9 @@ export class Frame {
 
   protected getCheckSequence(fromRawBytes: boolean): number[] {
     const { headerLength, payloadLengthBitSize } = this.frameConfig.frameConfigInitializer;
-    const { checkSequenceMask } = this.frameConfig.headerFirstByte ? this.frameConfig.headerFirstByte : empty;
+    const { checkSequenceMask } = this.frameConfig.headerFirstByte
+      ? this.frameConfig.headerFirstByte
+      : HEADER_FIRST_BYTE_EMPTY;
     const result: number[] = fromRawBytes
       ? this.rawBytes.slice(0, headerLength)
       : this.getFullCheckSequenceFromPayload().slice(0, headerLength);
@@ -121,7 +118,7 @@ export class Frame {
     const { payloadLengthBitSize, payloadLengthFixed, payloadLengthOffset } = this.frameConfig.frameConfigInitializer;
     const { payloadLengthMask, payloadLengthBitShift } = this.frameConfig.headerFirstByte
       ? this.frameConfig.headerFirstByte
-      : empty;
+      : HEADER_FIRST_BYTE_EMPTY;
 
     return payloadLengthBitSize > 0
       ? ((this.rawBytes[0] & payloadLengthMask) >>> payloadLengthBitShift) + payloadLengthOffset

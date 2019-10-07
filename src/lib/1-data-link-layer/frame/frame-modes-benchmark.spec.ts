@@ -6,6 +6,7 @@ import { FRAME_COUNTER_WITH_ZEROS, SCRAMBLE_SEQUENCE } from '@data-link-layer/co
 import { Frame } from '@data-link-layer/frame/frame';
 import { mocked512RandomBytesA, mocked512RandomBytesB } from '@data-link-layer/frame/frame-modes-benchmark.spec-data';
 import {
+  ErrorCorrection,
   FrameConfig,
   FrameCounter,
   FrameMode,
@@ -106,7 +107,7 @@ describe('FrameModesBenchmark', () => {
     };
     const runDetectionTestCases = (
       frameMode: FrameMode,
-      errorCorrectionEnabled: boolean,
+      errorCorrection: ErrorCorrection,
       testCases: TestCaseFrameCounterWithPayload[]
     ) => {
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
@@ -137,7 +138,7 @@ describe('FrameModesBenchmark', () => {
             rawBytes.data,
             scrambleSequence,
             frameConfig,
-            errorCorrectionEnabled,
+            errorCorrection,
             (frameCandidate, isErrorCorrected) => {
               if (isErrorCorrected) {
                 frameCandidate.isValid()
@@ -171,7 +172,7 @@ describe('FrameModesBenchmark', () => {
     };
 
     it('should work with 2 bytes of header, 1-8 bytes of payload and CRC-16 check sequence', () => {
-      runDetectionTestCases(FrameMode.Header2BytesPayloadLengthBetween1And8BytesCrc16, false, [
+      runDetectionTestCases(FrameMode.Header2BytesPayloadLengthBetween1And8BytesCrc16, ErrorCorrection.Off, [
         {
           frameCounter: {
             errorCorrectedInvalid: 0,
@@ -192,7 +193,7 @@ describe('FrameModesBenchmark', () => {
     });
 
     it('should work with 2 bytes of header, fixed 8 bytes of payload and CRC-16 check sequence', () => {
-      runDetectionTestCases(FrameMode.Header2BytesPayloadLengthFixedAt8BytesCrc16, false, [
+      runDetectionTestCases(FrameMode.Header2BytesPayloadLengthFixedAt8BytesCrc16, ErrorCorrection.Off, [
         {
           frameCounter: {
             errorCorrectedInvalid: 0,
@@ -213,7 +214,7 @@ describe('FrameModesBenchmark', () => {
     });
 
     it('should work with 3 bytes of header, 1-8 bytes of payload and CRC-24 check sequence', () => {
-      runDetectionTestCases(FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24, false, [
+      runDetectionTestCases(FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24, ErrorCorrection.Off, [
         {
           frameCounter: {
             errorCorrectedInvalid: 0,
@@ -234,7 +235,7 @@ describe('FrameModesBenchmark', () => {
     });
 
     it('should work with 3 bytes of header, fixed 8 bytes of payload and CRC-24 check sequence', () => {
-      runDetectionTestCases(FrameMode.Header3BytesPayloadLengthFixedAt8BytesCrc24, false, [
+      runDetectionTestCases(FrameMode.Header3BytesPayloadLengthFixedAt8BytesCrc24, ErrorCorrection.Off, [
         {
           frameCounter: {
             errorCorrectedInvalid: 0,
