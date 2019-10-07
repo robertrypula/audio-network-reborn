@@ -1,3 +1,5 @@
+// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+
 Currently I'm not planning to implement network layer but sonic router would be nice! ;)
 
 UPDATE 2019.10.05:
@@ -9,4 +11,3 @@ active (receive and resend data). Some ideas to make it simpler:
   - destination 'IP' addresses stored in 4 bits will give 16 unique values
   - source 'IP' addresses stored in 4 bits will give 16 unique values
   - it would require one additional byte in Data Link Layer frame
-

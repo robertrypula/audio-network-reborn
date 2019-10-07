@@ -12,8 +12,9 @@ export class AudioMonoIoFactory {
       case AudioMonoIoCreateMode.Stub:
         return new StubAudioMonoIo();
       case AudioMonoIoCreateMode.WebApi:
-      default:
         return new WebApiAudioMonoIo();
+      default:
+        throw new Error('Invalid AudioMonoIoCreateMode');
     }
   }
 }
