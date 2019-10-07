@@ -106,8 +106,8 @@ TODO #1:
   + finalize unit tests for scrambler method
   + group interfaces, types and enums in model.ts files & check if all all methods and functions are AZ sorted
   -/+ replace true/false values passed to functions with Enum (mostly in src/lib/1-data-link-layer/utils.ts)
-  - fix issue: you cannot build just after cloning as Prettier is complaining about End Of Lines
-  - add safety condition to findFrameCandidates & prevent uncompleted rxRawBytes buffer from being processed
+  -/+ fix issue: you cannot build just after cloning as Prettier is complaining about End Of Lines
+  - prevent uncompleted rxRawBytes buffer from being processed at rxTimeTime
   - detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
       - we don't need separate history for odd & even rxRawBytes,
       - we can return frames at getRxBytesCollection/getRxBytesErrorCorrectedCollection directly from history
