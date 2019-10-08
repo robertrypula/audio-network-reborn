@@ -4,6 +4,10 @@ import * as fromConstants from '@data-link-layer/constants';
 import { FrameModeToFrameConfigInitializerLookUp } from '@data-link-layer/model';
 import { CheckAlgorithm } from '@shared/model';
 
+export const ERROR_CORRECTED_FALSE = false;
+
+export const ERROR_CORRECTED_TRUE = true;
+
 export const FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP: FrameModeToFrameConfigInitializerLookUp = {
   Header2BytesPayloadLengthBetween1And8BytesCrc16: {
     checkAlgorithm: CheckAlgorithm.Crc16,

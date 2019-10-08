@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { ERROR_CORRECTED_FALSE, ERROR_CORRECTED_TRUE } from '@data-link-layer/config';
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
 import {
   DataLinkLayerWrapperListenHandlers,
@@ -65,10 +66,12 @@ export class DataLinkLayerWrapper {
       if (this.dataLinkLayer.rxTimeTick(this.getCurrentTime()) === RxTimeTickState.Stopped) {
         this.listenStop(false);
       } else if (this.rxHandlers.next) {
-        this.dataLinkLayer.getRxBytesCollection().forEach((rxBytes: number[]) => this.rxHandlers.next(rxBytes, false));
+        this.dataLinkLayer
+          .getRxBytesCollection()
+          .forEach((rxBytes: number[]) => this.rxHandlers.next(rxBytes, ERROR_CORRECTED_FALSE));
         this.dataLinkLayer
           .getRxBytesErrorCorrectedCollection()
-          .forEach((rxBytes: number[]) => this.rxHandlers.next(rxBytes, true));
+          .forEach((rxBytes: number[]) => this.rxHandlers.next(rxBytes, ERROR_CORRECTED_TRUE));
       }
     }, this.dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds);
   }
