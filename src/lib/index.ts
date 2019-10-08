@@ -106,7 +106,7 @@ TODO #1:
   + finalize unit tests for scrambler method
   + group interfaces, types and enums in model.ts files & check if all all methods and functions are AZ sorted
   + fix issue: you cannot build just after cloning as Prettier is complaining about End Of Lines
-  -/+ replace true/false values passed to functions with Enum (mostly in src/lib/1-data-link-layer/utils.ts)
+  + replace true/false values passed to functions with Enum (mostly in src/lib/1-data-link-layer/utils.ts)
   - prevent uncompleted rxRawBytes buffer from being processed at rxTimeTime
   - detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
       - we don't need separate history for odd & even rxRawBytes,
@@ -119,6 +119,7 @@ TODO #1:
   - PREPARE THE RELEASE: 0.1.0
 
 TODO #2:
+  - reduce the sequence number length
   - implement ApplicationLayer/TransportLayer code with chat examples
   - PhysicalLayer should store history based on time tick values (getHistory, setHistory methods?)
   - implement 'integration' test for full stack of layers

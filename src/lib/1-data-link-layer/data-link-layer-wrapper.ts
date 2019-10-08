@@ -1,6 +1,12 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { ERROR_CORRECTED_FALSE, ERROR_CORRECTED_TRUE } from '@data-link-layer/config';
+import {
+  ERROR_CORRECTED_FALSE,
+  ERROR_CORRECTED_TRUE,
+  INPUT_DISABLE_FALSE,
+  NOTIFY_COMPLETE_FALSE,
+  OUTPUT_DISABLE_FALSE
+} from '@data-link-layer/config';
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
 import {
   DataLinkLayerWrapperListenHandlers,
@@ -64,7 +70,7 @@ export class DataLinkLayerWrapper {
   protected handleRxInterval(): void {
     this.rxInterval = setInterval(() => {
       if (this.dataLinkLayer.rxTimeTick(this.getCurrentTime()) === RxTimeTickState.Stopped) {
-        this.listenStop(false);
+        this.listenStop(INPUT_DISABLE_FALSE);
       } else if (this.rxHandlers.next) {
         this.dataLinkLayer
           .getRxBytesCollection()
@@ -80,10 +86,10 @@ export class DataLinkLayerWrapper {
     const getTxGuardTimeout = (): any =>
       setTimeout(() => {
         this.txHandlers.next && this.txHandlers.next(this.dataLinkLayer.getTxProgress());
-        this.sendStop(false);
+        this.sendStop(OUTPUT_DISABLE_FALSE);
       }, this.dataLinkLayer.getTxGuardMilliseconds());
 
-    this.sendStop(false, false);
+    this.sendStop(OUTPUT_DISABLE_FALSE, NOTIFY_COMPLETE_FALSE);
     this.txHandlers.next && this.txHandlers.next(this.dataLinkLayer.getTxProgress());
 
     switch (this.dataLinkLayer.txTimeTick(this.getCurrentTime())) {
@@ -101,12 +107,13 @@ export class DataLinkLayerWrapper {
 
           switch (this.dataLinkLayer.txTimeTick(this.getCurrentTime())) {
             case TxTimeTickState.Guard:
-              this.sendStop(false, false);
+              this.sendStop(OUTPUT_DISABLE_FALSE, NOTIFY_COMPLETE_FALSE);
               this.txTimeout = getTxGuardTimeout();
               break;
 
             case TxTimeTickState.Idle:
-              this.sendStop(false, false); // probably it will never happen but stop the interval just in case...
+              // probably it will never happen but stop the interval just in case...
+              this.sendStop(OUTPUT_DISABLE_FALSE, NOTIFY_COMPLETE_FALSE);
               break;
 
             case TxTimeTickState.Symbol:

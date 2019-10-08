@@ -22,8 +22,9 @@ import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 export class DataLinkLayer {
   public readonly physicalLayer: PhysicalLayer;
 
+  public rxErrorCorrection = ErrorCorrection.Off; // keep 'off' as current 'brute-force' solution is just bad... :)
+
   protected frameConfig: FrameConfig;
-  protected rxErrorCorrection = ErrorCorrection.Off; // keep 'off' as current 'brute-force' solution is just bad... :)
   protected rxFrameHistoryA: FrameHistory = [];
   protected rxFrameHistoryB: FrameHistory = [];
   protected rxFrames: Frame[];
