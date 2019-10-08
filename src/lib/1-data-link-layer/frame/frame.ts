@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { HEADER_FIRST_BYTE_EMPTY } from '@data-link-layer/constants';
-import { FrameConfig } from '@data-link-layer/model';
+import { CheckSequenceSource, FrameConfig } from '@data-link-layer/model';
 import { getCheckAlgorithmImplementation } from '@shared/check-algorithms/check-algorithms';
 import { getFilledArray } from '@shared/utils';
 
@@ -49,8 +49,9 @@ export class Frame {
   public isValid(): boolean {
     return (
       this.rawBytes.length >= this.frameConfig.frameConfigInitializer.headerLength &&
-      this.getCheckSequence(true).join(',') === this.getCheckSequence(false).join(',') &&
-      this.getLengthFromRawBytes() === this.getLengthFromPayload()
+      this.getPayloadLengthFromHeader() === this.getPayloadLengthCalculated() &&
+      this.getCheckSequence(CheckSequenceSource.FromHeader).join(',') ===
+        this.getCheckSequence(CheckSequenceSource.Calculated).join(',')
     );
   }
 
@@ -61,7 +62,7 @@ export class Frame {
       : HEADER_FIRST_BYTE_EMPTY;
     const { max, min } = this.frameConfig.payloadLength;
     const payloadLength = payload.length;
-    let fullCheckSequence: number[];
+    let fullCheckSequenceCalculated: number[];
 
     if (payloadLength < min || payloadLength > max) {
       throw new Error('Payload length out of range');
@@ -70,9 +71,9 @@ export class Frame {
     this.rawBytes = [...getFilledArray(headerLength), ...payload];
     this.rawBytePosition = 0;
 
-    fullCheckSequence = this.getFullCheckSequenceFromPayload();
+    fullCheckSequenceCalculated = this.getFullCheckSequenceCalculated();
     for (let i = 0; i < headerLength; i++) {
-      const checkSequenceByte = i < fullCheckSequence.length ? fullCheckSequence[i] : 0x00;
+      const checkSequenceByte = i < fullCheckSequenceCalculated.length ? fullCheckSequenceCalculated[i] : 0x00;
       this.rawBytes[i] =
         i === 0 && payloadLengthBitSize > 0
           ? (((payloadLength - payloadLengthOffset) << payloadLengthBitShift) & payloadLengthMask) |
@@ -90,14 +91,21 @@ export class Frame {
     return this;
   }
 
-  protected getCheckSequence(fromRawBytes: boolean): number[] {
+  protected getCheckSequence(checkSequenceSource: CheckSequenceSource): number[] {
     const { headerLength, payloadLengthBitSize } = this.frameConfig.frameConfigInitializer;
     const { checkSequenceMask } = this.frameConfig.headerFirstByte
       ? this.frameConfig.headerFirstByte
       : HEADER_FIRST_BYTE_EMPTY;
-    const result: number[] = fromRawBytes
-      ? this.rawBytes.slice(0, headerLength)
-      : this.getFullCheckSequenceFromPayload().slice(0, headerLength);
+    let result: number[];
+
+    switch (checkSequenceSource) {
+      case CheckSequenceSource.Calculated:
+        result = this.getFullCheckSequenceCalculated().slice(0, headerLength);
+        break;
+      case CheckSequenceSource.FromHeader:
+        result = this.rawBytes.slice(0, headerLength);
+        break;
+    }
 
     if (payloadLengthBitSize > 0) {
       result[0] = result[0] & checkSequenceMask;
@@ -106,15 +114,15 @@ export class Frame {
     return result;
   }
 
-  protected getFullCheckSequenceFromPayload(): number[] {
+  protected getFullCheckSequenceCalculated(): number[] {
     return getCheckAlgorithmImplementation(this.frameConfig.frameConfigInitializer.checkAlgorithm)(this.getPayload());
   }
 
-  protected getLengthFromPayload(): number {
+  protected getPayloadLengthCalculated(): number {
     return this.rawBytes.length - this.frameConfig.frameConfigInitializer.headerLength;
   }
 
-  protected getLengthFromRawBytes(): number {
+  protected getPayloadLengthFromHeader(): number {
     const { payloadLengthBitSize, payloadLengthFixed, payloadLengthOffset } = this.frameConfig.frameConfigInitializer;
     const { payloadLengthMask, payloadLengthBitShift } = this.frameConfig.headerFirstByte
       ? this.frameConfig.headerFirstByte

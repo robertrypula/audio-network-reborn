@@ -105,8 +105,8 @@ TODO #1:
   + find better names for allOneItemErrors, rightAlignedSubArrays and scrambledSubArrays methods
   + finalize unit tests for scrambler method
   + group interfaces, types and enums in model.ts files & check if all all methods and functions are AZ sorted
+  + fix issue: you cannot build just after cloning as Prettier is complaining about End Of Lines
   -/+ replace true/false values passed to functions with Enum (mostly in src/lib/1-data-link-layer/utils.ts)
-  -/+ fix issue: you cannot build just after cloning as Prettier is complaining about End Of Lines
   - prevent uncompleted rxRawBytes buffer from being processed at rxTimeTime
   - detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
       - we don't need separate history for odd & even rxRawBytes,
@@ -135,4 +135,5 @@ TODO #3:
   - experiment with splitting the examples code to dedicated bundle: https://stackoverflow.com/questions/51045727
   - find alternative for coveralls
   - migrate FFT implementation from root AudioNetwork project, experiment with OFDM symbols
+  - https://stackoverflow.com/questions/40755149/how-to-keep-my-shebang-in-place-using-webpack
 */

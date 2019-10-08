@@ -3,6 +3,11 @@
 import { Frame } from '@data-link-layer/frame/frame';
 import { CheckAlgorithm, MinMaxRange } from '@shared/model';
 
+export enum CheckSequenceSource {
+  Calculated = 'Calculated',
+  FromHeader = 'FromHeader'
+}
+
 export enum ErrorCorrection {
   Off = 'Off',
   On = 'On'
