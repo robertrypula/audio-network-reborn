@@ -1,7 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import * as domUtils from '@examples/web/dom-utils';
-import { add, call, ret, sh, word } from '@examples/web/simple-c/core';
+import { add, call, data, ret, sh, word } from '@examples/web/simple-c/core';
+import { getHexFromBytes } from '@shared/utils';
 
 export class SimpleCWebExample {
   public constructor() {
@@ -12,15 +13,15 @@ export class SimpleCWebExample {
   }
 
   public refreshMemoryLog(): void {
-    domUtils.getById('stack-memory').innerHTML = '32';
-    domUtils.getById('data-memory').innerHTML = '32';
     this.run();
+    domUtils.getById('stack-memory').innerHTML = '32';
+    domUtils.getById('data-memory').innerHTML = getHexFromBytes(data);
   }
 
   protected run(): void {
     const length = word(1, []);
-    const textToCheck = word(20, [`lorem ipsum`]);
-    const getLength = word(1, [
+    const textToCheck = word(4, [`abc`, `de`]);
+    const getLength = word(-1, [
       bag => {
         const text = word(0, []);
         const i = word(0, []);
