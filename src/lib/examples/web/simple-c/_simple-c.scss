@@ -1,0 +1,23 @@
+// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+
+html.simple-c,
+.simple-c body {
+  margin: 0;
+  padding: 0;
+}
+
+.simple-c {
+  .memory-log {
+    float: left;
+    margin: 0 20px 20px 0;
+    padding: 20px;
+    width: 40%;
+    > div {
+      border: 1px solid lightgray;
+      margin-top: 20px;
+      padding: 10px;
+      font-family: monospace;
+      min-height: 200px;
+    }
+  }
+}

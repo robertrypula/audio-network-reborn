@@ -48,6 +48,7 @@ export * from '@examples/node/cli';
 export * from '@examples/web/data-link-layer/chat-advanced/chat-advanced';
 export * from '@examples/web/data-link-layer/chat-simple/chat-simple';
 export * from '@examples/web/data-link-layer/hex-bytes-simple/hex-bytes-simple';
+export * from '@examples/web/simple-c/simple-c';
 
 import { CliNodeExample } from '@examples/node/cli';
 import { argc, argv, isNode } from '@shared/environment-utils';
