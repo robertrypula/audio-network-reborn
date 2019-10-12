@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import * as domUtils from '@examples/web/dom-utils';
-import { add, Byte, call, memoryBytes, ret, sh, word } from '@examples/web/simple-c/core';
+import { add, Byte, call, memoryBytes, nand, ret, sh, word } from '@examples/web/simple-c/core';
 
 /*tslint:disable:no-console*/
 /*tslint:disable:no-bitwise*/
