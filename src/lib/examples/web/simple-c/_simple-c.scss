@@ -18,6 +18,21 @@ html.simple-c,
       padding: 10px;
       font-family: monospace;
       min-height: 200px;
+
+      > span.code {
+        color: white;
+        background-color: #ddddff;
+      }
+      > span.pointer {
+        color: #5555ff;
+        font-weight: bold;
+      }
+      > span.unused {
+        opacity: 0.1;
+      }
+      > span.value {
+        background-color: #efefff;
+      }
     }
   }
 }

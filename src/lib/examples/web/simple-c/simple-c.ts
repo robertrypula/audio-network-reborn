@@ -1,8 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import * as domUtils from '@examples/web/dom-utils';
-import { add, call, data, ret, sh, word } from '@examples/web/simple-c/core';
-import { getHexFromBytes } from '@shared/utils';
+import { add, Byte, call, memoryBytes, ret, sh, word } from '@examples/web/simple-c/core';
+
+/*tslint:disable:no-console*/
+/*tslint:disable:no-bitwise*/
 
 export class SimpleCWebExample {
   public constructor() {
@@ -10,23 +12,27 @@ export class SimpleCWebExample {
     domUtils.getById('audio-network-reborn-root').innerHTML = require('./simple-c.html');
 
     domUtils.getById('refresh-button').addEventListener('click', () => this.refreshMemoryLog());
+    this.refreshMemoryLog();
   }
 
   public refreshMemoryLog(): void {
     this.run();
-    domUtils.getById('stack-memory').innerHTML = '32';
-    domUtils.getById('data-memory').innerHTML = getHexFromBytes(data);
+    // domUtils.getById('stack-memory').innerHTML = this.getBytesHtml(stackBytes);
+    domUtils.getById('data-memory').innerHTML = this.getBytesHtml(memoryBytes);
+  }
+
+  protected getBytesHtml(bytes: Byte[]): string {
+    return bytes.reduce(
+      (html, byte) => html + `<span class="${byte.type}">${this.getHexFromByte(byte.value)}</span> `,
+      ''
+    );
+  }
+
+  protected getHexFromByte(byte: number): string {
+    return ((byte & 0xff) < 16 ? '0' : '') + (byte & 0xff).toString(16);
   }
 
   protected run(): void {
-    const ptr = word(1, [0x1234]);
-    const ptrB = word(2, [0x9182, 0xcdef]);
-
-    // ptr.v = ptrB.idx(1).a;
-
-    ptr.a = ptrB.idx(1).a;
-
-    return;
     const length = word(1, []);
     const textToCheck = word(4, [`abc`, `de`]);
     const getLength = word(-1, [
