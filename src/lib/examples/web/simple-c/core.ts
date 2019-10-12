@@ -22,9 +22,13 @@ export interface CodeEntry {
 
 // -----------------------------------------------------------------------------
 
-export let regDP = 0;
+// export let regGP = 10;
+export let globalScopeOffset = 0;
+
 export let regFP = 0;
-export let regSP = 64;
+export let regSP = 0x50;
+
+export let callLevel = 0;
 
 export const codeEntries: CodeEntry[] = [];
 export const memoryBytes: Byte[] = [];
@@ -34,26 +38,25 @@ const memoryInitialize = (size: number): void => {
   for (let i = 0; i < size; i++) {
     memoryBytes.push({ type: Type.Unused, value: 0 });
   }
-
 };
+
 const memoryRangeCheck = (address: number): void => {
   if (typeof memoryBytes[address] === 'undefined') {
     throw new Error(`Address ${address} is outside memory size of ${memoryBytes.length} bytes`);
   }
-
 };
+
 const memoryRead = (address: number): number => {
   memoryRangeCheck(address);
   return memoryBytes[address].value;
-
 };
+
 const memoryWrite = (address: number, byte: number, type?: Type): void => {
   memoryRangeCheck(address);
   memoryBytes[address].value = byte;
   if (type) {
     memoryBytes[address].type = type;
   }
-
 };
 
 memoryInitialize(128);
@@ -61,7 +64,7 @@ memoryInitialize(128);
 // -----------------------------------------------------------------------------
 
 export class Pointer {
-  public constructor(protected address: number, protected isIndexed: boolean) {}
+  public constructor(protected address: number, protected isIndexed: boolean, protected isStack: boolean) {}
 
   public get v(): number {
     const addressOfPointingValue = this.getAddressOfPointingValue();
@@ -84,8 +87,9 @@ export class Pointer {
     if (this.isIndexed) {
       throw new Error('Cannot assign to indexed pointer as it is calculated in the CPU register');
     }
-    memoryWrite(this.address, (address >>> 8) & 0xff);
-    memoryWrite(this.address + 1, address & 0xff);
+    const realAddress = this.getRealAddress();
+    memoryWrite(realAddress, (address >>> 8) & 0xff);
+    memoryWrite(realAddress + 1, address & 0xff);
   }
 
   public idx(offset: number): Pointer {
@@ -95,11 +99,17 @@ export class Pointer {
       throw new Error('Cannot index indexed pointer');
     }
 
-    return new Pointer(addressOfPointingValue + 2 * offset, true);
+    return new Pointer(addressOfPointingValue + 2 * offset, true, this.isStack);
+  }
+
+  protected getRealAddress(): number {
+    return (this.isStack ? regFP : 0) + this.address;
   }
 
   protected getAddressOfPointingValue(): number {
-    return this.isIndexed ? this.address : (memoryRead(this.address) << 8) | memoryRead(this.address + 1);
+    const realAddress = this.getRealAddress();
+
+    return this.isIndexed ? realAddress : (memoryRead(realAddress) << 8) | memoryRead(realAddress + 1);
   }
 }
 
@@ -107,13 +117,17 @@ export class Pointer {
 
 export const word = (wordCount: number, preset: number[] | string[] | [(bag: Pointer) => void]): Pointer => {
   const bytes: number[] = [];
-  const address = memoryBytes.findIndex(byte => byte.type === Type.Unused);
+  const isStack = !!callLevel;
+  const address = isStack ? regSP : globalScopeOffset;
   const addressOfPointingValue = address + 2;
-  let a = address;
   let type: Type;
 
-  memoryWrite(a++, (addressOfPointingValue >>> 8) & 0xff, Type.Pointer);
-  memoryWrite(a++, addressOfPointingValue & 0xff, Type.Pointer);
+  memoryWrite(isStack ? regSP++ : globalScopeOffset++, (addressOfPointingValue >>> 8) & 0xff, Type.Pointer);
+  memoryWrite(isStack ? regSP++ : globalScopeOffset++, addressOfPointingValue & 0xff, Type.Pointer);
+
+  if (isStack && preset.length) {
+    throw new Error('Predefine array is forbidden inside function');
+  }
 
   if (preset.length) {
     if (typeof preset[0] === 'number') {
@@ -128,15 +142,15 @@ export const word = (wordCount: number, preset: number[] | string[] | [(bag: Poi
       }
       type = Type.Value;
     } else if (typeof preset[0] === 'string') {
-      if (wordCount < preset.length / 2) {
-        throw new Error('Word count to small (string)');
-      }
       for (let i = 0; i < preset.length; i++) {
         const s = preset[i] as string;
 
         for (let j = 0; j < s.length; j++) {
           bytes.push(s.charCodeAt(j) & 0x7f);
         }
+      }
+      if (wordCount < bytes.length / 2) {
+        throw new Error('Word count to small (string)');
       }
       type = Type.Value;
     } else {
@@ -149,7 +163,7 @@ export const word = (wordCount: number, preset: number[] | string[] | [(bag: Poi
         bytes.push(0xff); // fake 'code'
       }
       wordCount = codeLengthInWords;
-      if (codeEntries.findIndex((codeEntry) => codeEntry.address === addressOfPointingValue) !== -1) {
+      if (codeEntries.findIndex(codeEntry => codeEntry.address === addressOfPointingValue) !== -1) {
         throw new Error('Code entry already exists');
       }
       codeEntries.push({
@@ -163,29 +177,59 @@ export const word = (wordCount: number, preset: number[] | string[] | [(bag: Poi
   }
 
   for (let i = 0; i < wordCount * 2; i++) {
-    memoryWrite(a++, i < bytes.length ? bytes[i] : 0x00, type);
+    if (isStack) {
+      memoryWrite(regSP++, 0x00, type);
+    } else {
+      memoryWrite(globalScopeOffset++, i < bytes.length ? bytes[i] : 0x00, type);
+    }
   }
 
-  return new Pointer(address, false);
+  return new Pointer(address, false, isStack);
 };
 
 // -----------------------------------------------------------------------------
+/*
+Intel x86 example:
+
+    Inside function
+    foo:                       ; foo(arg0, arg1, arg2);
+        push ebp               ; save previous function frame pointer
+        mov ebp, esp           ; create current function frame pointer
+        sub esp, N             ; N = number of bytes for local variables
+
+        ...                    ; function body (you can also push registers on stack and pop them at the end)
+
+        mov esp, ebp           ; restore stack (destroys all local vars)
+        pop ebp                ; restore previous function frame pointer
+        ret                    ; return from function (pops return address from stack)
+
+    Inside previous function
+
+        push  arg2             ; push arguments on stack in reverse order
+        push  arg1
+        push  arg0
+        call  foo              ; call function (pushes return address to stack)
+        add   esp, 3*4         ; instruction adds 3*4 bytes to stack pointer to destroy 3 arguments used in foo function
+ */
 
 export const call = (address: number, bagValue: number): void => {
-  const index = codeEntries.findIndex((codeEntry) => codeEntry.address === address);
+  const index = codeEntries.findIndex(codeEntry => codeEntry.address === address);
 
   if (index === -1) {
     throw new Error('Provided address does not point to function code');
   }
 
-  memoryWrite(regSP, (bagValue >>> 8) & 0xff, Type.Value);
-  memoryWrite(regSP + 1, bagValue & 0xff, Type.Value);
-  codeEntries[index].code(new Pointer(regSP, false));
-  regSP += 2;
+  const bagAddress = regSP;
+
+  callLevel++;
+  word(1, []);
+  memoryWrite(regSP - 2, (bagValue >>> 8) & 0xff);
+  memoryWrite(regSP - 1, bagValue & 0xff);
+  codeEntries[index].code(new Pointer(bagAddress, false, true));
 };
 
 export const ret = (): void => {
-  console.log('ret');
+  callLevel--;
 };
 
 // -----------------------------------------------------------------------------
