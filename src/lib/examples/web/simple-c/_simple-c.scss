@@ -23,15 +23,25 @@ html.simple-c,
         color: white;
         background-color: #ddddff;
       }
+      > span.function-call-on-stack {
+        color: white;
+        background-color: #ffdddd;
+      }
       > span.pointer {
         color: #5555ff;
         font-weight: bold;
       }
       > span.unused {
-        opacity: 0.1;
+        color: #eee;
       }
       > span.value {
         background-color: #efefff;
+      }
+      > span.sp {
+        border: 1px solid red;
+      }
+      > span.fp {
+        outline: 1px solid blue;
       }
     }
   }

@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import * as domUtils from '@examples/web/dom-utils';
-import { add, Byte, call, memoryBytes, ret, sh, word } from '@examples/web/simple-c/core';
+import { add, Byte, call, memoryBytes, regFP, regSP, ret, sh, word } from '@examples/web/simple-c/core';
 
 /*tslint:disable:no-console*/
 /*tslint:disable:no-bitwise*/
@@ -23,7 +23,11 @@ export class SimpleCWebExample {
 
   protected getBytesHtml(bytes: Byte[]): string {
     return bytes.reduce(
-      (html, byte) => html + `<span class="${byte.type}">${this.getHexFromByte(byte.value)}</span> `,
+      (html, byte, index) =>
+        html +
+        `<span class="${byte.type} ${index === regFP ? 'fp' : ''} ${index === regSP ? 'sp' : ''}">${this.getHexFromByte(
+          byte.value
+        )}</span> `,
       ''
     );
   }

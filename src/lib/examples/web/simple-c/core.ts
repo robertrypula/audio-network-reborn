@@ -5,6 +5,7 @@
 
 export enum Type {
   Code = 'code',
+  FunctionCallOnStack = 'function-call-on-stack',
   Pointer = 'pointer',
   Unused = 'unused',
   Value = 'value'
@@ -22,7 +23,6 @@ export interface CodeEntry {
 
 // -----------------------------------------------------------------------------
 
-// export let regGP = 10;
 export let globalScopeOffset = 0;
 
 export let regFP = 0;
@@ -59,7 +59,7 @@ const memoryWrite = (address: number, byte: number, type?: Type): void => {
   }
 };
 
-memoryInitialize(128);
+memoryInitialize(256);
 
 // -----------------------------------------------------------------------------
 
@@ -87,9 +87,8 @@ export class Pointer {
     if (this.isIndexed) {
       throw new Error('Cannot assign to indexed pointer as it is calculated in the CPU register');
     }
-    const realAddress = this.getRealAddress();
-    memoryWrite(realAddress, (address >>> 8) & 0xff);
-    memoryWrite(realAddress + 1, address & 0xff);
+    memoryWrite(this.address, (address >>> 8) & 0xff);
+    memoryWrite(this.address + 1, address & 0xff);
   }
 
   public idx(offset: number): Pointer {
@@ -102,14 +101,8 @@ export class Pointer {
     return new Pointer(addressOfPointingValue + 2 * offset, true, this.isStack);
   }
 
-  protected getRealAddress(): number {
-    return (this.isStack ? regFP : 0) + this.address;
-  }
-
   protected getAddressOfPointingValue(): number {
-    const realAddress = this.getRealAddress();
-
-    return this.isIndexed ? realAddress : (memoryRead(realAddress) << 8) | memoryRead(realAddress + 1);
+    return this.isIndexed ? this.address : (memoryRead(this.address) << 8) | memoryRead(this.address + 1);
   }
 }
 
@@ -225,10 +218,20 @@ export const call = (address: number, bagValue: number): void => {
   word(1, []);
   memoryWrite(regSP - 2, (bagValue >>> 8) & 0xff);
   memoryWrite(regSP - 1, bagValue & 0xff);
+  word(0, []);
+  memoryWrite(regSP - 2, 0xff, Type.FunctionCallOnStack);
+  memoryWrite(regSP - 1, 0xff, Type.FunctionCallOnStack);
+  word(0, []);
+  memoryWrite(regSP - 2, (regFP >>> 8) & 0xff, Type.FunctionCallOnStack);
+  memoryWrite(regSP - 1, regFP & 0xff, Type.FunctionCallOnStack);
+  regFP = regSP;
   codeEntries[index].code(new Pointer(bagAddress, false, true));
 };
 
 export const ret = (): void => {
+  // TODO unknown number of local variables in the function
+  // regSP -= 2;
+  // regSP -= 2;
   callLevel--;
 };
 
