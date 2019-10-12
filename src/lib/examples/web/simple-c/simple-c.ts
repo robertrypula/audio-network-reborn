@@ -11,13 +11,11 @@ export class SimpleCWebExample {
     domUtils.getByTagName('html').classList.add('simple-c');
     domUtils.getById('audio-network-reborn-root').innerHTML = require('./simple-c.html');
 
-    domUtils.getById('refresh-button').addEventListener('click', () => this.refreshMemoryLog());
+    this.run();
     this.refreshMemoryLog();
   }
 
   public refreshMemoryLog(): void {
-    this.run();
-    // domUtils.getById('stack-memory').innerHTML = this.getBytesHtml(stackBytes);
     domUtils.getById('memory').innerHTML = this.getBytesHtml(memoryBytes);
   }
 
@@ -25,9 +23,9 @@ export class SimpleCWebExample {
     return bytes.reduce(
       (html, byte, index) =>
         html +
-        `<span class="${byte.type} ${index === regFP ? 'fp' : ''} ${index === regSP ? 'sp' : ''}">${this.getHexFromByte(
-          byte.value
-        )}</span> `,
+        `<span class="${byte.type} ${index === regFP ? 'fp' : ''} ${index === regSP ? 'sp' : ''}">` +
+        `${this.getHexFromByte(byte.value)}` +
+        `</span> `,
       ''
     );
   }
