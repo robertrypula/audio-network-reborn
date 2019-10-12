@@ -7,27 +7,33 @@ export const stack: number[] = [];
 export const data: number[] = [];
 
 export class Pointer {
+  public constructor(protected address: number) {}
+
   public get v(): number {
     console.log('get v');
-    return 0;
+    return data[this.address] << 8 | data[this.address + 1];
   }
 
   public set v(value: number) {
     console.log('set v', value);
+    data[this.address] = (value >>> 8) & 0xff;
+    data[this.address + 1] = value & 0xff;
   }
 
   public get a(): number {
     console.log('get a');
-    return 0;
+    return this.address;
   }
 
   public set a(address: number) {
     console.log('set a', address);
+    // data[]
+    this.address = address;
   }
 
   public idx(offset: number): Pointer {
     console.log('idx', offset);
-    return new Pointer();
+    return new Pointer(this.address + 2 * offset);
   }
 }
 
@@ -78,7 +84,7 @@ export const word = (wordCount: number, preset: number[] | string[] | [(bag: Poi
     data.push(i < bytes.length ? bytes[i] : 0x00);
   }
 
-  return new Pointer();
+  return new Pointer(address);
 };
 
 export const ret = (): void => {

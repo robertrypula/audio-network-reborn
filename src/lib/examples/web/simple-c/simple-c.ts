@@ -19,6 +19,14 @@ export class SimpleCWebExample {
   }
 
   protected run(): void {
+    const ptr = word(1, [0x1234]);
+    const ptrB = word(2, [0x9182, 0xcdef]);
+
+    // ptr.v = ptrB.idx(1).a;
+
+    ptr.a = ptrB.idx(1).a;
+
+    return;
     const length = word(1, []);
     const textToCheck = word(4, [`abc`, `de`]);
     const getLength = word(-1, [
