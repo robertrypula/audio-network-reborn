@@ -33,10 +33,13 @@ export class SimpleCWebExample {
   }
 
   protected run(): void {
-    const length = word(1, []);
     const textToCheck = word(4, [`abc`, `de`]);
+    const length = word(1, []);
+    const getLengthBag = word(2, []);
     const getLength = word(-1, [
       bag => {
+        console.log(bag);
+        return;
         const text = word(0, []);
         const i = word(0, []);
         const chars = word(1, []);
@@ -78,7 +81,6 @@ export class SimpleCWebExample {
       }
     ]);
 
-    const getLengthBag = word(2, []);
     getLengthBag.idx(0).v = textToCheck.a;
     getLengthBag.idx(1).v = length.a;
 

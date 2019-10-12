@@ -15,10 +15,18 @@ export interface Byte {
   value: number;
 }
 
-export const regDP = 0;
-export const regFP = 0;
-export const regSP = 0;
+export interface CodeEntry {
+  address: number;
+  code: (bag: Pointer) => void;
+}
 
+// -----------------------------------------------------------------------------
+
+export let regDP = 0;
+export let regFP = 0;
+export let regSP = 64;
+
+export const codeEntries: CodeEntry[] = [];
 export const memoryBytes: Byte[] = [];
 
 const memoryInitialize = (size: number): void => {
@@ -26,28 +34,31 @@ const memoryInitialize = (size: number): void => {
   for (let i = 0; i < size; i++) {
     memoryBytes.push({ type: Type.Unused, value: 0 });
   }
-};
 
+};
 const memoryRangeCheck = (address: number): void => {
   if (typeof memoryBytes[address] === 'undefined') {
     throw new Error(`Address ${address} is outside memory size of ${memoryBytes.length} bytes`);
   }
-};
 
+};
 const memoryRead = (address: number): number => {
   memoryRangeCheck(address);
   return memoryBytes[address].value;
-};
 
+};
 const memoryWrite = (address: number, byte: number, type?: Type): void => {
   memoryRangeCheck(address);
   memoryBytes[address].value = byte;
   if (type) {
     memoryBytes[address].type = type;
   }
+
 };
 
 memoryInitialize(128);
+
+// -----------------------------------------------------------------------------
 
 export class Pointer {
   public constructor(protected address: number, protected isIndexed: boolean) {}
@@ -91,6 +102,8 @@ export class Pointer {
     return this.isIndexed ? this.address : (memoryRead(this.address) << 8) | memoryRead(this.address + 1);
   }
 }
+
+// -----------------------------------------------------------------------------
 
 export const word = (wordCount: number, preset: number[] | string[] | [(bag: Pointer) => void]): Pointer => {
   const bytes: number[] = [];
@@ -136,6 +149,13 @@ export const word = (wordCount: number, preset: number[] | string[] | [(bag: Poi
         bytes.push(0xff); // fake 'code'
       }
       wordCount = codeLengthInWords;
+      if (codeEntries.findIndex((codeEntry) => codeEntry.address === addressOfPointingValue) !== -1) {
+        throw new Error('Code entry already exists');
+      }
+      codeEntries.push({
+        address: addressOfPointingValue,
+        code: preset[0] as (bag: Pointer) => void
+      });
       type = Type.Code;
     }
   } else {
@@ -149,20 +169,33 @@ export const word = (wordCount: number, preset: number[] | string[] | [(bag: Poi
   return new Pointer(address, false);
 };
 
+// -----------------------------------------------------------------------------
+
+export const call = (address: number, bagValue: number): void => {
+  const index = codeEntries.findIndex((codeEntry) => codeEntry.address === address);
+
+  if (index === -1) {
+    throw new Error('Provided address does not point to function code');
+  }
+
+  memoryWrite(regSP, (bagValue >>> 8) & 0xff, Type.Value);
+  memoryWrite(regSP + 1, bagValue & 0xff, Type.Value);
+  codeEntries[index].code(new Pointer(regSP, false));
+  regSP += 2;
+};
+
 export const ret = (): void => {
   console.log('ret');
 };
 
-export const call = (address: number, bag: number): void => {
-  console.log('call', address, bag);
+// -----------------------------------------------------------------------------
+
+export const add = (a: number, b: number): number => {
+  return (a + b) & 0xffff;
 };
 
 export const nand = (a: number, b: number): number => {
   return ~(a & b) & 0xffff;
-};
-
-export const add = (a: number, b: number): number => {
-  return (a + b) & 0xffff;
 };
 
 export const sh = (v: number, amount: number): number => {
