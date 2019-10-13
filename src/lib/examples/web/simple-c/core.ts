@@ -3,23 +3,13 @@
 /*tslint:disable:no-console*/
 /*tslint:disable:no-bitwise*/
 
-export enum Type {
-  Code = 'code',
-  FunctionCallOnStack = 'function-call-on-stack',
-  Pointer = 'pointer',
-  Unused = 'unused',
-  Value = 'value'
-}
+import { Byte, CodeEntry, Type } from '@examples/web/simple-c/model';
 
-export interface Byte {
-  type: Type;
-  value: number;
-}
-
-export interface CodeEntry {
-  address: number;
-  code: (bag: Pointer) => void;
-}
+export const refreshMemoryLog: { handler: () => void } = {
+  handler: () => {
+    /*empty*/
+  }
+};
 
 // -----------------------------------------------------------------------------
 
@@ -57,6 +47,7 @@ const memoryWrite = (address: number, byte: number, type?: Type): void => {
   if (type) {
     memoryBytes[address].type = type;
   }
+  refreshMemoryLog.handler();
 };
 
 memoryInitialize(256);
@@ -233,24 +224,4 @@ export const ret = (): void => {
   // regSP -= 2;
   // regSP -= 2;
   callLevel--;
-};
-
-// -----------------------------------------------------------------------------
-
-export const add = (a: number, b: number): number => {
-  return (a + b) & 0xffff;
-};
-
-export const nand = (a: number, b: number): number => {
-  return ~(a & b) & 0xffff;
-};
-
-export const sh = (v: number, amount: number): number => {
-  let result = 0;
-
-  if (amount > -32 && amount < 32) {
-    result = amount >= 0 ? v >>> amount : v << -amount;
-  }
-
-  return result;
 };

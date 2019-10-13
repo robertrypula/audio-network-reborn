@@ -7,6 +7,11 @@ html.simple-c,
 }
 
 .simple-c {
+
+  #range {
+    width: 100%;
+  }
+
   .memory-log {
     // float: left;
     margin: 0 20px 20px 0;
@@ -19,28 +24,28 @@ html.simple-c,
       font-family: monospace;
       min-height: 200px;
 
-      > span.code {
+      span.code {
         color: white;
         background-color: #ddddff;
       }
-      > span.function-call-on-stack {
+      span.function-call-on-stack {
         color: white;
         background-color: #ffdddd;
       }
-      > span.pointer {
+      span.pointer {
         color: #5555ff;
         font-weight: bold;
       }
-      > span.unused {
+      span.unused {
         color: #eee;
       }
-      > span.value {
+      span.value {
         background-color: #efefff;
       }
-      > span.sp {
+      span.sp {
         border: 1px solid red;
       }
-      > span.fp {
+      span.fp {
         outline: 1px solid blue;
       }
     }

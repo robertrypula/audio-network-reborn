@@ -1,39 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import * as domUtils from '@examples/web/dom-utils';
-import { add, Byte, call, memoryBytes, regFP, regSP, ret, sh, word } from '@examples/web/simple-c/core';
+import { call, ret, word } from '@examples/web/simple-c/core';
+import { add, sh } from '@examples/web/simple-c/operators';
+import { SimpleCWebExampleBase } from '@examples/web/simple-c/simple-c-web-example-base';
 
-/*tslint:disable:no-console*/
-/*tslint:disable:no-bitwise*/
-
-export class SimpleCWebExample {
-  public constructor() {
-    domUtils.getByTagName('html').classList.add('simple-c');
-    domUtils.getById('audio-network-reborn-root').innerHTML = require('./simple-c.html');
-
-    this.run();
-    this.refreshMemoryLog();
-  }
-
-  public refreshMemoryLog(): void {
-    domUtils.getById('memory').innerHTML = this.getBytesHtml(memoryBytes);
-  }
-
-  protected getBytesHtml(bytes: Byte[]): string {
-    return bytes.reduce(
-      (html, byte, index) =>
-        html +
-        `<span class="${byte.type} ${index === regFP ? 'fp' : ''} ${index === regSP ? 'sp' : ''}">` +
-        `${this.getHexFromByte(byte.value)}` +
-        `</span> `,
-      ''
-    );
-  }
-
-  protected getHexFromByte(byte: number): string {
-    return ((byte & 0xff) < 16 ? '0' : '') + (byte & 0xff).toString(16);
-  }
-
+export class SimpleCWebExample extends SimpleCWebExampleBase {
   protected run(): void {
     const length = word(1, []);
     const textToCheck = word(10, [`simple c`]);
