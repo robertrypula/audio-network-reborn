@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+// Proof of Concept - don't judge the code quality :)
+
 import { call, ret, word } from '@examples/web/simple-c/core';
 import { add, sh } from '@examples/web/simple-c/operators';
 import { SimpleCWebExampleBase } from '@examples/web/simple-c/simple-c-web-example-base';
@@ -50,13 +52,20 @@ export class SimpleCWebExample extends SimpleCWebExampleBase {
         i.v = sh(i.v, -1);
         i.v = add(i.v, offset.v);
 
+        /*
+        const lengthSub = word(1, []);
+        const getLengthBagSub = word(2, []);
+        getLengthBagSub.idx(0).v = textToCheck.a;
+        getLengthBagSub.idx(1).v = lengthSub.a;
+        // call(getLength.a, getLengthBagSub.a);
+        */
+
         ret();
       }
     ]);
 
     getLengthBag.idx(0).v = textToCheck.a;
     getLengthBag.idx(1).v = length.a;
-
     call(getLength.a, getLengthBag.a);
   }
 }

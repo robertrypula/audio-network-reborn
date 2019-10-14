@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+// Proof of Concept - don't judge the code quality :)
+
 /*tslint:disable:no-bitwise*/
 
 export const add = (a: number, b: number): number => {

@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+// Proof of Concept - don't judge the code quality :)
+
 import { Pointer } from '@examples/web/simple-c/core';
 
 export enum Type {

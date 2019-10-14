@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+// Proof of Concept - don't judge the code quality :)
+
 html.simple-c,
 .simple-c body {
   margin: 0;
@@ -23,6 +25,10 @@ html.simple-c,
       font-family: monospace;
       min-height: 200px;
 
+      span {
+        border: 1px solid transparent;
+      }
+
       span.code {
         color: white;
         background-color: #ddddff;
@@ -42,7 +48,7 @@ html.simple-c,
         background-color: #efefff;
       }
       span.sp {
-        border: 1px solid red;
+        border-color: red;
       }
       span.fp {
         outline: 1px solid blue;

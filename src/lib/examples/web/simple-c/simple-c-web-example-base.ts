@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+// Proof of Concept - don't judge the code quality :)
+
 import * as domUtils from '@examples/web/dom-utils';
 import { memoryBytes, refreshMemoryLog, regFP, regSP } from '@examples/web/simple-c/core';
 import { Byte } from '@examples/web/simple-c/model';

@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+// Proof of Concept - don't judge the code quality :)
+
 /*tslint:disable:no-console*/
 /*tslint:disable:no-bitwise*/
 
@@ -15,10 +17,11 @@ export const refreshMemoryLog: { handler: () => void } = {
 
 export let globalScopeOffset = 0;
 
-export let regFP = 0;
+export let regFP = 0x73; // some random number to test if initial value is restored at the end of the program
 export let regSP = 0x50;
 
 export let callLevel = 0;
+export let callLevelAllocatedVariables: number[] = [];
 
 export const codeEntries: CodeEntry[] = [];
 export const memoryBytes: Byte[] = [];
@@ -38,6 +41,7 @@ const memoryRangeCheck = (address: number): void => {
 
 const memoryRead = (address: number): number => {
   memoryRangeCheck(address);
+  refreshMemoryLog.handler();
   return memoryBytes[address].value;
 };
 
@@ -50,7 +54,7 @@ const memoryWrite = (address: number, byte: number, type?: Type): void => {
   refreshMemoryLog.handler();
 };
 
-memoryInitialize(256);
+memoryInitialize(512);
 
 // -----------------------------------------------------------------------------
 
@@ -105,6 +109,14 @@ export const word = (wordCount: number, preset: number[] | string[] | [(bag: Poi
   const address = isStack ? regSP : globalScopeOffset;
   const addressOfPointingValue = address + 2;
   let type: Type;
+
+  if (typeof callLevelAllocatedVariables[callLevel] === 'undefined') {
+    callLevelAllocatedVariables[callLevel] = 0;
+  }
+
+  callLevel === 0 && callLevelAllocatedVariables[callLevel] === 0 && refreshMemoryLog.handler();
+
+  callLevelAllocatedVariables[callLevel]++;
 
   memoryWrite(isStack ? regSP++ : globalScopeOffset++, (addressOfPointingValue >>> 8) & 0xff, Type.Pointer);
   memoryWrite(isStack ? regSP++ : globalScopeOffset++, addressOfPointingValue & 0xff, Type.Pointer);
@@ -198,30 +210,57 @@ Intel x86 example:
 
 export const call = (address: number, bagValue: number): void => {
   const index = codeEntries.findIndex(codeEntry => codeEntry.address === address);
+  const bagAddress = regSP;
+  const FAKE_RETURN_ADDRESS = 0xffff; // needs to be fake as in JavaScript we don't have actual program code
 
   if (index === -1) {
     throw new Error('Provided address does not point to function code');
   }
 
-  const bagAddress = regSP;
-
   callLevel++;
+
+  // parameter
   word(1, []);
   memoryWrite(regSP - 2, (bagValue >>> 8) & 0xff);
   memoryWrite(regSP - 1, bagValue & 0xff);
+
+  // the actual assembler 'call' instruction that stores return address
   word(0, []);
-  memoryWrite(regSP - 2, 0xff, Type.FunctionCallOnStack);
-  memoryWrite(regSP - 1, 0xff, Type.FunctionCallOnStack);
+  memoryWrite(regSP - 2, (FAKE_RETURN_ADDRESS >>> 8) & 0xff, Type.FunctionCallOnStack);
+  memoryWrite(regSP - 1, FAKE_RETURN_ADDRESS & 0xff, Type.FunctionCallOnStack);
+
+  // the function code starts with storing old Frame Pointer and creating new Frame Pointer from current Stack Pointer
   word(0, []);
   memoryWrite(regSP - 2, (regFP >>> 8) & 0xff, Type.FunctionCallOnStack);
   memoryWrite(regSP - 1, regFP & 0xff, Type.FunctionCallOnStack);
   regFP = regSP;
+  refreshMemoryLog.handler();
+
+  // run the code
   codeEntries[index].code(new Pointer(bagAddress, false, true));
 };
 
 export const ret = (): void => {
-  // TODO unknown number of local variables in the function
-  // regSP -= 2;
-  // regSP -= 2;
+  const NUMBER_OF_VARIABLES_AT_CALL_PREAMBLE = 3;
+  const numberOfLocalVariablesToDestroy = callLevelAllocatedVariables[callLevel] - NUMBER_OF_VARIABLES_AT_CALL_PREAMBLE;
+  let FAKE_RETURN_ADDRESS: number;
+
+  // destroy all local vars
+  regSP = regFP; // actually we don't need 'numberOfLocalVariablesToDestroy' we can just move SP to FP
+  refreshMemoryLog.handler();
+
+  // pop previous Frame Pointer
+  regFP = memoryRead(--regSP);
+  regFP = (memoryRead(--regSP) << 8) | regFP;
+
+  // the actual assembler 'ret' instruction that pops the return address
+  FAKE_RETURN_ADDRESS = memoryRead(--regSP);
+  FAKE_RETURN_ADDRESS = (memoryRead(--regSP) << 8) | FAKE_RETURN_ADDRESS;
+
+  // destroy the function call parameter
+  regSP -= 2; // the 'bag' parameter value
+  regSP -= 2; // the 'bag' parameter pointer
+
   callLevel--;
+  refreshMemoryLog.handler();
 };
