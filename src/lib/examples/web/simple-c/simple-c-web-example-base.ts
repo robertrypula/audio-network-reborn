@@ -7,8 +7,7 @@ import { Byte } from '@examples/web/simple-c/model';
 /*tslint:disable:no-bitwise*/
 
 export abstract class SimpleCWebExampleBase {
-  protected refreshMemoryLogCounter = 0;
-  protected lastHtml: string = null;
+  protected htmlHistory: string[] = [];
 
   protected constructor() {
     domUtils.getByTagName('html').classList.add('simple-c');
@@ -16,18 +15,23 @@ export abstract class SimpleCWebExampleBase {
 
     refreshMemoryLog.handler = this.refreshMemoryLog.bind(this);
     this.run();
+    this.configureInputs();
   }
 
   public refreshMemoryLog(): void {
-    const div = domUtils.createElement('div');
     const html = this.getBytesHtml(memoryBytes);
 
-    if (this.lastHtml !== html) {
-      div.setAttribute('id', `log-${this.refreshMemoryLogCounter++}`);
-      div.innerHTML = html;
-      domUtils.getById('memory').appendChild(div);
-      this.lastHtml = html;
+    if (this.htmlHistory.length === 0 || this.htmlHistory[this.htmlHistory.length - 1] !== html) {
+      this.htmlHistory.push(html);
     }
+  }
+
+  protected configureInputs(): void {
+    domUtils.getByIdInput('range').setAttribute('max', this.htmlHistory.length - 1 + '');
+    domUtils.getByIdInput('range').addEventListener('input', () => {
+      domUtils.getById('memory').innerHTML = this.htmlHistory[+domUtils.getByIdInput('range').value];
+    });
+    domUtils.getById('memory').innerHTML = this.htmlHistory[0];
   }
 
   protected getBytesHtml(bytes: Byte[]): string {
