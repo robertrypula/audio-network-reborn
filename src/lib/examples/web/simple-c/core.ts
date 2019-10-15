@@ -17,7 +17,7 @@ export const refreshMemoryLog: { handler: () => void } = {
 
 export let globalScopeOffset = 0;
 
-export let regFP = 0x73; // some random number to test if initial value is restored at the end of the program
+export let regFP = 0x90; // some random number to test if initial value is restored at the end of the program
 export let regSP = 0x50;
 
 export let callLevel = 0;

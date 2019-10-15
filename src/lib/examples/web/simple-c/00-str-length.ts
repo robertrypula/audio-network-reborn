@@ -6,7 +6,10 @@ import { call, ret, word } from '@examples/web/simple-c/core';
 import { add, sh } from '@examples/web/simple-c/operators';
 import { SimpleCWebExampleBase } from '@examples/web/simple-c/simple-c-web-example-base';
 
-export class SimpleCWebExample extends SimpleCWebExampleBase {
+// Most desired feature:
+// - add ability to return values by function call like ret(something.v)
+
+export class StrLengthWebExample extends SimpleCWebExampleBase {
   protected run(): void {
     const length = word(1, []);
     const textToCheck = word(10, [`simple c`]);
@@ -52,14 +55,6 @@ export class SimpleCWebExample extends SimpleCWebExampleBase {
         i.v = sh(i.v, -1);
         i.v = add(i.v, offset.v);
 
-        /*
-        const lengthSub = word(1, []);
-        const getLengthBagSub = word(2, []);
-        getLengthBagSub.idx(0).v = textToCheck.a;
-        getLengthBagSub.idx(1).v = lengthSub.a;
-        // call(getLength.a, getLengthBagSub.a);
-        */
-
         ret();
       }
     ]);
@@ -67,5 +62,10 @@ export class SimpleCWebExample extends SimpleCWebExampleBase {
     getLengthBag.idx(0).v = textToCheck.a;
     getLengthBag.idx(1).v = length.a;
     call(getLength.a, getLengthBag.a);
+
+    // Set the range form field to the end. The 'textToCheck' length will be displayed in second byte pair.
+    // 00 02 00 08 00 06
+    //       ^^^^^
+    //       length
   }
 }
