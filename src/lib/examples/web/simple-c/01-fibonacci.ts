@@ -28,7 +28,8 @@ export class FibonacciWebExample extends SimpleCWebExampleBase {
         n.v = bagReader.idx(1).v;
         outputWriter.a = bagReader.idx(0).v;
 
-        if (n.v === 1 || n.v === 2) { // <--- complex conditions are not allowed in Simple C - refactor it...
+        if (n.v === 1 || n.v === 2) {
+          // ^^^^^^^^^^^^^^^^^^^^ complex conditions are not allowed in Simple C - refactor it...
           outputWriter.v = 1;
         } else {
           aN.v = add(n.v, -2);
