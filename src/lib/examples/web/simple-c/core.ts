@@ -17,8 +17,13 @@ export const refreshMemoryLog: { handler: () => void } = {
 
 export let globalScopeOffset = 0;
 
-export let regFP = 0x90; // some random number to test if initial value is restored at the end of the program
-export let regSP = 0x50;
+export let reg00 = 0x00;
+//         reg01
+//          ...
+//         reg12
+export let regFP = 0x90; // reg13  some random number to test if initial value is restored at the end of the program
+export let regSP = 0x50; // reg14
+export let regPC = 0x00; // reg15
 
 export let callLevel = 0;
 export let callLevelAllocatedVariables: number[] = [];
@@ -208,7 +213,7 @@ Intel x86 example:
         add   esp, 3*4         ; instruction adds 3*4 bytes to stack pointer to destroy 3 arguments used in foo function
  */
 
-export const call = (address: number, bagValue: number): void => {
+export const call = (address: number, bagValue: number): number => {
   const index = codeEntries.findIndex(codeEntry => codeEntry.address === address);
   const bagAddress = regSP;
   const FAKE_RETURN_ADDRESS = 0xffff; // needs to be fake as in JavaScript we don't have actual program code
@@ -238,9 +243,11 @@ export const call = (address: number, bagValue: number): void => {
 
   // run the code
   codeEntries[index].code(new Pointer(bagAddress, false, true));
+
+  return reg00;
 };
 
-export const ret = (): void => {
+export const ret = (returnValue: number): void => {
   const NUMBER_OF_VARIABLES_AT_CALL_PREAMBLE = 3;
   const numberOfLocalVariablesToDestroy = callLevelAllocatedVariables[callLevel] - NUMBER_OF_VARIABLES_AT_CALL_PREAMBLE;
   let FAKE_RETURN_ADDRESS: number;
@@ -263,4 +270,6 @@ export const ret = (): void => {
 
   callLevel--;
   refreshMemoryLog.handler();
+
+  reg00 = returnValue; // the return value is stored in CPU register (like in C compilers)
 };
