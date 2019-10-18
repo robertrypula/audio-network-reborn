@@ -27,8 +27,8 @@ export class DataLinkLayer {
   protected frameConfig: FrameConfig;
   protected rxFrameHistoryA: FrameHistory = [];
   protected rxFrameHistoryB: FrameHistory = [];
-  protected rxFrames: Frame[];
-  protected rxFramesErrorCorrected: Frame[];
+  protected rxFrames: Frame[] = [];
+  protected rxFramesErrorCorrected: Frame[] = [];
   protected rxRawBytesA: FixedSizeBuffer<number>;
   protected rxRawBytesB: FixedSizeBuffer<number>;
   protected rxRawBytesCounter = 0;
@@ -86,6 +86,10 @@ export class DataLinkLayer {
     }
 
     rxRawBytes.insert(rxRawByte);
+    if (rxRawBytes.isBelowMinimalLength()) {
+      return RxTimeTickState.Listening;
+    }
+
     this.rxFrames = [];
     this.rxFramesErrorCorrected = [];
 
@@ -107,11 +111,13 @@ export class DataLinkLayer {
 
   public setFrameConfigInitializer(frameConfigInitializer: FrameConfigInitializer): void {
     let lengthMax: number;
+    let lengthMin: number;
 
     this.frameConfig = getFrameConfig(frameConfigInitializer);
     lengthMax = this.frameConfig.rawBytesLength.max;
-    this.rxRawBytesA = new FixedSizeBuffer<number>(lengthMax);
-    this.rxRawBytesB = new FixedSizeBuffer<number>(lengthMax);
+    lengthMin = this.frameConfig.rawBytesLength.min;
+    this.rxRawBytesA = new FixedSizeBuffer<number>(lengthMax, lengthMin);
+    this.rxRawBytesB = new FixedSizeBuffer<number>(lengthMax, lengthMin);
   }
 
   public setFrameMode(frameMode: FrameMode): void {

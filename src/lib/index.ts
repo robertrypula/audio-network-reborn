@@ -107,7 +107,7 @@ TODO #1:
   + group interfaces, types and enums in model.ts files & check if all all methods and functions are AZ sorted
   + fix issue: you cannot build just after cloning as Prettier is complaining about End Of Lines
   + replace true/false values passed to functions with Enum (mostly in src/lib/1-data-link-layer/utils.ts)
-  - prevent uncompleted rxRawBytes buffer from being processed at rxTimeTime
+  + prevent uncompleted rxRawBytes buffer from being processed at rxTimeTick
   - detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
       - we don't need separate history for odd & even rxRawBytes,
       - we can return frames at getRxBytesCollection/getRxBytesErrorCorrectedCollection directly from history
