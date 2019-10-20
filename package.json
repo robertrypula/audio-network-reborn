@@ -16,6 +16,7 @@
     "start:node": "yarn clean && webpack --env.DEVELOPMENT && yarn start:node:existing",
     "start:node:existing": "node dist/audio-network-reborn-v0.1.0-rc19.js audioNetworkReborn.run.nodeExample",
     "test": "jest --watch",
+    "test:clear-cache": "jest --clearCache",
     "test:coverage": "jest --coverage",
     "test:report-coverage": "cat ./coverage/lcov.info | coveralls",
     "u:i": "yarn upgrade-interactive --latest"

@@ -126,6 +126,5 @@ export class AudioMonoIo implements AudioMonoIoInterface {
 // -----------------------------------------------------------------------------
 
 export const createAudioMonoIoConfig: CreateConfig = { stub: false };
-export const createAudioMonoIo = (): AudioMonoIoInterface => {
-  return createAudioMonoIoConfig.stub ? new AudioMonoIoStub() : new AudioMonoIo();
-};
+export const createAudioMonoIo = (): AudioMonoIoInterface =>
+  createAudioMonoIoConfig.stub ? new AudioMonoIoStub() : new AudioMonoIo();

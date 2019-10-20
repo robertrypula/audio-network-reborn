@@ -120,6 +120,7 @@ TODO #1:
 
 TODO #2:
   - reduce the sequence number length
+  - add createDataLinkLayer function (same as PhysicalLayer/AudioMonoIo) and DataLinkLayerInterface
   - implement ApplicationLayer/TransportLayer code with chat examples
   - PhysicalLayer should store history based on time tick values (getHistory, setHistory methods?)
   - implement 'integration' test for full stack of layers

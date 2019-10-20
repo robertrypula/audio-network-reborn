@@ -87,6 +87,18 @@ export class DataLinkLayer {
     }
 
     rxRawBytes.insert(rxRawByte);
+    this.rxRawBytesCounter++;
+    /* TODO finalize class changes
+    console.log(
+      this.rxRawBytesCounter,
+      ' - ',
+      isEven,
+      ' - ',
+      this.rxRawBytesA.data.join(','),
+      ' ||| ',
+      this.rxRawBytesB.data.join(',')
+    );
+    */
     if (rxRawBytes.isBelowMinimalLength()) {
       return RxTimeTickState.Listening;
     }
@@ -105,7 +117,6 @@ export class DataLinkLayer {
     );
     /*tslint:disable-next-line:no-console*/
     // validFramesCounter && console.log(new Date().getTime() - start); // TODO remove me
-    this.rxRawBytesCounter++;
 
     return RxTimeTickState.Listening;
   }

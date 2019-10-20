@@ -21,7 +21,6 @@ export class PhysicalLayer implements PhysicalLayerInterface {
   protected dspConfig: DspConfig;
 
   public constructor(dspMode: DspMode = DspMode.NormalBandFastAudibleLower) {
-    // console.log('PhysicalLayer real'); // TODO remove
     this.audioMonoIo = createAudioMonoIo();
     this.setDspMode(dspMode);
   }
@@ -64,6 +63,5 @@ export class PhysicalLayer implements PhysicalLayerInterface {
 // -----------------------------------------------------------------------------
 
 export const createPhysicalLayerConfig: CreateConfig = { stub: false };
-export const createPhysicalLayer = (): PhysicalLayerInterface => {
-  return createPhysicalLayerConfig.stub ? new PhysicalLayerStub() : new PhysicalLayer();
-};
+export const createPhysicalLayer = (): PhysicalLayerInterface =>
+  createPhysicalLayerConfig.stub ? new PhysicalLayerStub() : new PhysicalLayer();

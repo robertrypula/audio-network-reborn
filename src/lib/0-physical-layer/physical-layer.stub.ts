@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
+import { DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP } from '@physical-layer/config';
+import { getDspConfig } from '@physical-layer/config-utils';
 import {
   AudioMonoIoInterface,
   DspConfig,
@@ -13,12 +15,8 @@ import {
 export class PhysicalLayerStub implements PhysicalLayerInterface {
   public readonly audioMonoIo: AudioMonoIoInterface;
 
-  public constructor() {
-    // console.log('PhysicalLayerStub'); // TODO remove
-  }
-
   public getDspConfig(): DspConfig {
-    return null;
+    return getDspConfig(DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP[DspMode.NormalBandFastAudibleLower]);
   }
 
   public rx(currentTime: number): number {
