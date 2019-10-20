@@ -10,6 +10,10 @@ export enum CheckAlgorithm {
 
 // -----------------------------------------------------------------------------
 
+export interface CreateConfig {
+  stub: boolean;
+}
+
 export interface MinMaxRange {
   max: number;
   min: number;

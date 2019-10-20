@@ -5,14 +5,16 @@ import { DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP } from '@physical-layer/conf
 import { getDspConfig } from '@physical-layer/config-utils';
 import { BYTE_UNIQUE_VALUES, SILENCE_FREQUENCY } from '@physical-layer/constants';
 import { FftResult } from '@physical-layer/fft-result';
-import { AudioMonoIo, DspConfig, DspConfigInitializer, DspMode } from '@physical-layer/model';
+import { AudioMonoIo, DspConfig, DspConfigInitializer, DspMode, PhysicalLayerInterface } from '@physical-layer/model';
+import { PhysicalLayerStub } from '@physical-layer/physical-layer.stub';
 
-export class PhysicalLayer {
+export class PhysicalLayer implements PhysicalLayerInterface {
   public readonly audioMonoIo: AudioMonoIo;
 
   protected dspConfig: DspConfig;
 
   public constructor(dspMode: DspMode = DspMode.NormalBandFastAudibleLower) {
+    // console.log('PhysicalLayer real'); // TODO remove
     this.audioMonoIo = audioMonoIoFactory.createAudioMonoIo();
     this.setDspMode(dspMode);
   }
@@ -51,3 +53,10 @@ export class PhysicalLayer {
     );
   }
 }
+
+// -----------------------------------------------------------------------------
+
+export const createPhysicalLayerConfig = { stub: false };
+export const createPhysicalLayer = (): PhysicalLayerInterface => {
+  return createPhysicalLayerConfig.stub ? new PhysicalLayerStub() : new PhysicalLayer();
+};

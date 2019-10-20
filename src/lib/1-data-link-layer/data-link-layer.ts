@@ -16,11 +16,12 @@ import {
   TxTimeTickState
 } from '@data-link-layer/model';
 import { findFrameCandidates, scrambler } from '@data-link-layer/utils';
-import { PhysicalLayer } from '@physical-layer/physical-layer';
+import { PhysicalLayerInterface } from '@physical-layer/model';
+import { createPhysicalLayer } from '@physical-layer/physical-layer';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 
 export class DataLinkLayer {
-  public readonly physicalLayer: PhysicalLayer;
+  public readonly physicalLayer: PhysicalLayerInterface;
 
   public rxErrorCorrection = ErrorCorrection.Off; // keep 'off' as current 'brute-force' solution is just bad... :)
 
@@ -37,7 +38,7 @@ export class DataLinkLayer {
   protected txRawBytesCounter = 0;
 
   public constructor(frameMode: FrameMode = FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24) {
-    this.physicalLayer = new PhysicalLayer();
+    this.physicalLayer = createPhysicalLayer();
     this.setFrameMode(frameMode);
   }
 

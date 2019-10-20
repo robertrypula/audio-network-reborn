@@ -67,6 +67,17 @@ export interface DspConfigInitializer {
 
 // -----------------------------------------------------------------------------
 
+export interface PhysicalLayerInterface {
+  readonly audioMonoIo: AudioMonoIo;
+  getDspConfig(): DspConfig;
+  rx(currentTime: number): number;
+  setDspConfigInitializer(dspConfigInitializer: DspConfigInitializer): void;
+  setDspMode(dspMode: DspMode): void;
+  tx(byte: number, currentTime: number): void;
+}
+
+// -----------------------------------------------------------------------------
+
 export type DspModeToDspConfigInitializerLookUp = {
   [key in keyof typeof DspMode]: DspConfigInitializer;
 };
