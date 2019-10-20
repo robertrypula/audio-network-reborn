@@ -1,8 +1,10 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { AudioMonoIo } from '@physical-layer/model';
+import { AudioMonoIoStub } from '@physical-layer/audio-mono-io/audio-mono-io.stub';
+import { AudioMonoIoInterface } from '@physical-layer/model';
+import { CreateConfig } from '@shared/model';
 
-export class WebApiAudioMonoIo implements AudioMonoIo {
+export class AudioMonoIo implements AudioMonoIoInterface {
   protected audioContext: AudioContext;
   protected fftSize = 256;
 
@@ -120,3 +122,10 @@ export class WebApiAudioMonoIo implements AudioMonoIo {
     }
   }
 }
+
+// -----------------------------------------------------------------------------
+
+export const createAudioMonoIoConfig: CreateConfig = { stub: false };
+export const createAudioMonoIo = (): AudioMonoIoInterface => {
+  return createAudioMonoIoConfig.stub ? new AudioMonoIoStub() : new AudioMonoIo();
+};

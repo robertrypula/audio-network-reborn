@@ -6,15 +6,15 @@ export const libraryInfo = {
   version: '0.1.0-rc19'
 };
 
-export * from '@physical-layer/audio-mono-io/audio-mono-io-factory';
-export * from '@physical-layer/audio-mono-io/stub-audio-mono-io';
-export * from '@physical-layer/audio-mono-io/web-api-audio-mono-io';
+export * from '@physical-layer/audio-mono-io/audio-mono-io';
+export * from '@physical-layer/audio-mono-io/audio-mono-io.stub';
 export * from '@physical-layer/config';
 export * from '@physical-layer/config-utils';
 export * from '@physical-layer/constants';
 export * from '@physical-layer/fft-result';
 export * from '@physical-layer/model';
 export * from '@physical-layer/physical-layer';
+export * from '@physical-layer/physical-layer.stub';
 
 export * from '@data-link-layer/config';
 export * from '@data-link-layer/constants';

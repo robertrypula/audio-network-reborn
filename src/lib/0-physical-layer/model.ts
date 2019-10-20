@@ -1,10 +1,5 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-export enum AudioMonoIoCreateMode {
-  Stub = 'Stub',
-  WebApi = 'WebApi'
-}
-
 export enum DspMode {
   // NOTE: names picked in a way that they sort alphabetically from fast to slow
   ExtraordinaryBandFast = 'ExtraordinaryBandFast',
@@ -30,16 +25,6 @@ export enum DspMode {
 }
 
 // -----------------------------------------------------------------------------
-
-export interface AudioMonoIo {
-  getFftSize(): number;
-  getFrequencyDomainData(currentTime: number): Float32Array;
-  getSampleRate(): number;
-  inputDisable(): void;
-  outputDisable(): void;
-  setFftSize(fftSize: number): void;
-  setPeriodicWave(frequency: number, currentTime: number): void;
-}
 
 export interface Band {
   bandwidth: number;
@@ -67,8 +52,18 @@ export interface DspConfigInitializer {
 
 // -----------------------------------------------------------------------------
 
+export interface AudioMonoIoInterface {
+  getFftSize(): number;
+  getFrequencyDomainData(currentTime: number): Float32Array;
+  getSampleRate(): number;
+  inputDisable(): void;
+  outputDisable(): void;
+  setFftSize(fftSize: number): void;
+  setPeriodicWave(frequency: number, currentTime: number): void;
+}
+
 export interface PhysicalLayerInterface {
-  readonly audioMonoIo: AudioMonoIo;
+  readonly audioMonoIo: AudioMonoIoInterface;
   getDspConfig(): DspConfig;
   rx(currentTime: number): number;
   setDspConfigInitializer(dspConfigInitializer: DspConfigInitializer): void;

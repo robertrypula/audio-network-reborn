@@ -1,21 +1,28 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { audioMonoIoFactory } from '@physical-layer/audio-mono-io/audio-mono-io-factory';
+import { createAudioMonoIo } from '@physical-layer/audio-mono-io/audio-mono-io';
 import { DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP } from '@physical-layer/config';
 import { getDspConfig } from '@physical-layer/config-utils';
 import { BYTE_UNIQUE_VALUES, SILENCE_FREQUENCY } from '@physical-layer/constants';
 import { FftResult } from '@physical-layer/fft-result';
-import { AudioMonoIo, DspConfig, DspConfigInitializer, DspMode, PhysicalLayerInterface } from '@physical-layer/model';
+import {
+  AudioMonoIoInterface,
+  DspConfig,
+  DspConfigInitializer,
+  DspMode,
+  PhysicalLayerInterface
+} from '@physical-layer/model';
 import { PhysicalLayerStub } from '@physical-layer/physical-layer.stub';
+import { CreateConfig } from '@shared/model';
 
 export class PhysicalLayer implements PhysicalLayerInterface {
-  public readonly audioMonoIo: AudioMonoIo;
+  public readonly audioMonoIo: AudioMonoIoInterface;
 
   protected dspConfig: DspConfig;
 
   public constructor(dspMode: DspMode = DspMode.NormalBandFastAudibleLower) {
     // console.log('PhysicalLayer real'); // TODO remove
-    this.audioMonoIo = audioMonoIoFactory.createAudioMonoIo();
+    this.audioMonoIo = createAudioMonoIo();
     this.setDspMode(dspMode);
   }
 
@@ -56,7 +63,7 @@ export class PhysicalLayer implements PhysicalLayerInterface {
 
 // -----------------------------------------------------------------------------
 
-export const createPhysicalLayerConfig = { stub: false };
+export const createPhysicalLayerConfig: CreateConfig = { stub: false };
 export const createPhysicalLayer = (): PhysicalLayerInterface => {
   return createPhysicalLayerConfig.stub ? new PhysicalLayerStub() : new PhysicalLayer();
 };

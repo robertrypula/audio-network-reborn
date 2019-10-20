@@ -1,13 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import {
-  AudioMonoIoCreateMode,
-  audioMonoIoFactory,
-  DataLinkLayer,
-  libraryInfo,
-  RxTimeTickState,
-  TxTimeTickState
-} from '@';
+import { createAudioMonoIoConfig, DataLinkLayer, libraryInfo, RxTimeTickState, TxTimeTickState } from '@';
 
 describe('Index', () => {
   describe('Library Info', () => {
@@ -25,7 +18,7 @@ describe('Index', () => {
   });
 
   it('should be dummy integration test that uses the lib code', () => {
-    audioMonoIoFactory.audioMonoIoCreateMode = AudioMonoIoCreateMode.Stub;
+    createAudioMonoIoConfig.stub = true;
     const dataLinkLayer = new DataLinkLayer();
 
     dataLinkLayer.setTxBytes([0x01, 0x02, 0x03]);
