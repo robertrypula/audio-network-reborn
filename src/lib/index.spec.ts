@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { createAudioMonoIoConfig, DataLinkLayer, libraryInfo, RxTimeTickState, TxTimeTickState } from '@';
+import { libraryInfo } from '@';
 
 describe('Index', () => {
   describe('Library Info', () => {
@@ -15,23 +15,5 @@ describe('Index', () => {
     it('should return gitHub', () => {
       expect(libraryInfo.gitHub).toBeTruthy();
     });
-  });
-
-  it('should be dummy integration test that uses the lib code', () => {
-    createAudioMonoIoConfig.stub = true;
-    const dataLinkLayer = new DataLinkLayer();
-
-    dataLinkLayer.setTxBytes([0x01, 0x02, 0x03]);
-    expect(dataLinkLayer.txTimeTick(0)).toBe(TxTimeTickState.Symbol); // header
-    expect(dataLinkLayer.txTimeTick(1)).toBe(TxTimeTickState.Symbol); // header
-    expect(dataLinkLayer.txTimeTick(2)).toBe(TxTimeTickState.Symbol); // header
-    expect(dataLinkLayer.txTimeTick(3)).toBe(TxTimeTickState.Symbol); // data: 0x01
-    expect(dataLinkLayer.txTimeTick(4)).toBe(TxTimeTickState.Symbol); // data: 0x02
-    expect(dataLinkLayer.txTimeTick(5)).toBe(TxTimeTickState.Symbol); // data: 0x03
-    expect(dataLinkLayer.txTimeTick(6)).toBe(TxTimeTickState.Guard);
-    expect(dataLinkLayer.txTimeTick(7)).toBe(TxTimeTickState.Idle);
-
-    expect(dataLinkLayer.rxTimeTick(7)).toBe(RxTimeTickState.Listening);
-    expect(dataLinkLayer.getRxBytesCollection()).toEqual([]);
   });
 });
