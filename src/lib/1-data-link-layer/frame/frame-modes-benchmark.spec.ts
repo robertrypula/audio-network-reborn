@@ -186,7 +186,7 @@ describe('FrameModesBenchmark', () => {
         }
       ]);
       /*
-        Stream of ~1 million bytes without error correction:
+        Test on large sample size - stream of ~1 million bytes without error correction:
           executionTime: '144.5 s', invalid: 135998534, valid: 1, validFake: 2077,
           byteStreamLength: 1000010, validFakeFrameEvery: 481.4684641309581
       */
@@ -207,7 +207,7 @@ describe('FrameModesBenchmark', () => {
         }
       ]);
       /*
-        Stream of ~1 million bytes without error correction:
+        Test on large sample size - stream of ~1 million bytes without error correction:
           executionTime: '23.7 s', invalid: 16999744, valid: 1, validFake: 272,
           byteStreamLength: 1000010, validFakeFrameEvery: 3676.5073529411766
       */
@@ -228,7 +228,7 @@ describe('FrameModesBenchmark', () => {
         }
       ]);
       /*
-        Stream of ~1 million bytes without error correction:
+        Test on large sample size - stream of ~1 million bytes without error correction:
           executionTime: '162.2 s', invalid: 136000603, valid: 1, validFake: 8,
           byteStreamLength: 1000011, validFakeFrameEvery: 125001.375
       */
@@ -249,7 +249,7 @@ describe('FrameModesBenchmark', () => {
         }
       ]);
       /*
-        Stream of ~1 million bytes without error correction:
+        Test on large sample size - stream of ~1 million bytes without error correction:
           executionTime: '26.4 s', invalid: 17000015, valid: 1, validFake: 1,
           byteStreamLength: 1000011, validFakeFrameEvery: 1000011
       */

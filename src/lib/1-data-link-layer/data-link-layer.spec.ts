@@ -3,74 +3,91 @@
 import Spy = jasmine.Spy;
 import CallInfo = jasmine.CallInfo;
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
-import { TxTimeTickState } from '@data-link-layer/model';
+import { RxTimeTickState, TxTimeTickState } from '@data-link-layer/model';
 import { createPhysicalLayerConfig } from '@physical-layer/physical-layer';
+import { getHexFromBytes } from '@shared/utils';
 
 describe('Data Link Layer', () => {
+  let currentTime: number;
+  let dataLinkLayer: DataLinkLayer;
+  let rxIntervalMilliseconds: number;
+  let txGuardMilliseconds: number;
+  let txIntervalMilliseconds: number;
+
   beforeEach(() => {
     createPhysicalLayerConfig.stub = true;
+    dataLinkLayer = new DataLinkLayer();
+    currentTime = 0;
+    rxIntervalMilliseconds = dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds;
+    txGuardMilliseconds = dataLinkLayer.getTxGuardMilliseconds();
+    txIntervalMilliseconds = dataLinkLayer.physicalLayer.getDspConfig().txIntervalMilliseconds;
   });
 
-  it('should generate proper tx calls at PhysicalLayer (scrambled by scramble sequence)', () => {
+  it('should properly scramble bytes in two subsequent equal frames and generate proper TX calls', () => {
     const RANDOM_USER_LAG_MILLISECONDS = 1500;
-    const dataLinkLayer = new DataLinkLayer();
     const spyTx: Spy = spyOn(dataLinkLayer.physicalLayer, 'tx');
+    const spyTxMapper = (args: [number, number]) =>
+      ('    ' + args[1]).substr(-4) + ': ' + (args[0] === null ? 'null' : '0x' + getHexFromBytes([args[0]]));
     const spyTxTimeTick: Spy = spyOn(dataLinkLayer, 'txTimeTick').and.callThrough();
-    const txIntervalMilliseconds: number = dataLinkLayer.physicalLayer.getDspConfig().txIntervalMilliseconds;
-    const txGuardMilliseconds: number = dataLinkLayer.getTxGuardMilliseconds();
-    let currentTime = 0;
+    const spyTxTimeTickMapper = (item: CallInfo) => [('    ' + item.args[0]).substr(-4), item.returnValue].join(': ');
+    let spyTxExpectation: string[];
+    let spyTxTimeTickExpectation: string[];
     let txTimeTickState: TxTimeTickState;
 
     for (let i = 0; i < 2; i++) {
       dataLinkLayer.setTxBytes([0x61]);
       do {
         txTimeTickState = dataLinkLayer.txTimeTick(currentTime);
-        switch (txTimeTickState) {
-          case TxTimeTickState.Symbol:
-            currentTime += txIntervalMilliseconds;
-            break;
-          case TxTimeTickState.Guard:
-            currentTime += txGuardMilliseconds;
-            break;
-          case TxTimeTickState.Idle:
-            currentTime += RANDOM_USER_LAG_MILLISECONDS;
-            break;
-        }
+        currentTime +=
+          txTimeTickState === TxTimeTickState.Symbol
+            ? txIntervalMilliseconds
+            : txTimeTickState === TxTimeTickState.Guard
+            ? txGuardMilliseconds
+            : RANDOM_USER_LAG_MILLISECONDS;
       } while (txTimeTickState !== TxTimeTickState.Idle);
     }
 
-    expect(spyTx.calls.allArgs()).toEqual([
-      [0x0b, 0], // scrambled header byte
-      [0x22, 126], // scrambled header byte
-      [0x70, 252], // scrambled header byte
-      [0x14, 378], // scrambled 0x61 byte
-      [null, 504], // set silence to stop playing tone above
-      // time gap: RANDOM_USER_LAG_MILLISECONDS + txGuardMilliseconds
-      [0xe0, 2035], // scrambled header byte
-      [0xb1, 2161], // scrambled header byte
-      [0x9b, 2287], // scrambled header byte
-      [0xbf, 2413], // scrambled 0x61 byte
-      [null, 2539] // set silence to stop playing tone above
-    ] as Array<[number, number]>);
+    spyTxExpectation = spyTx.calls.allArgs().map(spyTxMapper);
+    expect(spyTxExpectation.join(' | ')).toEqual(
+      '' + //  header       header       header       data         silence (null) to stop playing last tone
+        //     ....         ....         ....         ....         ....
+        '   0: 0x0b |  126: 0x22 |  252: 0x70 |  378: 0x14 |  504: null | ' +
+        '2035: 0xe0 | 2161: 0xb1 | 2287: 0x9b | 2413: 0xbf | 2539: null'
+    );
 
-    expect(spyTxTimeTick.calls.all().map((item: CallInfo) => [item.args[0], item.returnValue])).toEqual([
-      [0, TxTimeTickState.Symbol],
-      [126, TxTimeTickState.Symbol],
-      [252, TxTimeTickState.Symbol],
-      [378, TxTimeTickState.Symbol],
-      [504, TxTimeTickState.Guard],
-      [535, TxTimeTickState.Idle],
-      [2035, TxTimeTickState.Symbol],
-      [2161, TxTimeTickState.Symbol],
-      [2287, TxTimeTickState.Symbol],
-      [2413, TxTimeTickState.Symbol],
-      [2539, TxTimeTickState.Guard],
-      [2570, TxTimeTickState.Idle]
-    ] as Array<[number, TxTimeTickState]>);
+    spyTxTimeTickExpectation = spyTxTimeTick.calls.all().map(spyTxTimeTickMapper);
+    expect(spyTxTimeTickExpectation.join(' | ')).toEqual(
+      '' +
+        '   0: Symbol |  126: Symbol |  252: Symbol |  378: Symbol |  504: Guard |  535: Idle | ' +
+        '2035: Symbol | 2161: Symbol | 2287: Symbol | 2413: Symbol | 2539: Guard | 2570: Idle'
+    );
+  });
 
-    /*
-    const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-    const spyRx = spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake(() => data.shift());
-    */
+  const rxBytes = (rx: number[]): Array<[number, number[]]> => {
+    const rxBytesCollectionGlobal: Array<[number, number[]]> = [];
+    let rxTimeTickState: RxTimeTickState;
+
+    spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake(() => rx.shift());
+    do {
+      rxTimeTickState = dataLinkLayer.rxTimeTick(currentTime);
+      dataLinkLayer
+        .getRxBytesCollection()
+        .forEach((payload: number[]) => rxBytesCollectionGlobal.push([currentTime, payload]));
+      currentTime += rxIntervalMilliseconds;
+    } while (rxTimeTickState !== RxTimeTickState.Stopped);
+
+    return rxBytesCollectionGlobal;
+  };
+
+  it('should return only one out of two identical frames that are separated by one RX step', () => {
+    expect(rxBytes([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[441, [0x61]]]);
+    // tx intervals:      ..........  ==========  ..........  ==========                          ^^^   ^^^^
+    //                    header (1)  header (2)  header (3)  scrambled data                     rxTime payload
+  });
+
+  it('should return only one out of two identical frames that are separated by one RX step (offset)', () => {
+    expect(rxBytes([0x00, 0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[504, [0x61]]]);
+    // tx intervals:            ..........  ==========  ..........  ==========                          ^^^   ^^^^
+    //                          header (1)  header (2)  header (3)  scrambled data                     rxTime payload
   });
 });
