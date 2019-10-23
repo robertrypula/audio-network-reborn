@@ -2,6 +2,7 @@
 
 import Spy = jasmine.Spy;
 import CallInfo = jasmine.CallInfo;
+
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
 import { RxTimeTickState, TxTimeTickState } from '@data-link-layer/model';
 import { createPhysicalLayerConfig } from '@physical-layer/physical-layer';
@@ -82,12 +83,37 @@ describe('Data Link Layer', () => {
   it('should return only one out of two identical frames that are separated by one RX step', () => {
     expect(rxBytes([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[441, [0x61]]]);
     // tx intervals:      ..........  ==========  ..........  ==========                          ^^^   ^^^^
-    //                    header (1)  header (2)  header (3)  scrambled data                     rxTime payload
+    //                    header      header      header      scrambled data                     rxTime payload
   });
 
   it('should return only one out of two identical frames that are separated by one RX step (offset)', () => {
     expect(rxBytes([0x00, 0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[504, [0x61]]]);
     // tx intervals:            ..........  ==========  ..........  ==========                          ^^^   ^^^^
-    //                          header (1)  header (2)  header (3)  scrambled data                     rxTime payload
+    //                          header      header      header      scrambled data                     rxTime payload
+  });
+
+  it.only('should not receive the own data that was transmitted', () => {
+    let currentTxByte = 0;
+    const spyRx: Spy = spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake((currentTimeSub: number) => {
+      console.log('RX [x]      <---  | ', currentTimeSub, currentTxByte.toString(16));
+      return currentTxByte;
+    });
+    const spyTx: Spy = spyOn(dataLinkLayer.physicalLayer, 'tx').and.callFake((byte: number, currentTimeSub: number) => {
+      currentTxByte = byte !== null ? byte : 0;
+      console.log('TX [x] --->       | ', currentTimeSub, currentTxByte.toString(16));
+    });
+    let rxBytesCollection: number[][] = [];
+
+    dataLinkLayer.setTxBytes([0x61]);
+    for (let i = 0; i < 15; i++) {
+      i % 2 === 0 && dataLinkLayer.txTimeTick(currentTime);
+      dataLinkLayer.rxTimeTick(currentTime);
+      currentTime += rxIntervalMilliseconds;
+
+      rxBytesCollection = dataLinkLayer.getRxBytesCollection();
+      if (rxBytesCollection.length) {
+        console.log(rxBytesCollection);
+      }
+    }
   });
 });
