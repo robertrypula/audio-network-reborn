@@ -1,10 +1,9 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import Spy = jasmine.Spy;
 import CallInfo = jasmine.CallInfo;
-
+import Spy = jasmine.Spy;
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
-import { RxTimeTickState, TxTimeTickState } from '@data-link-layer/model';
+import { ErrorCorrection, RxTimeTickState, TxTimeTickState } from '@data-link-layer/model';
 import { createPhysicalLayerConfig } from '@physical-layer/physical-layer';
 import { getHexFromBytes } from '@shared/utils';
 
@@ -29,49 +28,70 @@ describe('Data Link Layer', () => {
       const rxBytesCollectionGlobal: Array<[number, number[]]> = [];
       let rxTimeTickState: RxTimeTickState;
 
+      spyRx = spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake(() => rx.shift());
       spyRxTimeTick = spyOn(dataLinkLayer, 'rxTimeTick').and.callThrough();
-      spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake(() => rx.shift());
       do {
         rxTimeTickState = dataLinkLayer.rxTimeTick(currentTime);
         dataLinkLayer
           .getRxBytesCollection()
-          .forEach((payload: number[]) => rxBytesCollectionGlobal.push([currentTime, payload]));
+          .forEach((rxBytes: number[]) => rxBytesCollectionGlobal.push([currentTime, rxBytes]));
+        dataLinkLayer.rxErrorCorrection === ErrorCorrection.On &&
+          dataLinkLayer
+            .getRxBytesErrorCorrectedCollection()
+            .forEach((rxBytes: number[]) => rxBytesCollectionGlobal.push([currentTime, rxBytes]));
         currentTime += rxIntervalMilliseconds;
       } while (rxTimeTickState !== RxTimeTickState.Stopped);
 
       return rxBytesCollectionGlobal;
     };
+    const spyRxMapper = (callInfo: CallInfo) =>
+      ('    ' + callInfo.args[0]).substr(-4) +
+      ': ' +
+      (callInfo.returnValue === null ? 'null' : '0x' + getHexFromBytes([callInfo.returnValue]));
     const spyRxTimeTickMapper = (callInfo: CallInfo) =>
       [('    ' + callInfo.args[0]).substr(-4), callInfo.returnValue].join(': ');
+    let spyRx: Spy;
+    let spyRxExpectation: string[];
     let spyRxTimeTick: Spy;
     let spyRxTimeTickExpectation: string[];
+
+    it('should generate proper RX calls', () => {
+      rxTest([0x12, 0x23, 0x34, 0x45, 0x56, null]);
+
+      spyRxExpectation = spyRx.calls.all().map(spyRxMapper);
+      expect(spyRxExpectation.join(' | ')).toEqual(
+        '   0: 0x12 |   63: 0x23 |  126: 0x34 |  189: 0x45 |  252: 0x56 |  315: null'
+      );
+
+      spyRxTimeTickExpectation = spyRxTimeTick.calls.all().map(spyRxTimeTickMapper);
+      expect(spyRxTimeTickExpectation.join(' | ')).toEqual(
+        '   0: Listening |   63: Listening |  126: Listening |  189: Listening |  252: Listening |  315: Stopped'
+      );
+    });
 
     it('should return only one out of two identical frames that are separated by one RX step', () => {
       expect(rxTest([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[441, [0x61]]]);
       // tx intervals:     ..........  ==========  ..........  ==========                          ^^^   ^^^^
-      //                   \------- scrambled header -------/  scrambled data                     rxTime payload
-
-      spyRxTimeTickExpectation = spyRxTimeTick.calls.all().map(spyRxTimeTickMapper);
-      expect(spyRxTimeTickExpectation.join(' | ')).toEqual(
-        '' +
-          '   0: Listening |   63: Listening |  126: Listening |  189: Listening |  252: Listening | ' +
-          ' 315: Listening |  378: Listening |  441: Listening |  504: Listening |  567: Listening | ' +
-          ' 630: Stopped'
-      );
+      //                   \------- scrambled header -------/  scrambled data                     rxTime rxBytes
     });
 
     it('should return only one out of two identical frames that are separated by one RX step (offset)', () => {
       expect(rxTest([0x00, 0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[504, [0x61]]]);
       // tx intervals:           ..........  ==========  ..........  ==========                          ^^^   ^^^^
-      //                         \------- scrambled header -------/  scrambled data                     rxTime payload
+      //                         \------- scrambled header -------/  scrambled data                     rxTime rxBytes
+    });
 
-      spyRxTimeTickExpectation = spyRxTimeTick.calls.all().map(spyRxTimeTickMapper);
-      expect(spyRxTimeTickExpectation.join(' | ')).toEqual(
-        '' +
-          '   0: Listening |   63: Listening |  126: Listening |  189: Listening |  252: Listening | ' +
-          ' 315: Listening |  378: Listening |  441: Listening |  504: Listening |  567: Listening | ' +
-          ' 630: Listening |  693: Stopped'
-      );
+    describe('Error Correction', () => {
+      it('should properly find frame even if one of the bytes is corrupted', () => {
+        expect(rxTest([0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, null])).toEqual([[378, [0x61]]]);
+      });
+
+      it('should properly find frame even if one of the bytes is corrupted', () => {
+        const error = 32;
+
+        dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
+        expect(rxTest([0x0b, 0x0b, 0x22, 0x22, 0x70 + error, 0x70 + error, 0x14, 0x14, null])).toEqual([[378, [0x61]]]);
+      });
     });
   });
 
