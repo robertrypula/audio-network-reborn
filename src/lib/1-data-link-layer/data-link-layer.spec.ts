@@ -3,7 +3,7 @@
 import CallInfo = jasmine.CallInfo;
 import Spy = jasmine.Spy;
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
-import { ErrorCorrection, RxTimeTickState, TxTimeTickState } from '@data-link-layer/model';
+import { ErrorCorrection, RxBytesCollector, RxTimeTickState, TxTimeTickState } from '@data-link-layer/model';
 import { BYTE_UNIQUE_VALUES } from '@physical-layer/constants';
 import { createPhysicalLayerConfig } from '@physical-layer/physical-layer';
 import { getHexFromBytes } from '@shared/utils';
@@ -25,8 +25,9 @@ describe('Data link layer', () => {
   });
 
   describe('RX', () => {
-    const rxTest = (rx: number[]): Array<[number, number[]]> => {
-      const rxBytesCollectionGlobal: Array<[number, number[]]> = [];
+    const rxTest = (rx: number[]): RxBytesCollector[] => {
+      const rxBytesCollector: RxBytesCollector[] = [];
+      const isRxErrorCorrectionOn: boolean = dataLinkLayer.rxErrorCorrection === ErrorCorrection.On;
       let rxTimeTickState: RxTimeTickState;
 
       spyRx = spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake(() => rx.shift());
@@ -35,22 +36,34 @@ describe('Data link layer', () => {
         rxTimeTickState = dataLinkLayer.rxTimeTick(currentTime);
         dataLinkLayer
           .getRxBytesCollection()
-          .forEach((rxBytes: number[]) => rxBytesCollectionGlobal.push([currentTime, rxBytes]));
-        dataLinkLayer.rxErrorCorrection === ErrorCorrection.On &&
+          .forEach((bytes: number[]): number =>
+            rxBytesCollector.push(
+              isRxErrorCorrectionOn
+                ? { bytes, isErrorCorrected: false, receivedAtTime: currentTime }
+                : { bytes, receivedAtTime: currentTime }
+            )
+          );
+        isRxErrorCorrectionOn &&
           dataLinkLayer
             .getRxBytesErrorCorrectedCollection()
-            .forEach((rxBytes: number[]) => rxBytesCollectionGlobal.push([currentTime, rxBytes]));
+            .forEach((bytes: number[]): number =>
+              rxBytesCollector.push(
+                isRxErrorCorrectionOn
+                  ? { bytes, isErrorCorrected: true, receivedAtTime: currentTime }
+                  : { bytes, receivedAtTime: currentTime }
+              )
+            );
         currentTime += rxIntervalMilliseconds;
       } while (rxTimeTickState !== RxTimeTickState.Stopped);
 
-      return rxBytesCollectionGlobal;
+      return rxBytesCollector;
     };
     const spyRxMapper = (callInfo: CallInfo) =>
-      ('    ' + callInfo.args[0]).substr(-4) +
+      ('    ' + callInfo.args[0]).substr(-4) + // TODO implement and use pad func
       ': ' +
       (callInfo.returnValue === null ? 'null' : '0x' + getHexFromBytes([callInfo.returnValue]));
     const spyRxTimeTickMapper = (callInfo: CallInfo) =>
-      [('    ' + callInfo.args[0]).substr(-4), callInfo.returnValue].join(': ');
+      [('    ' + callInfo.args[0]).substr(-4), callInfo.returnValue].join(': '); // TODO implement and use pad func
     let spyRx: Spy;
     let spyRxExpectation: string[];
     let spyRxTimeTick: Spy;
@@ -72,34 +85,41 @@ describe('Data link layer', () => {
 
     describe('Frame detection and duplicates removal', () => {
       it('should return only one out of two identical frames that are separated by one RX step', () => {
-        expect(rxTest([0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[378, [0x61]]]);
-        // tx:         ``````````  ``````````  ``````````  ``````````  ``````````              ^^^   ^^^^
-        //             \________________________________/  \________/                         rxTime rxBytes
-        //                  scrambled 3 B of header         scrambled 1B of data
+        expect(rxTest([0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([
+          // tx:       ``````````  ``````````  ``````````  ``````````  ``````````
+          //           \________________________________/  \________/
+          //                scrambled 3 B of header         scrambled 1 B of data
+          { bytes: [0x61], receivedAtTime: 378 }
+        ]);
       });
 
       it('should return only one out of two identical frames that are separated by one RX step (offset)', () => {
-        expect(rxTest([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[441, [0x61]]]);
-        // tx:               ``````````  ``````````  ``````````  ``````````  ``````````              ^^^   ^^^^
-        //                   \________________________________/  \________/                         rxTime rxBytes
-        //                        scrambled 3 B of header         scrambled 1B of data
+        expect(rxTest([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([
+          // tx:       ``````````  ``````````  ``````````  ``````````  ``````````
+          //           \________________________________/  \________/
+          //                scrambled 3 B of header         scrambled 1 B of data
+          { bytes: [0x61], receivedAtTime: 441 }
+        ]);
       });
     });
 
     describe('Error correction', () => {
-      it('should properly find frame even if one of the bytes is corrupted', () => {
+      it('should return error-free frame via getRxBytesCollection method', () => {
         const byte = 0x22;
 
-        expect(rxTest([0x0b, 0x0b, byte, byte, 0x70, 0x70, 0x14, 0x14, null])).toEqual([[378, [0x61]]]);
+        expect(rxTest([0x0b, 0x0b, byte, byte, 0x70, 0x70, 0x14, 0x14, null])).toEqual([
+          { bytes: [0x61], receivedAtTime: 378 }
+        ]);
       });
 
-      it('should properly find frame even if one of the bytes is corrupted', () => {
+      it('should return error-at-one-byte frame via getRxBytesErrorCorrectedCollection method', () => {
         const ERROR = 32;
-        let byte = 0x22;
+        const byte = 0x22 + ERROR;
 
-        byte = (byte + ERROR) % BYTE_UNIQUE_VALUES;
         dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
-        expect(rxTest([0x0b, 0x0b, byte, byte, 0x70, 0x70, 0x14, 0x14, null])).toEqual([[378, [0x61]]]);
+        expect(rxTest([0x0b, 0x0b, byte, byte, 0x70, 0x70, 0x14, 0x14, null])).toEqual([
+          { bytes: [0x61], isErrorCorrected: true, receivedAtTime: 378 }
+        ]);
       });
     });
   });
@@ -139,11 +159,12 @@ describe('Data link layer', () => {
       const spyGetTxProgress: Spy = spyOn(dataLinkLayer, 'getTxProgress').and.callThrough();
       const spyGetTxProgressMapper = (callInfo: CallInfo) => callInfo.returnValue.toFixed(4);
       const spyTx: Spy = spyOn(dataLinkLayer.physicalLayer, 'tx');
-      const spyTxMapper = (args: [number, number]) =>
-        ('    ' + args[1]).substr(-4) + ': ' + (args[0] === null ? 'null' : '0x' + getHexFromBytes([args[0]]));
+      const spyTxMapper = (
+        args: [number, number] // TODO implement and use pad func
+      ) => ('    ' + args[1]).substr(-4) + ': ' + (args[0] === null ? 'null' : '0x' + getHexFromBytes([args[0]]));
       const spyTxTimeTick: Spy = spyOn(dataLinkLayer, 'txTimeTick').and.callThrough();
       const spyTxTimeTickMapper = (callInfo: CallInfo) =>
-        [('    ' + callInfo.args[0]).substr(-4), callInfo.returnValue].join(': ');
+        [('    ' + callInfo.args[0]).substr(-4), callInfo.returnValue].join(': '); // TODO implement and use pad func
       let spyGetTxProgressExpectation: string[];
       let spyTxExpectation: string[];
       let spyTxTimeTickExpectation: string[];

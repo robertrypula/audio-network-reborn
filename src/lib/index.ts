@@ -124,7 +124,7 @@ TODO #2:
   - add createDataLinkLayer function (same as PhysicalLayer/AudioMonoIo) and DataLinkLayerInterface
   - implement ApplicationLayer/TransportLayer code with chat examples
   - PhysicalLayer should store history based on time tick values (getHistory, setHistory methods?)
-  - implement 'integration' test for full stack of layers
+  - implement 'integration' test for full stack of layers and refactor data-link-layer.spec.ts
   - PREPARE THE RELEASE: 0.2.0
 
 TODO #3:

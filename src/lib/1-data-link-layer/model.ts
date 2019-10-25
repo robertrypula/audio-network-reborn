@@ -99,6 +99,12 @@ export type HeaderFirstByte = {
   payloadLengthMask: number;
 };
 
+export type RxBytesCollector = {
+  bytes: number[];
+  isErrorCorrected?: boolean;
+  receivedAtTime: number;
+};
+
 export type TestCaseFrameCounterWithPayload = {
   frameCounter: FrameCounter;
   payload: string;
