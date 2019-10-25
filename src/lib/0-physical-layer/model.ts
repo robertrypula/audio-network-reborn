@@ -26,32 +26,6 @@ export enum DspMode {
 
 // -----------------------------------------------------------------------------
 
-export interface Band {
-  bandwidth: number;
-  begin: number;
-  end: number;
-}
-
-export interface DspConfig {
-  band: Band;
-  dspConfigInitializer: DspConfigInitializer;
-  dspMode: DspMode;
-  longestFftWindowTimeMilliseconds: number;
-  rawByteRate: number;
-  rxIntervalMilliseconds: number;
-  txIntervalMilliseconds: number;
-  unifiedBinIndexes?: number[];
-  unifiedFrequencies?: number[];
-}
-
-export interface DspConfigInitializer {
-  fftSize: number;
-  frequencyEnd: number;
-  safeMarginFactor: number;
-}
-
-// -----------------------------------------------------------------------------
-
 export interface AudioMonoIoInterface {
   getFftSize(): number;
   getFrequencyDomainData(currentTime: number): Float32Array;
@@ -73,6 +47,30 @@ export interface PhysicalLayerInterface {
 
 // -----------------------------------------------------------------------------
 
+export type Band = {
+  bandwidth: number;
+  begin: number;
+  end: number;
+};
+
+export type DspConfig = {
+  band: Band;
+  dspConfigInitializer: DspConfigInitializer;
+  dspMode: DspMode;
+  longestFftWindowTimeMilliseconds: number;
+  rawByteRate: number;
+  rxIntervalMilliseconds: number;
+  txIntervalMilliseconds: number;
+  unifiedBinIndexes?: number[];
+  unifiedFrequencies?: number[];
+};
+
 export type DspModeToDspConfigInitializerLookUp = {
   [key in keyof typeof DspMode]: DspConfigInitializer;
+};
+
+export type DspConfigInitializer = {
+  fftSize: number;
+  frequencyEnd: number;
+  safeMarginFactor: number;
 };

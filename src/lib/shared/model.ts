@@ -10,20 +10,18 @@ export enum CheckAlgorithm {
 
 // -----------------------------------------------------------------------------
 
-export interface CreateConfig {
-  stub: boolean;
-}
+export type CheckAlgorithmImplementation = (bytes: number[]) => number[];
 
-export interface MinMaxRange {
+export type CreateConfig = {
+  stub: boolean;
+};
+
+export type MinMaxRange = {
   max: number;
   min: number;
-}
+};
 
-export interface TestCaseInOut {
+export type TestCaseInOut = {
   in: string;
   out: string;
-}
-
-// -----------------------------------------------------------------------------
-
-export type CheckAlgorithmImplementation = (bytes: number[]) => number[];
+};

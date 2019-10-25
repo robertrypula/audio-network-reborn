@@ -38,75 +38,73 @@ export enum TxTimeTickState {
 
 // -----------------------------------------------------------------------------
 
-export interface DataLinkLayerWrapperListenHandlers {
+export type DataLinkLayerWrapperListenHandlers = {
   next: (bytes: number[], isErrorCorrected: boolean) => void;
   complete: () => void;
-}
+};
 
-export interface DataLinkLayerWrapperSendHandlers {
+export type DataLinkLayerWrapperSendHandlers = {
   next: (progress: number) => void;
   complete: () => void;
-}
+};
 
-export interface FrameConfig {
+export type FrameConfig = {
   frameConfigInitializer: FrameConfigInitializer;
   frameMode: FrameMode;
   headerFirstByte?: HeaderFirstByte;
   payloadLength: MinMaxRange;
   rawBytesLength: MinMaxRange;
-}
+};
 
-export interface FrameConfigInitializer {
+export type FrameConfigInitializer = {
   checkAlgorithm: CheckAlgorithm;
   guardFactor: number;
   headerLength: number;
   payloadLengthBitSize: number; // value in range <0, 8>
   payloadLengthFixed?: number; // required if payloadLengthBitSize === 0
   payloadLengthOffset?: number; // required if payloadLengthBitSize > 0
-}
+};
 
-export interface FrameCounter {
+export type FrameConfigInitializerWithoutCheckAlgorithm = Omit<FrameConfigInitializer, 'checkAlgorithm'>;
+
+export type FrameCounter = {
   errorCorrectedInvalid?: number;
   errorCorrectedValid?: number;
   errorCorrectedValidFake?: number;
   invalid?: number;
   valid?: number;
   validFake?: number;
-}
+};
 
-export interface FrameCounterSimple {
+export type FrameCounterSimple = {
   errorCorrected: number;
   nonErrorCorrected: number;
-}
-
-export interface FrameHistoryEntry {
-  frame: Frame;
-  isErrorCorrected: boolean;
-  rawBytePosition: number;
-}
-
-export interface HeaderFirstByte {
-  checkSequenceMask: number;
-  payloadLengthBitShift: number;
-  payloadLengthMask: number;
-}
-
-export interface TestCaseFrameCounterWithPayload {
-  frameCounter: FrameCounter;
-  payload: string;
-}
-
-export interface TestCaseFrameIntegrity {
-  payload: string;
-  expectedRawBytes: string;
-}
-
-// -----------------------------------------------------------------------------
-
-export type FrameConfigInitializerWithoutCheckAlgorithm = Omit<FrameConfigInitializer, 'checkAlgorithm'>;
+};
 
 export type FrameHistory = FrameHistoryEntry[];
 
+export type FrameHistoryEntry = {
+  frame: Frame;
+  isErrorCorrected: boolean;
+  rawBytePosition: number;
+};
+
 export type FrameModeToFrameConfigInitializerLookUp = {
   [key in keyof typeof FrameMode]: FrameConfigInitializer;
+};
+
+export type HeaderFirstByte = {
+  checkSequenceMask: number;
+  payloadLengthBitShift: number;
+  payloadLengthMask: number;
+};
+
+export type TestCaseFrameCounterWithPayload = {
+  frameCounter: FrameCounter;
+  payload: string;
+};
+
+export type TestCaseFrameIntegrity = {
+  payload: string;
+  expectedRawBytes: string;
 };
