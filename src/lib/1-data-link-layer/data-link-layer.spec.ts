@@ -4,10 +4,11 @@ import CallInfo = jasmine.CallInfo;
 import Spy = jasmine.Spy;
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
 import { ErrorCorrection, RxTimeTickState, TxTimeTickState } from '@data-link-layer/model';
+import { BYTE_UNIQUE_VALUES } from '@physical-layer/constants';
 import { createPhysicalLayerConfig } from '@physical-layer/physical-layer';
 import { getHexFromBytes } from '@shared/utils';
 
-describe('Data Link Layer', () => {
+describe('Data link layer', () => {
   let currentTime: number;
   let dataLinkLayer: DataLinkLayer;
   let rxIntervalMilliseconds: number;
@@ -69,28 +70,36 @@ describe('Data Link Layer', () => {
       );
     });
 
-    it('should return only one out of two identical frames that are separated by one RX step', () => {
-      expect(rxTest([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[441, [0x61]]]);
-      // tx intervals:     ..........  ==========  ..........  ==========                          ^^^   ^^^^
-      //                   \------- scrambled header -------/  scrambled data                     rxTime rxBytes
+    describe('Frame detection and duplicates removal', () => {
+      it('should return only one out of two identical frames that are separated by one RX step', () => {
+        expect(rxTest([0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[378, [0x61]]]);
+        // tx:         ``````````  ``````````  ``````````  ``````````  ``````````              ^^^   ^^^^
+        //             \________________________________/  \________/                         rxTime rxBytes
+        //                  scrambled 3 B of header         scrambled 1B of data
+      });
+
+      it('should return only one out of two identical frames that are separated by one RX step (offset)', () => {
+        expect(rxTest([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[441, [0x61]]]);
+        // tx:               ``````````  ``````````  ``````````  ``````````  ``````````              ^^^   ^^^^
+        //                   \________________________________/  \________/                         rxTime rxBytes
+        //                        scrambled 3 B of header         scrambled 1B of data
+      });
     });
 
-    it('should return only one out of two identical frames that are separated by one RX step (offset)', () => {
-      expect(rxTest([0x00, 0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([[504, [0x61]]]);
-      // tx intervals:           ..........  ==========  ..........  ==========                          ^^^   ^^^^
-      //                         \------- scrambled header -------/  scrambled data                     rxTime rxBytes
-    });
-
-    describe('Error Correction', () => {
+    describe('Error correction', () => {
       it('should properly find frame even if one of the bytes is corrupted', () => {
-        expect(rxTest([0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, null])).toEqual([[378, [0x61]]]);
+        const byte = 0x22;
+
+        expect(rxTest([0x0b, 0x0b, byte, byte, 0x70, 0x70, 0x14, 0x14, null])).toEqual([[378, [0x61]]]);
       });
 
       it('should properly find frame even if one of the bytes is corrupted', () => {
-        const error = 32;
+        const ERROR = 32;
+        let byte = 0x22;
 
+        byte = (byte + ERROR) % BYTE_UNIQUE_VALUES;
         dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
-        expect(rxTest([0x0b, 0x0b, 0x22, 0x22, 0x70 + error, 0x70 + error, 0x14, 0x14, null])).toEqual([[378, [0x61]]]);
+        expect(rxTest([0x0b, 0x0b, byte, byte, 0x70, 0x70, 0x14, 0x14, null])).toEqual([[378, [0x61]]]);
       });
     });
   });

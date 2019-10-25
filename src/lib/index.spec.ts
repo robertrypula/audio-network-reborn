@@ -3,7 +3,7 @@
 import { libraryInfo } from '@';
 
 describe('Index', () => {
-  describe('Library Info', () => {
+  describe('Library info', () => {
     it('should return version', () => {
       expect(libraryInfo.version).toBeTruthy();
     });

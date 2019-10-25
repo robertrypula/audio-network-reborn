@@ -3,7 +3,7 @@
 import { getDspConfigsFromAllDspModes } from '@physical-layer/config-utils';
 import { DspConfig, DspMode } from '@physical-layer/model';
 
-describe('Config Utils', () => {
+describe('Config utils', () => {
   describe('getDspConfigsFromAllDspModes', () => {
     it('should return valid list', () => {
       const expectation: DspConfig[] = [

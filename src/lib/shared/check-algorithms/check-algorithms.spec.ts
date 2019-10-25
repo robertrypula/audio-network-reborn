@@ -4,7 +4,7 @@ import { getCheckAlgorithmImplementation } from '@shared/check-algorithms/check-
 import { CheckAlgorithm, CheckAlgorithmImplementation, TestCaseInOut } from '@shared/model';
 import { getBytesFromText, getHexFromBytes } from '@shared/utils';
 
-describe('CheckAlgorithms', () => {
+describe('Check algorithms', () => {
   const runTestCases = (checkAlgorithmImplementation: CheckAlgorithmImplementation, testCases: TestCaseInOut[]) => {
     testCases.forEach((testCase: TestCaseInOut) =>
       expect(getHexFromBytes(checkAlgorithmImplementation(getBytesFromText(testCase.in)))).toEqual(testCase.out)

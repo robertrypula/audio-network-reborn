@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-describe('Web Utils', () => {
+describe('Web utils', () => {
   describe('fileRead', () => {
     it('should ...', () => {
       // TODO implement

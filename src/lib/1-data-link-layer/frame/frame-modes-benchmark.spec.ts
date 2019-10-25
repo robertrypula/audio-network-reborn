@@ -18,7 +18,7 @@ import { findFrameCandidates, scrambler } from '@data-link-layer/utils';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 import { getBytesFromHex, getHexFromBytes, getRandomBytes } from '@shared/utils';
 
-describe('FrameModesBenchmark', () => {
+describe('Frame modes benchmark', () => {
   describe('Frame integrity', () => {
     const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseFrameIntegrity[]) => {
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);

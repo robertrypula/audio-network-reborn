@@ -4,7 +4,7 @@ import { getFrameConfigsFromAllFrameModes } from '@data-link-layer/config-utils'
 import { FrameConfig, FrameMode } from '@data-link-layer/model';
 import { CheckAlgorithm } from '@shared/model';
 
-describe('Config Utils', () => {
+describe('Config utils', () => {
   describe('getFrameConfigsFromAllFrameModes', () => {
     it('should return valid list', () => {
       const expectation: FrameConfig[] = [
