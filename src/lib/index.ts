@@ -3,7 +3,7 @@
 export const libraryInfo = {
   author: 'Robert Rypuła',
   gitHub: 'https://github.com/robertrypula/audio-network-reborn',
-  version: '0.1.0-rc19'
+  version: '0.1.0-rc20'
 };
 
 export * from '@physical-layer/audio-mono-io/audio-mono-io';
@@ -109,6 +109,8 @@ TODO #1:
   + replace true/false values passed to functions with Enum (mostly in src/lib/1-data-link-layer/utils.ts)
   + prevent uncompleted rxRawBytes buffer from being processed at rxTimeTick
   + use 'type' instead of 'interface' in types that never be implemented by any class
+  + implement data-link-layer unit tests
+  + adds return types to all arrow functions
   - detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
       - we don't need separate history for odd & even rxRawBytes,
       - we can return frames at getRxBytesCollection/getRxBytesErrorCorrectedCollection directly from history
