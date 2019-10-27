@@ -72,6 +72,36 @@ describe('Utils', () => {
     });
   });
 
+  describe('padStart', () => {
+    it('should properly pad decimal numbers', () => {
+      const length = 3;
+      const radix = 10;
+
+      expect(fromUtils.padStart(null, radix, length)).toBe('000');
+      expect(fromUtils.padStart(0, radix, length)).toBe('000');
+      expect(fromUtils.padStart(1, radix, length)).toBe('001');
+      expect(fromUtils.padStart(999, radix, length)).toBe('999');
+      expect(fromUtils.padStart(999, radix, length - 1)).toBe('999');
+    });
+
+    it('should properly pad hexadecimal numbers', () => {
+      const length = 2;
+      const radix = 16;
+
+      expect(fromUtils.padStart(null, radix, length)).toBe('00');
+      expect(fromUtils.padStart(0, radix, length)).toBe('00');
+      expect(fromUtils.padStart(1, radix, length)).toBe('01');
+      expect(fromUtils.padStart(16, radix, length)).toBe('10');
+    });
+
+    it('should work with any given fillWith parameter', () => {
+      const length = 10;
+      const radix = 16;
+
+      expect(fromUtils.padStart(0xabc, radix, length, '.')).toBe('.......abc');
+    });
+  });
+
   describe('sortKeys', () => {
     it('should recursively sort keys in given object', () => {
       /*tslint:disable:object-literal-sort-keys*/

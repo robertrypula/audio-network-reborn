@@ -13,6 +13,7 @@ import {
   FrameMode,
   RxTimeTickState,
   ScramblerMode,
+  SelfReception,
   TxTimeTickState
 } from '@data-link-layer/model';
 import { findFrameCandidates, scrambler } from '@data-link-layer/utils';
@@ -24,6 +25,7 @@ export class DataLinkLayer {
   public readonly physicalLayer: PhysicalLayerInterface;
 
   public rxErrorCorrection = ErrorCorrection.Off; // keep 'off' as current 'brute-force' solution is just bad... :)
+  public rxSelfReception = SelfReception.On;
 
   protected frameConfig: FrameConfig;
   protected rxFrameHistoryA: FrameHistory = [];

@@ -30,6 +30,11 @@ export enum ScramblerMode {
   UnScramble = 'UnScramble'
 }
 
+export enum SelfReception {
+  Off = 'Off',
+  On = 'On'
+}
+
 export enum TxTimeTickState {
   Guard = 'Guard',
   Idle = 'Idle',

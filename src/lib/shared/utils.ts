@@ -45,7 +45,7 @@ export const getFilledArray = (length: number, fillWith = 0): number[] => {
 };
 
 export const getHexFromBytes = (bytes: number[], joinWith = ' '): string => {
-  return bytes.map((byte: number) => ((byte & 0xff) < 16 ? '0' : '') + (byte & 0xff).toString(16)).join(joinWith);
+  return bytes.map((byte: number): string => padStart(byte & 0xff, 16, 2)).join(joinWith);
 };
 
 export const getRandomBytes = (length: number): number[] => {
@@ -73,6 +73,13 @@ export const isEqual = (a: any, b: any): boolean => {
   sortKeys(bClone);
 
   return JSON.stringify(aClone) === JSON.stringify(bClone);
+};
+
+export const padStart = (value: number, radix: number, length: number, fillWith = '0'): string => {
+  const result: string = (value >> 0).toString(radix);
+  const missingCharacters = length - result.length;
+
+  return missingCharacters > 0 ? fillWith.repeat(missingCharacters) + result : result;
 };
 
 export const sortKeys = (object: any): void => {

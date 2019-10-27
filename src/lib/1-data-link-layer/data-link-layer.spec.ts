@@ -3,12 +3,19 @@
 import CallInfo = jasmine.CallInfo;
 import Spy = jasmine.Spy;
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
-import { ErrorCorrection, RxBytesCollector, RxTimeTickState, TxTimeTickState } from '@data-link-layer/model';
-import { BYTE_UNIQUE_VALUES } from '@physical-layer/constants';
+import {
+  ErrorCorrection,
+  RxBytesCollector,
+  RxTimeTickState,
+  SelfReception,
+  TxTimeTickState
+} from '@data-link-layer/model';
 import { createPhysicalLayerConfig } from '@physical-layer/physical-layer';
-import { getHexFromBytes } from '@shared/utils';
+import { getHexFromBytes, padStart } from '@shared/utils';
 
 describe('Data link layer', () => {
+  const hex = (value: number): string => (value === null ? 'null' : '0x' + getHexFromBytes([value]));
+  const time = (value: number): string => padStart(value, 10, 4, ' ');
   let currentTime: number;
   let dataLinkLayer: DataLinkLayer;
   let rxIntervalMilliseconds: number;
@@ -58,12 +65,8 @@ describe('Data link layer', () => {
 
       return rxBytesCollector;
     };
-    const spyRxMapper = (callInfo: CallInfo) =>
-      ('    ' + callInfo.args[0]).substr(-4) + // TODO implement and use pad func
-      ': ' +
-      (callInfo.returnValue === null ? 'null' : '0x' + getHexFromBytes([callInfo.returnValue]));
-    const spyRxTimeTickMapper = (callInfo: CallInfo) =>
-      [('    ' + callInfo.args[0]).substr(-4), callInfo.returnValue].join(': '); // TODO implement and use pad func
+    const spyRxMapper = (callInfo: CallInfo): string => `${time(callInfo.args[0])}: ${hex(callInfo.returnValue)}`;
+    const spyRxTimeTickMapper = (callInfo: CallInfo): string => `${time(callInfo.args[0])}: ${callInfo.returnValue}`;
     let spyRx: Spy;
     let spyRxExpectation: string[];
     let spyRxTimeTick: Spy;
@@ -107,8 +110,9 @@ describe('Data link layer', () => {
       it('should return error-free frame via getRxBytesCollection method', () => {
         const byte = 0x22;
 
+        dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
         expect(rxTest([0x0b, 0x0b, byte, byte, 0x70, 0x70, 0x14, 0x14, null])).toEqual([
-          { bytes: [0x61], receivedAtTime: 378 }
+          { bytes: [0x61], isErrorCorrected: false, receivedAtTime: 378 }
         ]);
       });
 
@@ -125,46 +129,63 @@ describe('Data link layer', () => {
   });
 
   describe('RX <-> TX', () => {
-    it('should not receive the own data that was transmitted', () => {
+    const RX_TX_TEST_BYTES = [0x61, 0x62, 0x63];
+    const rxTxTest = (): RxBytesCollector[] => {
+      const rxBytesCollector: RxBytesCollector[] = [];
+      const TEST_SAFE_MARGIN = 4;
       let currentTxByte = 0;
-      const spyRx: Spy = spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake((currentTimeSub: number) => {
-        // console.log('RX [x]      <---  | ', currentTimeSub, currentTxByte.toString(16));
-        return currentTxByte;
-      });
-      const spyTx: Spy = spyOn(dataLinkLayer.physicalLayer, 'tx').and.callFake(
-        (byte: number, currentTimeSub: number) => {
-          currentTxByte = byte !== null ? byte : 0;
-          // console.log('TX [x] --->       | ', currentTimeSub, currentTxByte.toString(16));
-        }
-      );
-      let rxBytesCollection: number[][] = [];
+      let i = 0;
+      let iEnd = +Infinity;
 
-      dataLinkLayer.setTxBytes([0x61]);
-      for (let i = 0; i < 15; i++) {
+      spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake((): number => currentTxByte);
+      spyOn(dataLinkLayer.physicalLayer, 'tx').and.callFake((byte: number): void => {
+        currentTxByte = byte !== null ? byte : 0;
+      });
+
+      do {
         i % 2 === 0 && dataLinkLayer.txTimeTick(currentTime);
         dataLinkLayer.rxTimeTick(currentTime);
-        currentTime += rxIntervalMilliseconds;
+        dataLinkLayer.getRxBytesCollection().map((bytes: number[]): void => {
+          rxBytesCollector.push({
+            bytes,
+            receivedAtTime: currentTime
+          });
+        });
 
-        rxBytesCollection = dataLinkLayer.getRxBytesCollection();
-        // if (rxBytesCollection.length) {
-        //   console.log(rxBytesCollection);
-        // }
-      }
+        currentTime += rxIntervalMilliseconds;
+        if (iEnd === +Infinity && dataLinkLayer.getTxProgress() === 1) {
+          iEnd = i + TEST_SAFE_MARGIN;
+        }
+        i++;
+      } while (i < iEnd);
+
+      return rxBytesCollector;
+    };
+
+    it('should receive the data that was transmitted at the same device when rxSelfReception is On', () => {
+      dataLinkLayer.rxSelfReception = SelfReception.On;
+      dataLinkLayer.setTxBytes(RX_TX_TEST_BYTES);
+      expect(rxTxTest()).toEqual([{ bytes: RX_TX_TEST_BYTES, receivedAtTime: 630 }]);
     });
+
+    /* TODO enable this test cases when SelfReception.Off will be implemented
+    it('should NOT receive the data that was transmitted at the same device when rxSelfReception is Off', () => {
+      dataLinkLayer.rxSelfReception = SelfReception.Off;
+      dataLinkLayer.setTxBytes(RX_TX_TEST_BYTES);
+      expect(rxTxTest()).toEqual([]);
+    });
+    */
   });
 
   describe('TX', () => {
     it('should properly scramble bytes in two subsequent equal frames and generate proper TX calls', () => {
       const RANDOM_USER_LAG_MILLISECONDS = 1500;
       const spyGetTxProgress: Spy = spyOn(dataLinkLayer, 'getTxProgress').and.callThrough();
-      const spyGetTxProgressMapper = (callInfo: CallInfo) => callInfo.returnValue.toFixed(4);
+      const spyGetTxProgressMapper = (callInfo: CallInfo): string => callInfo.returnValue.toFixed(4);
       const spyTx: Spy = spyOn(dataLinkLayer.physicalLayer, 'tx');
-      const spyTxMapper = (
-        args: [number, number] // TODO implement and use pad func
-      ) => ('    ' + args[1]).substr(-4) + ': ' + (args[0] === null ? 'null' : '0x' + getHexFromBytes([args[0]]));
+      const spyTxMapper = (callInfo: CallInfo): string => `${time(callInfo.args[1])}: ${hex(callInfo.args[0])}`;
       const spyTxTimeTick: Spy = spyOn(dataLinkLayer, 'txTimeTick').and.callThrough();
-      const spyTxTimeTickMapper = (callInfo: CallInfo) =>
-        [('    ' + callInfo.args[0]).substr(-4), callInfo.returnValue].join(': '); // TODO implement and use pad func
+      const spyTxTimeTickMapper = (callInfo: CallInfo): string => `${time(callInfo.args[0])}: ${callInfo.returnValue}`;
       let spyGetTxProgressExpectation: string[];
       let spyTxExpectation: string[];
       let spyTxTimeTickExpectation: string[];
@@ -172,6 +193,7 @@ describe('Data link layer', () => {
 
       for (let i = 0; i < 2; i++) {
         dataLinkLayer.setTxBytes([0x61]);
+        dataLinkLayer.getTxProgress();
         do {
           txTimeTickState = dataLinkLayer.txTimeTick(currentTime);
           dataLinkLayer.getTxProgress();
@@ -186,10 +208,12 @@ describe('Data link layer', () => {
 
       spyGetTxProgressExpectation = spyGetTxProgress.calls.all().map(spyGetTxProgressMapper);
       expect(spyGetTxProgressExpectation.join(' | ')).toEqual(
-        '0.2355 | 0.4710 | 0.7065 | 0.9421 | 1.0000 | 1.0000 | 0.2355 | 0.4710 | 0.7065 | 0.9421 | 1.0000 | 1.0000'
+        '' +
+          '0.0000 | 0.2355 | 0.4710 | 0.7065 | 0.9421 | 1.0000 | 1.0000 | ' +
+          '0.0000 | 0.2355 | 0.4710 | 0.7065 | 0.9421 | 1.0000 | 1.0000'
       );
 
-      spyTxExpectation = spyTx.calls.allArgs().map(spyTxMapper);
+      spyTxExpectation = spyTx.calls.all().map(spyTxMapper);
       expect(spyTxExpectation.join(' | ')).toEqual(
         '' + //  header       header       header       data         silence (null) to stop playing last tone
           //     ....         ....         ....         ....         ....
