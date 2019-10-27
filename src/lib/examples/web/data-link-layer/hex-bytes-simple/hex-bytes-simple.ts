@@ -71,7 +71,7 @@ export class DataLinkLayerHexBytesSimpleWebExample {
 
   protected handleRxInterval(): void {
     this.clearRxInterval();
-    this.rxInterval = setInterval(() => {
+    this.rxInterval = setInterval((): void => {
       let rxBytesCollection: number[][];
 
       this.dataLinkLayer.rxTimeTick(new Date().getTime());
@@ -80,7 +80,7 @@ export class DataLinkLayerHexBytesSimpleWebExample {
       if (rxBytesCollection.length) {
         const div: HTMLElement = domUtils.createElement('div');
 
-        div.innerHTML = rxBytesCollection.map((rxBytes: number[]) => getHexFromBytes(rxBytes)).join(' | ');
+        div.innerHTML = rxBytesCollection.map((rxBytes: number[]): string => getHexFromBytes(rxBytes)).join(' | ');
         domUtils.getById('rx-data').appendChild(div);
       }
     }, this.dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds);
@@ -89,7 +89,7 @@ export class DataLinkLayerHexBytesSimpleWebExample {
   protected handleTxInterval(): void {
     this.clearTxInterval();
     if (this.dataLinkLayer.txTimeTick(new Date().getTime()) === TxTimeTickState.Symbol) {
-      this.txInterval = setInterval(() => {
+      this.txInterval = setInterval((): void => {
         // Example code is bad - it's not waiting for guard interval to be finished
         this.dataLinkLayer.txTimeTick(new Date().getTime()) === TxTimeTickState.Guard && this.clearTxInterval();
       }, this.dataLinkLayer.physicalLayer.getDspConfig().txIntervalMilliseconds);
@@ -108,7 +108,7 @@ export class DataLinkLayerHexBytesSimpleWebExample {
     domUtils.getById('dsp-mode-dropdown').innerHTML =
       fromTemplate.dropdownOptionEmpty +
       getDspConfigsFromAllDspModes()
-        .map((dspConfig: DspConfig) => fromTemplate.dropdownOption(dspConfig))
+        .map((dspConfig: DspConfig): string => fromTemplate.dropdownOption(dspConfig))
         .join('');
   }
 }

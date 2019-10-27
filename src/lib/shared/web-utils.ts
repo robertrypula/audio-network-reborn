@@ -1,11 +1,11 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 export const fileRead = (file: File): Promise<number[]> => {
-  return new Promise<number[]>((resolve, reject) => {
+  return new Promise<number[]>((resolve, reject): void => {
     const reader = new FileReader();
 
     if (file) {
-      reader.onload = () => resolve(Array.from(new Uint8Array(reader.result as ArrayBuffer)));
+      reader.onload = (): void => resolve(Array.from(new Uint8Array(reader.result as ArrayBuffer)));
       reader.readAsArrayBuffer(file);
     } else {
       reject('no file');

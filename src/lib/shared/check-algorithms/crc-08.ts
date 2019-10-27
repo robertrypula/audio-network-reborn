@@ -13,7 +13,7 @@ const CRC_08_LOOKUP_TABLE: number[] = `
   47,52,55,5c,5b,76,71,78,7f,6a,6d,64,63,3e,39,30,37,22,25,2c,2b,06,01,08,0f,1a,1d,14,13,ae,a9,a0,a7,b2,b5,bc,bb,96,91,
   98,9f,8a,8d,84,83,de,d9,d0,d7,c2,c5,cc,cb,e6,e1,e8,ef,fa,fd,f4,f3`
   .split(',')
-  .map((value: string) => parseInt(value, 16));
+  .map((value: string): number => parseInt(value, 16));
 
 export const getCrc08: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation:

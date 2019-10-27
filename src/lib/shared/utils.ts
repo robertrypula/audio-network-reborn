@@ -36,7 +36,7 @@ export const getBytesFromHex = (hex: string): number[] => {
 };
 
 export const getBytesFromText = (text: string): number[] => {
-  return text.split('').map((char: string) => char.charCodeAt(0) % 256);
+  return text.split('').map((char: string): number => char.charCodeAt(0) % 256);
 };
 
 export const getFilledArray = (length: number, fillWith = 0): number[] => {
@@ -50,7 +50,7 @@ export const getHexFromBytes = (bytes: number[], joinWith = ' '): string => {
 
 export const getRandomBytes = (length: number): number[] => {
   // https://stackoverflow.com/questions/1295584
-  return getFilledArray(length).map(() => getRandomInt(0, 255));
+  return getFilledArray(length).map((): number => getRandomInt(0, 255));
 };
 
 export const getRandomInt = (min: number, max: number): number => {
@@ -89,7 +89,7 @@ export const sortKeys = (object: any): void => {
     object !== null &&
     Object.keys(object)
       .sort()
-      .forEach((key: string) => {
+      .forEach((key: string): void => {
         object[someAlmostRandomValue + key] = object[key];
         delete object[key];
         object[key] = object[someAlmostRandomValue + key];

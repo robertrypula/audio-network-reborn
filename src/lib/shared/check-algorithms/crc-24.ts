@@ -22,7 +22,7 @@ const CRC_24_LOOKUP_TABLE: number[] = `
   26359f,a07964,ace092,2aac69,b5d37e,339f85,3f0673,b94a88,87b4a6,01f85d,0d61ab,8b2d50,145247,921ebc,9e874a,18cbb1,
   e37b16,6537ed,69ae1b,efe2e0,709df7,f6d10c,fa48fa,7c0401,42fa2f,c4b6d4,c82f22,4e63d9,d11cce,575035,5bc9c3,dd8538`
   .split(',')
-  .map((value: string) => parseInt(value, 16));
+  .map((value: string): number => parseInt(value, 16));
 
 export const getCrc24: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation:

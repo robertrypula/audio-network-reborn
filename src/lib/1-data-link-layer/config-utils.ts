@@ -8,7 +8,7 @@ import { isEqual } from '@shared/utils';
 /*tslint:disable:no-bitwise*/
 
 export const detectFrameMode = (frameConfigInitializer: FrameConfigInitializer): FrameMode => {
-  return Object.keys(FrameMode).find((frameMode: FrameMode) =>
+  return Object.keys(FrameMode).find((frameMode: FrameMode): boolean =>
     isEqual(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode], frameConfigInitializer)
   ) as FrameMode;
 };
@@ -32,8 +32,8 @@ export const getFrameConfig = (frameConfigInitializer: FrameConfigInitializer): 
 };
 
 export const getFrameConfigsFromAllFrameModes = (): FrameConfig[] => {
-  return Object.keys(FrameMode).map((frameMode: FrameMode) =>
-    getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode])
+  return Object.keys(FrameMode).map(
+    (frameMode: FrameMode): FrameConfig => getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode])
   );
 };
 

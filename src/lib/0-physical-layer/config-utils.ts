@@ -6,13 +6,13 @@ import { DspConfig, DspConfigInitializer, DspMode } from '@physical-layer/model'
 import { isEqual } from '@shared/utils';
 
 export const detectDspMode = (dspConfigInitializer: DspConfigInitializer): DspMode => {
-  return Object.keys(DspMode).find((dspMode: DspMode) =>
+  return Object.keys(DspMode).find((dspMode: DspMode): boolean =>
     isEqual(fromConfig.DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP[dspMode], dspConfigInitializer)
   ) as DspMode;
 };
 
 export const getClosestBinIndexes = (fftSize: number, sampleRate: number, frequencies: number[]): number[] => {
-  return frequencies.map((frequency: number) => Math.round((frequency * fftSize) / sampleRate));
+  return frequencies.map((frequency: number): number => Math.round((frequency * fftSize) / sampleRate));
 };
 
 export const getDspConfig = (dspConfigInitializer: DspConfigInitializer, sampleRate: number = null): DspConfig => {
@@ -48,8 +48,9 @@ export const getDspConfig = (dspConfigInitializer: DspConfigInitializer, sampleR
 };
 
 export const getDspConfigsFromAllDspModes = (sampleRate: number = null): DspConfig[] => {
-  return Object.keys(DspMode).map((dspMode: DspMode) =>
-    getDspConfig(fromConfig.DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP[dspMode], sampleRate)
+  return Object.keys(DspMode).map(
+    (dspMode: DspMode): DspConfig =>
+      getDspConfig(fromConfig.DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP[dspMode], sampleRate)
   );
 };
 
@@ -111,7 +112,9 @@ export const getUnifiedFrequencies = (
 };
 
 export const isInsideForbiddenFrequencies = (frequency: number): boolean => {
-  return fromConfig.FREQUENCY_FORBIDDEN_RANGE.some((range: number[]) => range[0] < frequency && frequency < range[1]);
+  return fromConfig.FREQUENCY_FORBIDDEN_RANGE.some(
+    (range: number[]): boolean => range[0] < frequency && frequency < range[1]
+  );
 };
 
 export const validateDspConfigInitializer = (dspConfigInitializer: DspConfigInitializer): void => {

@@ -26,7 +26,7 @@ const CRC_32_LOOKUP_TABLE: number[] = `
   40df0b66,37d83bf0,a9bcae53,debb9ec5,47b2cf7f,30b5ffe9,bdbdf21c,cabac28a,53b39330,24b4a3a6,bad03605,cdd70693,54de5729,
   23d967bf,b3667a2e,c4614ab8,5d681b02,2a6f2b94,b40bbe37,c30c8ea1,5a05df1b,2d02ef8d`
   .split(',')
-  .map((value: string) => parseInt(value, 16));
+  .map((value: string): number => parseInt(value, 16));
 
 export const getCrc32: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation:

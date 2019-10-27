@@ -43,7 +43,7 @@ export class AudioMonoIo implements AudioMonoIoInterface {
     }
 
     if (this.microphoneMediaStream) {
-      this.microphoneMediaStream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+      this.microphoneMediaStream.getTracks().forEach((track: MediaStreamTrack): void => track.stop());
       this.microphoneMediaStream = null;
     }
 
@@ -83,12 +83,12 @@ export class AudioMonoIo implements AudioMonoIoInterface {
     // TODO fix known issue: inputEnable/inputDisable doesn't wait for promise
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
-      .then((mediaStream: MediaStream) => {
+      .then((mediaStream: MediaStream): void => {
         this.microphoneMediaStream = mediaStream;
         this.microphoneRealNode = this.audioContext.createMediaStreamSource(mediaStream);
         this.microphoneRealNode.connect(node);
       })
-      .catch((error: any) => {
+      .catch((error: any): void => {
         throw new Error(error);
       });
   }

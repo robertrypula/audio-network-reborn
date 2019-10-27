@@ -26,7 +26,7 @@ export const visualizeUnifiedFrequencies = (
     sampleRates.length * binSpacing
   );
 
-  sampleRates.forEach((sampleRate: number, index: number) => {
+  sampleRates.forEach((sampleRate: number, index: number): void => {
     const resolution: number = sampleRate / fftSize;
 
     for (let bin = 0; bin < frequencyBinsCount; bin++) {
@@ -45,7 +45,7 @@ export const visualizeUnifiedFrequencies = (
     }
   });
 
-  unifiedFrequencies.forEach((frequency: number) => {
+  unifiedFrequencies.forEach((frequency: number): void => {
     const y: number = binHeight * 1.5;
     const halfHeight: number = binHeight / 3;
     simpleCanvas.line(frequency, y - halfHeight, frequency, y + halfHeight);

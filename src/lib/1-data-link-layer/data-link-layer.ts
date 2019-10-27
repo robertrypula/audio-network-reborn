@@ -49,12 +49,12 @@ export class DataLinkLayer {
   }
 
   public getRxBytesCollection(): number[][] {
-    return this.rxFrames.length ? this.rxFrames.map((frame: Frame) => frame.getPayload()) : [];
+    return this.rxFrames.length ? this.rxFrames.map((frame: Frame): number[] => frame.getPayload()) : [];
   }
 
   public getRxBytesErrorCorrectedCollection(): number[][] {
     return this.rxFramesErrorCorrected.length
-      ? this.rxFramesErrorCorrected.map((frame: Frame) => frame.getPayload())
+      ? this.rxFramesErrorCorrected.map((frame: Frame): number[] => frame.getPayload())
       : [];
   }
 
@@ -113,7 +113,7 @@ export class DataLinkLayer {
       this.scrambleSequence,
       this.frameConfig,
       this.rxErrorCorrection,
-      (frameCandidate: Frame, isErrorCorrected: boolean) => {
+      (frameCandidate: Frame, isErrorCorrected: boolean): void => {
         this.tryToFindValidFrame(frameCandidate, isErrorCorrected) && validFramesCounter++;
       }
     );
@@ -170,7 +170,7 @@ export class DataLinkLayer {
     if (frameCandidate.isValid()) {
       const frame: Frame = isErrorCorrected ? frameCandidate.clone() : frameCandidate;
       const equalFramesHalfStepBack: FrameHistory = rxFrameHistoryHalfStepBack.filter(
-        (frameHistoryEntry: FrameHistoryEntry) =>
+        (frameHistoryEntry: FrameHistoryEntry): boolean =>
           frameHistoryEntry.rawBytePosition >= this.rxRawBytesCounter - 1 && frameHistoryEntry.frame.isEqualTo(frame)
       );
 

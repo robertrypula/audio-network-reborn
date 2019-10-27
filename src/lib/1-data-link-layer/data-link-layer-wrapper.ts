@@ -68,23 +68,23 @@ export class DataLinkLayerWrapper {
   }
 
   protected handleRxInterval(): void {
-    this.rxInterval = setInterval(() => {
+    this.rxInterval = setInterval((): void => {
       if (this.dataLinkLayer.rxTimeTick(this.getCurrentTime()) === RxTimeTickState.Stopped) {
         this.listenStop(INPUT_DISABLE_FALSE);
       } else if (this.rxHandlers.next) {
         this.dataLinkLayer
           .getRxBytesCollection()
-          .forEach((rxBytes: number[]) => this.rxHandlers.next(rxBytes, ERROR_CORRECTED_FALSE));
+          .forEach((rxBytes: number[]): void => this.rxHandlers.next(rxBytes, ERROR_CORRECTED_FALSE));
         this.dataLinkLayer
           .getRxBytesErrorCorrectedCollection()
-          .forEach((rxBytes: number[]) => this.rxHandlers.next(rxBytes, ERROR_CORRECTED_TRUE));
+          .forEach((rxBytes: number[]): void => this.rxHandlers.next(rxBytes, ERROR_CORRECTED_TRUE));
       }
     }, this.dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds);
   }
 
   protected handleTxInterval(): void {
     const getTxGuardTimeout = (): any =>
-      setTimeout(() => {
+      setTimeout((): void => {
         this.txHandlers.next && this.txHandlers.next(this.dataLinkLayer.getTxProgress());
         this.sendStop(OUTPUT_DISABLE_FALSE);
       }, this.dataLinkLayer.getTxGuardMilliseconds());
@@ -102,7 +102,7 @@ export class DataLinkLayerWrapper {
         break;
 
       case TxTimeTickState.Symbol:
-        this.txInterval = setInterval(() => {
+        this.txInterval = setInterval((): void => {
           this.txHandlers.next && this.txHandlers.next(this.dataLinkLayer.getTxProgress());
 
           switch (this.dataLinkLayer.txTimeTick(this.getCurrentTime())) {

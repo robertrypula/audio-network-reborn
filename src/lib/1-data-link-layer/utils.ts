@@ -49,14 +49,14 @@ export const findFrameCandidates = (
 ): void => {
   const { min } = frameConfig.rawBytesLength;
 
-  allPossibleUnScrambledArrays(input, scrambleSequence, (unScrambled: number[]) => {
-    allPossibleRightAlignedArrays(unScrambled, min, (rawBytes: number[]) => {
+  allPossibleUnScrambledArrays(input, scrambleSequence, (unScrambled: number[]): void => {
+    allPossibleRightAlignedArrays(unScrambled, min, (rawBytes: number[]): void => {
       callback(new Frame(frameConfig).setRawBytes(rawBytes), ERROR_CORRECTED_FALSE);
 
       errorCorrection === ErrorCorrection.On &&
-        allPossibleSinglePositionErrors(rawBytes, () =>
-          callback(new Frame(frameConfig).setRawBytes(rawBytes), ERROR_CORRECTED_TRUE)
-        );
+        allPossibleSinglePositionErrors(rawBytes, (): void => {
+          callback(new Frame(frameConfig).setRawBytes(rawBytes), ERROR_CORRECTED_TRUE);
+        });
     });
   });
 };

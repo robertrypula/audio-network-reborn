@@ -18,7 +18,7 @@ const CRC_16_LOOKUP_TABLE: number[] = `
   8a81,4a40,4e00,8ec1,8f81,4f40,8d01,4dc0,4c80,8c41,4400,84c1,8581,4540,8701,47c0,4680,8641,8201,42c0,4380,8341,4100,
   81c1,8081,4040`
   .split(',')
-  .map((value: string) => parseInt(value, 16));
+  .map((value: string): number => parseInt(value, 16));
 
 export const getCrc16: CheckAlgorithmImplementation = (bytes: number[]): number[] => {
   // Code migrated to TypeScript from vanilla JavaScript implementation:

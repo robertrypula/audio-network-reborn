@@ -44,8 +44,8 @@ export class DataLinkLayerChatSimpleWebExample {
   public listenEnable(): void {
     domUtils.getById('listen-wrapper').classList.add('enabled');
     this.dataLinkLayerWrapper.listen({
-      complete: () => domUtils.getById('listen-wrapper').classList.remove('enabled'),
-      next: (bytes: number[]) => this.logFrame(bytes, true)
+      complete: (): void => domUtils.getById('listen-wrapper').classList.remove('enabled'),
+      next: (bytes: number[]): void => this.logFrame(bytes, true)
     });
   }
 
@@ -63,15 +63,17 @@ export class DataLinkLayerChatSimpleWebExample {
 
     this.sendStart();
     this.dataLinkLayerWrapper.send(bytes, {
-      complete: () => this.sendComplete(bytes),
-      next: (progress: number) => (domUtils.getById('send-progress-bar').style.width = progress * 100 + '%')
+      complete: (): void => this.sendComplete(bytes),
+      next: (progress: number): void => {
+        domUtils.getById('send-progress-bar').style.width = progress * 100 + '%';
+      }
     });
   }
 
   protected initializeHtmlElements(): void {
-    domUtils.getById('send-button').addEventListener('click', () => this.send());
-    domUtils.getById('listen-enable-button').addEventListener('click', () => this.listenEnable());
-    domUtils.getById('send-field').addEventListener('keydown', (event: KeyboardEvent) => {
+    domUtils.getById('send-button').addEventListener('click', (): void => this.send());
+    domUtils.getById('listen-enable-button').addEventListener('click', (): void => this.listenEnable());
+    domUtils.getById('send-field').addEventListener('keydown', (event: KeyboardEvent): void => {
       if (event.key === 'Enter') {
         event.preventDefault();
         this.send();
