@@ -4,15 +4,18 @@ import { getCheckAlgorithmImplementation } from '@shared/check-algorithms/check-
 import { CheckAlgorithm, CheckAlgorithmImplementation, TestCaseInOut } from '@shared/model';
 import { getBytesFromText, getHexFromBytes } from '@shared/utils';
 
-describe('Check algorithms', () => {
-  const runTestCases = (checkAlgorithmImplementation: CheckAlgorithmImplementation, testCases: TestCaseInOut[]) => {
+describe('Check algorithms', (): void => {
+  const runTestCases = (
+    checkAlgorithmImplementation: CheckAlgorithmImplementation,
+    testCases: TestCaseInOut[]
+  ): void => {
     testCases.forEach((testCase: TestCaseInOut) =>
       expect(getHexFromBytes(checkAlgorithmImplementation(getBytesFromText(testCase.in)))).toEqual(testCase.out)
     );
   };
 
-  describe('getCrc08', () => {
-    it('should pass all test cases', () => {
+  describe('getCrc08', (): void => {
+    it('should pass all test cases', (): void => {
       // Verified at: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html (CRC8)
       runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Crc08), [
         { in: 'abcde', out: '52' },
@@ -23,8 +26,8 @@ describe('Check algorithms', () => {
     });
   });
 
-  describe('getCrc16', () => {
-    it('should pass all test cases', () => {
+  describe('getCrc16', (): void => {
+    it('should pass all test cases', (): void => {
       // Verified at: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html (CRC16_ARC)
       runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Crc16), [
         { in: 'abcde', out: '85 b8' },
@@ -35,8 +38,8 @@ describe('Check algorithms', () => {
     });
   });
 
-  describe('getCrc24', () => {
-    it('should pass all test cases', () => {
+  describe('getCrc24', (): void => {
+    it('should pass all test cases', (): void => {
       // Verified by npm package: https://www.npmjs.com/package/polycrc
       runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Crc24), [
         { in: 'abcde', out: 'd7 49 3c' },
@@ -47,8 +50,8 @@ describe('Check algorithms', () => {
     });
   });
 
-  describe('getCrc32', () => {
-    it('should pass all test cases', () => {
+  describe('getCrc32', (): void => {
+    it('should pass all test cases', (): void => {
       // Verified at: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html (CRC32)
       runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Crc32), [
         { in: 'abcde', out: '85 87 d8 65' },
@@ -59,8 +62,8 @@ describe('Check algorithms', () => {
     });
   });
 
-  describe('getSha1', () => {
-    it('should pass all test cases', () => {
+  describe('getSha1', (): void => {
+    it('should pass all test cases', (): void => {
       // SHA-1 'abc...' test vectors from https://www.di-mgt.com.au/sha_testvectors.html
       runTestCases(getCheckAlgorithmImplementation(CheckAlgorithm.Sha1), [
         {

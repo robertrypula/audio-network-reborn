@@ -3,9 +3,9 @@
 import { getDspConfigsFromAllDspModes } from '@physical-layer/config-utils';
 import { DspConfig, DspMode } from '@physical-layer/model';
 
-describe('Config utils', () => {
-  describe('getDspConfigsFromAllDspModes', () => {
-    it('should return valid list', () => {
+describe('Config utils', (): void => {
+  describe('getDspConfigsFromAllDspModes', (): void => {
+    it('should return valid list', (): void => {
       const expectation: DspConfig[] = [
         {
           band: { bandwidth: 15128.466796875, begin: 3568.505859375, end: 18696.97265625 },

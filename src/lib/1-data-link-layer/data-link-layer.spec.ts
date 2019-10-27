@@ -13,7 +13,7 @@ import {
 import { createPhysicalLayerConfig } from '@physical-layer/physical-layer';
 import { getHexFromBytes, padStart } from '@shared/utils';
 
-describe('Data link layer', () => {
+describe('Data link layer', (): void => {
   const hex = (value: number): string => (value === null ? 'null' : '0x' + getHexFromBytes([value]));
   const time = (value: number): string => padStart(value, 10, 4, ' ');
   let currentTime: number;
@@ -22,7 +22,7 @@ describe('Data link layer', () => {
   let txGuardMilliseconds: number;
   let txIntervalMilliseconds: number;
 
-  beforeEach(() => {
+  beforeEach((): void => {
     createPhysicalLayerConfig.stub = true;
     dataLinkLayer = new DataLinkLayer();
     currentTime = 0;
@@ -31,7 +31,7 @@ describe('Data link layer', () => {
     txIntervalMilliseconds = dataLinkLayer.physicalLayer.getDspConfig().txIntervalMilliseconds;
   });
 
-  describe('RX', () => {
+  describe('RX', (): void => {
     const rxTest = (rx: number[]): RxBytesCollector[] => {
       const rxBytesCollector: RxBytesCollector[] = [];
       const isRxErrorCorrectionOn: boolean = dataLinkLayer.rxErrorCorrection === ErrorCorrection.On;
@@ -72,7 +72,7 @@ describe('Data link layer', () => {
     let spyRxTimeTick: Spy;
     let spyRxTimeTickExpectation: string[];
 
-    it('should generate proper RX calls', () => {
+    it('should generate proper RX calls', (): void => {
       rxTest([0x12, 0x23, 0x34, 0x45, 0x56, null]);
 
       spyRxExpectation = spyRx.calls.all().map(spyRxMapper);
@@ -86,8 +86,8 @@ describe('Data link layer', () => {
       );
     });
 
-    describe('Frame detection and duplicates removal', () => {
-      it('should return only one out of two identical frames that are separated by one RX step', () => {
+    describe('Frame detection and duplicates removal', (): void => {
+      it('should return only one out of two identical frames that are separated by one RX step', (): void => {
         expect(rxTest([0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([
           // tx:       ``````````  ``````````  ``````````  ``````````  ``````````
           //           \________________________________/  \________/
@@ -96,7 +96,7 @@ describe('Data link layer', () => {
         ]);
       });
 
-      it('should return only one out of two identical frames that are separated by one RX step (offset)', () => {
+      it('should return only one out of two identical frames that are separated by one RX step (offset)', (): void => {
         expect(rxTest([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([
           // tx:       ``````````  ``````````  ``````````  ``````````  ``````````
           //           \________________________________/  \________/
@@ -106,8 +106,8 @@ describe('Data link layer', () => {
       });
     });
 
-    describe('Error correction', () => {
-      it('should return error-free frame via getRxBytesCollection method', () => {
+    describe('Error correction', (): void => {
+      it('should return error-free frame via getRxBytesCollection method', (): void => {
         const byte = 0x22;
 
         dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
@@ -116,7 +116,7 @@ describe('Data link layer', () => {
         ]);
       });
 
-      it('should return error-at-one-byte frame via getRxBytesErrorCorrectedCollection method', () => {
+      it('should return error-at-one-byte frame via getRxBytesErrorCorrectedCollection method', (): void => {
         const ERROR = 32;
         const byte = 0x22 + ERROR;
 
@@ -128,7 +128,7 @@ describe('Data link layer', () => {
     });
   });
 
-  describe('RX <-> TX', () => {
+  describe('RX <-> TX', (): void => {
     const RX_TX_TEST_BYTES = [0x61, 0x62, 0x63];
     const rxTxTest = (): RxBytesCollector[] => {
       const rxBytesCollector: RxBytesCollector[] = [];
@@ -162,14 +162,14 @@ describe('Data link layer', () => {
       return rxBytesCollector;
     };
 
-    it('should receive the data that was transmitted at the same device when rxSelfReception is On', () => {
+    it('should receive the data that was transmitted at the same device when rxSelfReception is On', (): void => {
       dataLinkLayer.rxSelfReception = SelfReception.On;
       dataLinkLayer.setTxBytes(RX_TX_TEST_BYTES);
       expect(rxTxTest()).toEqual([{ bytes: RX_TX_TEST_BYTES, receivedAtTime: 630 }]);
     });
 
     /* TODO enable this test cases when SelfReception.Off will be implemented
-    it('should NOT receive the data that was transmitted at the same device when rxSelfReception is Off', () => {
+    it('should NOT receive the data that was transmitted at the same device when rxSelfReception is Off', (): void => {
       dataLinkLayer.rxSelfReception = SelfReception.Off;
       dataLinkLayer.setTxBytes(RX_TX_TEST_BYTES);
       expect(rxTxTest()).toEqual([]);
@@ -177,8 +177,8 @@ describe('Data link layer', () => {
     */
   });
 
-  describe('TX', () => {
-    it('should properly scramble bytes in two subsequent equal frames and generate proper TX calls', () => {
+  describe('TX', (): void => {
+    it('should properly scramble bytes in two subsequent equal frames and generate proper TX calls', (): void => {
       const RANDOM_USER_LAG_MILLISECONDS = 1500;
       const spyGetTxProgress: Spy = spyOn(dataLinkLayer, 'getTxProgress').and.callThrough();
       const spyGetTxProgressMapper = (callInfo: CallInfo): string => callInfo.returnValue.toFixed(4);

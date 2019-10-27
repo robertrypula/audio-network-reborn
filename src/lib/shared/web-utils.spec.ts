@@ -1,14 +1,14 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-describe('Web utils', () => {
-  describe('fileRead', () => {
-    it('should ...', () => {
+describe('Web utils', (): void => {
+  describe('fileRead', (): void => {
+    it('should ...', (): void => {
       // TODO implement
     });
   });
 
-  describe('fileSave', () => {
-    it('should ...', () => {
+  describe('fileSave', (): void => {
+    it('should ...', (): void => {
       // TODO implement
     });
   });

@@ -7,9 +7,9 @@ import { Frame } from '@data-link-layer/frame/frame';
 import { ErrorCorrection, FrameConfig, FrameCounterSimple, FrameMode, ScramblerMode } from '@data-link-layer/model';
 import * as fromUtils from '@data-link-layer/utils';
 
-describe('Utils', () => {
-  describe('allPossibleRightAlignedArrays', () => {
-    it('should iterate through all possible arrays', () => {
+describe('Utils', (): void => {
+  describe('allPossibleRightAlignedArrays', (): void => {
+    it('should iterate through all possible arrays', (): void => {
       const result: number[][] = [];
       const lengthMin = 3;
 
@@ -24,7 +24,7 @@ describe('Utils', () => {
       ]);
     });
 
-    it('should not trigger callback if input array is smaller than minLength parameter', () => {
+    it('should not trigger callback if input array is smaller than minLength parameter', (): void => {
       const result: number[][] = [];
       const lengthMin = 3;
 
@@ -33,8 +33,8 @@ describe('Utils', () => {
     });
   });
 
-  describe('allPossibleSinglePositionErrors', () => {
-    it('should generate at single array reference all possible combinations with error at only one position', () => {
+  describe('allPossibleSinglePositionErrors', (): void => {
+    it('should generate (in place) all possible combinations with error at only one position', (): void => {
       const dataOriginal = [1, 2, 0];
       const data: number[] = dataOriginal.slice(0);
       const result: number[][] = [];
@@ -45,7 +45,7 @@ describe('Utils', () => {
       expect(data).toEqual(dataOriginal);
     });
 
-    it('should generate proper amount of all possible combinations with error at only one position', () => {
+    it('should generate proper amount of all possible combinations with error at only one position', (): void => {
       const dataOriginal = [32, 34, 242, 43, 65, 32, 65, 43, 13, 174];
       const data: number[] = dataOriginal.slice(0);
       let counter = 0;
@@ -56,8 +56,8 @@ describe('Utils', () => {
     });
   });
 
-  describe('allPossibleUnScrambledArrays', () => {
-    it('should iterate through all possible arrays for given scrambleSequence and unscramble them', () => {
+  describe('allPossibleUnScrambledArrays', (): void => {
+    it('should iterate through all possible arrays for given scrambleSequence and unscramble them', (): void => {
       const result: number[][] = [];
       const scrambleSequence = [10, 20, 30, 12];
 
@@ -67,7 +67,7 @@ describe('Utils', () => {
       expect(result).toEqual([[256 - 10, 80, 170], [256 - 20, 70, 188], [256 - 30, 88, 190], [256 - 12, 90, 180]]);
     });
 
-    it('should iterate through all possible arrays for given scrambleSeq. and unscramble them (range check)', () => {
+    it('should iterate through all possible arrays and unscramble them (range check)', (): void => {
       const result: number[][] = [];
       const scrambleSequence = [25, 26];
       const range = 20;
@@ -82,8 +82,8 @@ describe('Utils', () => {
     });
   });
 
-  describe('findFrameCandidates', () => {
-    it('should find all possible frame candidates', () => {
+  describe('findFrameCandidates', (): void => {
+    it('should find all possible frame candidates', (): void => {
       const frameMode: FrameMode = FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24;
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
       const { min } = frameConfig.rawBytesLength;
@@ -99,7 +99,7 @@ describe('Utils', () => {
         scrambleSequence,
         frameConfig,
         ErrorCorrection.On,
-        (frameCandidate: Frame, isErrorCorrected: boolean) => {
+        (frameCandidate: Frame, isErrorCorrected: boolean): void => {
           isErrorCorrected ? frameCounterSimple.errorCorrected++ : frameCounterSimple.nonErrorCorrected++;
           if (!isErrorCorrected) {
             nonErrorCorrectedRawBytes.push(frameCandidate.getRawBytes());
@@ -128,8 +128,8 @@ describe('Utils', () => {
     });
   });
 
-  describe('scrambler', () => {
-    it('should properly scramble the data in the array', () => {
+  describe('scrambler', (): void => {
+    it('should properly scramble the data in the array', (): void => {
       const data = [32, 10, 20, 30, 100, 200];
       const scrambleSequence = [10, 20, 30, 12];
 
@@ -137,7 +137,7 @@ describe('Utils', () => {
       expect(data).toEqual([42, 30, 50, 42, 110, 220]);
     });
 
-    it('should properly un-scramble the data in the array', () => {
+    it('should properly un-scramble the data in the array', (): void => {
       const data = [42, 30, 50, 42, 110, 220];
       const scrambleSequence = [10, 20, 30, 12];
 
@@ -145,7 +145,7 @@ describe('Utils', () => {
       expect(data).toEqual([32, 10, 20, 30, 100, 200]);
     });
 
-    it('should properly scramble the data in the array (range and offset test)', () => {
+    it('should properly scramble the data in the array (range and offset test)', (): void => {
       const range = 50;
       const data = [45, 5, 15, range + 49];
       const scrambleSequence = [20, 5, range + 1];
@@ -155,7 +155,7 @@ describe('Utils', () => {
       expect(data).toEqual([0, 6, 35, 4]);
     });
 
-    it('should properly un-scramble the data in the array (range and offset test)', () => {
+    it('should properly un-scramble the data in the array (range and offset test)', (): void => {
       const range = 50;
       const data = [0, 6, 35, range + 4];
       const scrambleSequence = [20, 5, range + 1];

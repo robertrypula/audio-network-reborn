@@ -7,8 +7,6 @@ import { getCrc32 } from '@shared/check-algorithms/crc-32';
 import { getSha1 } from '@shared/check-algorithms/sha-1';
 import { CheckAlgorithm, CheckAlgorithmImplementation } from '@shared/model';
 
-/*tslint:disable:no-bitwise*/
-
 export const getCheckAlgorithmImplementation = (checkAlgorithm: CheckAlgorithm): CheckAlgorithmImplementation => {
   switch (checkAlgorithm) {
     case CheckAlgorithm.Crc08:

@@ -2,17 +2,17 @@
 
 import { libraryInfo } from '@';
 
-describe('Index', () => {
-  describe('Library info', () => {
-    it('should return version', () => {
+describe('Index', (): void => {
+  describe('Library info', (): void => {
+    it('should return version', (): void => {
       expect(libraryInfo.version).toBeTruthy();
     });
 
-    it('should return author', () => {
+    it('should return author', (): void => {
       expect(libraryInfo.author).toBeTruthy();
     });
 
-    it('should return gitHub', () => {
+    it('should return gitHub', (): void => {
       expect(libraryInfo.gitHub).toBeTruthy();
     });
   });

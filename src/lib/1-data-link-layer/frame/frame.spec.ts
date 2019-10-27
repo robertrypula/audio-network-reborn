@@ -14,33 +14,33 @@ const frameConfig: FrameConfig = getFrameConfig({
   ...HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES
 });
 
-describe('Frame', () => {
-  describe('clone', () => {
-    it('should ...', () => {
+describe('Frame', (): void => {
+  describe('clone', (): void => {
+    it('should ...', (): void => {
       // TODO implement
     });
   });
 
-  describe('getNextRawByte', () => {
-    it('should ...', () => {
+  describe('getNextRawByte', (): void => {
+    it('should ...', (): void => {
       // TODO implement
     });
   });
 
-  describe('getPayload', () => {
-    it('should ...', () => {
+  describe('getPayload', (): void => {
+    it('should ...', (): void => {
       // TODO implement
     });
   });
 
-  describe('getRawBytePosition', () => {
-    it('should ...', () => {
+  describe('getRawBytePosition', (): void => {
+    it('should ...', (): void => {
       // TODO implement
     });
   });
 
-  describe('getRawBytes', () => {
-    it('should properly generate raw bytes (header + payload) for given payload', () => {
+  describe('getRawBytes', (): void => {
+    it('should properly generate raw bytes (header + payload) for given payload', (): void => {
       // TODO implement
       // const fakeCheckSequence = getBytesFromHex('ab bc de');
       // const frame = new Frame(frameConfig);
@@ -51,20 +51,20 @@ describe('Frame', () => {
     });
   });
 
-  describe('isEqualTo', () => {
-    it('should ...', () => {
+  describe('isEqualTo', (): void => {
+    it('should ...', (): void => {
       // TODO implement
     });
   });
 
-  describe('isNotEqualTo', () => {
-    it('should ...', () => {
+  describe('isNotEqualTo', (): void => {
+    it('should ...', (): void => {
       // TODO implement
     });
   });
 
-  describe('isValid', () => {
-    it('should detect errors', () => {
+  describe('isValid', (): void => {
+    it('should detect errors', (): void => {
       // TODO implement
       // const frame = new Frame(frameConfig);
       // const payload = getBytesFromHex('f6 f7 f8 f9 fa fb fc fd');
@@ -79,14 +79,14 @@ describe('Frame', () => {
     });
   });
 
-  describe('setPayload', () => {
-    it('should ...', () => {
+  describe('setPayload', (): void => {
+    it('should ...', (): void => {
       // TODO implement
     });
   });
 
-  describe('setRawBytes', () => {
-    it('should properly set raw bytes', () => {
+  describe('setRawBytes', (): void => {
+    it('should properly set raw bytes', (): void => {
       const validRawBytes = '7d 54 3e 33 41 ec 66';
       const frame = new Frame(frameConfig);
 

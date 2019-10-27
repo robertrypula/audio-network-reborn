@@ -4,15 +4,15 @@ import { TestCaseInOut } from '@shared/model';
 import { getTextFromUtf8Bytes } from '@shared/utf8/decode';
 import { getBytesFromHex } from '@shared/utils';
 
-describe('Utf8 decode', () => {
-  describe('getTextFromUtf8Bytes', () => {
-    const runTestCases = (testCases: TestCaseInOut[]) => {
+describe('Utf8 decode', (): void => {
+  describe('getTextFromUtf8Bytes', (): void => {
+    const runTestCases = (testCases: TestCaseInOut[]): void => {
       testCases.forEach((testCase: TestCaseInOut) =>
         expect(getTextFromUtf8Bytes(getBytesFromHex(testCase.in))).toEqual(testCase.out)
       );
     };
 
-    it('should work', () => {
+    it('should work', (): void => {
       runTestCases([
         { in: 'c4 85 c4 87 c4 99 c5 82 c5 84 c3 b3 c5 9b c5 bc c5 ba', out: 'ąćęłńóśżź' }, // Polish characters
         { in: 'c4 84 c4 86 c4 98 c5 81 c5 83 c3 93 c5 9a c5 bb c5 b9', out: 'ĄĆĘŁŃÓŚŻŹ' }, // Polish characters

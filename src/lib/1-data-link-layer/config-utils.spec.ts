@@ -4,9 +4,9 @@ import { getFrameConfigsFromAllFrameModes } from '@data-link-layer/config-utils'
 import { FrameConfig, FrameMode } from '@data-link-layer/model';
 import { CheckAlgorithm } from '@shared/model';
 
-describe('Config utils', () => {
-  describe('getFrameConfigsFromAllFrameModes', () => {
-    it('should return valid list', () => {
+describe('Config utils', (): void => {
+  describe('getFrameConfigsFromAllFrameModes', (): void => {
+    it('should return valid list', (): void => {
       const expectation: FrameConfig[] = [
         {
           frameConfigInitializer: {

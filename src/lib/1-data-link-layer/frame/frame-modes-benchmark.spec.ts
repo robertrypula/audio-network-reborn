@@ -18,11 +18,11 @@ import { findFrameCandidates, scrambler } from '@data-link-layer/utils';
 import { FixedSizeBuffer } from '@shared/fixed-size-buffer';
 import { getBytesFromHex, getHexFromBytes, getRandomBytes } from '@shared/utils';
 
-describe('Frame modes benchmark', () => {
-  describe('Frame integrity', () => {
-    const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseFrameIntegrity[]) => {
+describe('Frame modes benchmark', (): void => {
+  describe('Frame integrity', (): void => {
+    const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseFrameIntegrity[]): void => {
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
-      testCases.forEach((testCase: TestCaseFrameIntegrity) => {
+      testCases.forEach((testCase: TestCaseFrameIntegrity): void => {
         const frameA = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
         const rawBytes: number[] = frameA.getRawBytes().slice(0);
         const frameB = new Frame(frameConfig).setRawBytes(rawBytes);
@@ -34,7 +34,7 @@ describe('Frame modes benchmark', () => {
       });
     };
 
-    it('should work with 2 bytes of header, 1-8 bytes of payload and CRC-16 check sequence', () => {
+    it('should work with 2 bytes of header, 1-8 bytes of payload and CRC-16 check sequence', (): void => {
       runIntegrityTestCases(FrameMode.Header2BytesPayloadLengthBetween1And8BytesCrc16, [
         { expectedRawBytes: 'ef 8a 00 0a 14 1e 28 78 fa ff', payload: '00 0a 14 1e 28 78 fa ff' },
         { expectedRawBytes: 'f4 29 61 62 63 64 65 66 67 68', payload: '61 62 63 64 65 66 67 68' },
@@ -49,7 +49,7 @@ describe('Frame modes benchmark', () => {
       ]);
     });
 
-    it('should work with 2 bytes of header, fixed 8 bytes of payload and CRC-16 check sequence', () => {
+    it('should work with 2 bytes of header, fixed 8 bytes of payload and CRC-16 check sequence', (): void => {
       runIntegrityTestCases(FrameMode.Header2BytesPayloadLengthFixedAt8BytesCrc16, [
         { expectedRawBytes: '4f 8a 00 0a 14 1e 28 78 fa ff', payload: '00 0a 14 1e 28 78 fa ff' },
         { expectedRawBytes: '74 29 61 62 63 64 65 66 67 68', payload: '61 62 63 64 65 66 67 68' },
@@ -64,7 +64,7 @@ describe('Frame modes benchmark', () => {
       ]);
     });
 
-    it('should work with 3 bytes of header, 1-8 bytes of payload and CRC-24 check sequence', () => {
+    it('should work with 3 bytes of header, 1-8 bytes of payload and CRC-24 check sequence', (): void => {
       runIntegrityTestCases(FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24, [
         { expectedRawBytes: 'e7 9a d7 00 0a 14 1e 28 78 fa ff', payload: '00 0a 14 1e 28 78 fa ff' },
         { expectedRawBytes: 'e8 6c c1 61 62 63 64 65 66 67 68', payload: '61 62 63 64 65 66 67 68' },
@@ -79,7 +79,7 @@ describe('Frame modes benchmark', () => {
       ]);
     });
 
-    it('should work with 3 bytes of header, fixed 8 bytes of payload and CRC-24 check sequence', () => {
+    it('should work with 3 bytes of header, fixed 8 bytes of payload and CRC-24 check sequence', (): void => {
       runIntegrityTestCases(FrameMode.Header3BytesPayloadLengthFixedAt8BytesCrc24, [
         { expectedRawBytes: '27 9a d7 00 0a 14 1e 28 78 fa ff', payload: '00 0a 14 1e 28 78 fa ff' },
         { expectedRawBytes: 'e8 6c c1 61 62 63 64 65 66 67 68', payload: '61 62 63 64 65 66 67 68' },
@@ -95,7 +95,7 @@ describe('Frame modes benchmark', () => {
     });
   });
 
-  describe('Frame detection in long raw bytes random stream', () => {
+  describe('Frame detection in long raw bytes random stream', (): void => {
     const localExperiments = false;
     const randomBytesLength = 1000 * 1e3;
     const randomBytesLengthHalf = Math.ceil(randomBytesLength / 2);
@@ -109,10 +109,10 @@ describe('Frame modes benchmark', () => {
       frameMode: FrameMode,
       errorCorrection: ErrorCorrection,
       testCases: TestCaseFrameCounterWithPayload[]
-    ) => {
+    ): void => {
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
 
-      testCases.forEach((testCase: TestCaseFrameCounterWithPayload) => {
+      testCases.forEach((testCase: TestCaseFrameCounterWithPayload): void => {
         const { max, min } = frameConfig.rawBytesLength;
         const frameCounter: FrameCounter = { ...FRAME_COUNTER_WITH_ZEROS };
         const rawBytes = new FixedSizeBuffer<number>(max, min);
@@ -139,7 +139,7 @@ describe('Frame modes benchmark', () => {
             scrambleSequence,
             frameConfig,
             errorCorrection,
-            (frameCandidate, isErrorCorrected) => {
+            (frameCandidate, isErrorCorrected): void => {
               if (isErrorCorrected) {
                 frameCandidate.isValid()
                   ? frameCandidate.isEqualTo(frameNotScrambled)
@@ -171,7 +171,7 @@ describe('Frame modes benchmark', () => {
       });
     };
 
-    it('should work with 2 bytes of header, 1-8 bytes of payload and CRC-16 check sequence', () => {
+    it('should work with 2 bytes of header, 1-8 bytes of payload and CRC-16 check sequence', (): void => {
       runDetectionTestCases(FrameMode.Header2BytesPayloadLengthBetween1And8BytesCrc16, ErrorCorrection.Off, [
         {
           frameCounter: {
@@ -192,7 +192,7 @@ describe('Frame modes benchmark', () => {
       */
     });
 
-    it('should work with 2 bytes of header, fixed 8 bytes of payload and CRC-16 check sequence', () => {
+    it('should work with 2 bytes of header, fixed 8 bytes of payload and CRC-16 check sequence', (): void => {
       runDetectionTestCases(FrameMode.Header2BytesPayloadLengthFixedAt8BytesCrc16, ErrorCorrection.Off, [
         {
           frameCounter: {
@@ -213,7 +213,7 @@ describe('Frame modes benchmark', () => {
       */
     });
 
-    it('should work with 3 bytes of header, 1-8 bytes of payload and CRC-24 check sequence', () => {
+    it('should work with 3 bytes of header, 1-8 bytes of payload and CRC-24 check sequence', (): void => {
       runDetectionTestCases(FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24, ErrorCorrection.Off, [
         {
           frameCounter: {
@@ -234,7 +234,7 @@ describe('Frame modes benchmark', () => {
       */
     });
 
-    it('should work with 3 bytes of header, fixed 8 bytes of payload and CRC-24 check sequence', () => {
+    it('should work with 3 bytes of header, fixed 8 bytes of payload and CRC-24 check sequence', (): void => {
       runDetectionTestCases(FrameMode.Header3BytesPayloadLengthFixedAt8BytesCrc24, ErrorCorrection.Off, [
         {
           frameCounter: {
