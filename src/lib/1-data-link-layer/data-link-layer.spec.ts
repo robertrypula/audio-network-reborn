@@ -126,6 +126,10 @@ describe('Data link layer', (): void => {
         ]);
       });
     });
+
+    describe('Multiple valid frames detection', () => {
+      // TODO mock the isValid function - make all functions valid
+    });
   });
 
   describe('RX <-> TX', (): void => {

@@ -8,6 +8,16 @@ import {
 } from '@data-link-layer/model';
 import { getBytesFromHex } from '@shared/utils';
 
+// those constants are really bad... refactor it
+export const ERROR_CORRECTED_FALSE = false;
+export const ERROR_CORRECTED_TRUE = true;
+export const INPUT_DISABLE_FALSE = false;
+export const INPUT_DISABLE_TRUE = true;
+export const NOTIFY_COMPLETE_FALSE = false;
+export const NOTIFY_COMPLETE_TRUE = true;
+export const OUTPUT_DISABLE_FALSE = false;
+export const OUTPUT_DISABLE_TRUE = true;
+
 export const FRAME_COUNTER_WITH_ZEROS: FrameCounter = {
   errorCorrectedInvalid: 0,
   errorCorrectedValid: 0,

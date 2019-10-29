@@ -6,7 +6,7 @@ import {
   INPUT_DISABLE_FALSE,
   NOTIFY_COMPLETE_FALSE,
   OUTPUT_DISABLE_FALSE
-} from '@data-link-layer/config';
+} from '@data-link-layer/constants';
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
 import {
   DataLinkLayerWrapperListenHandlers,
