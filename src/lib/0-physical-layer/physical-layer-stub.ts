@@ -15,6 +15,8 @@ import {
 export class PhysicalLayerStub implements PhysicalLayerInterface {
   public readonly audioMonoIo: AudioMonoIoInterface;
 
+  public constructor(dspMode: DspMode) {}
+
   public getDspConfig(): DspConfig {
     return getDspConfig(DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP[DspMode.NormalBandFastAudibleLower]);
   }

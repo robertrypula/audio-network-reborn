@@ -2,7 +2,7 @@
 
 import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
 import { getFrameConfig } from '@data-link-layer/config-utils';
-import { FRAME_COUNTER_WITH_ZEROS, SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
+import { FRAME_COUNTER_WITH_ZEROS, GET_SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
 import { mocked512RandomBytesA, mocked512RandomBytesB } from '@data-link-layer/frame/frame-modes-benchmark.spec-data';
 import {
@@ -99,7 +99,7 @@ describe('Frame modes benchmark', (): void => {
     const localExperiments = false;
     const randomBytesLength = 1000 * 1e3;
     const randomBytesLengthHalf = Math.ceil(randomBytesLength / 2);
-    const scrambleSequence: number[] = SCRAMBLE_SEQUENCE();
+    const scrambleSequence: number[] = GET_SCRAMBLE_SEQUENCE();
     const getRandomRawBytes = (firstPart: boolean): number[] => {
       return localExperiments
         ? getRandomBytes(randomBytesLengthHalf)

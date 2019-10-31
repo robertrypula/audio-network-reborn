@@ -47,6 +47,8 @@ export interface PhysicalLayerInterface {
 
 // -----------------------------------------------------------------------------
 
+export type AudioMonoIoStatic = new () => AudioMonoIoInterface;
+
 export type Band = {
   bandwidth: number;
   begin: number;
@@ -74,3 +76,5 @@ export type DspConfigInitializer = {
   frequencyEnd: number;
   safeMarginFactor: number;
 };
+
+export type PhysicalLayerStatic = new (dspMode: DspMode) => PhysicalLayerInterface;

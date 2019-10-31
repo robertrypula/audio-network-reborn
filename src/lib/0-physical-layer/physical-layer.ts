@@ -10,17 +10,17 @@ import {
   DspConfig,
   DspConfigInitializer,
   DspMode,
-  PhysicalLayerInterface
+  PhysicalLayerInterface,
+  PhysicalLayerStatic
 } from '@physical-layer/model';
-import { PhysicalLayerStub } from '@physical-layer/physical-layer.stub';
-import { CreateConfig } from '@shared/model';
+import { PhysicalLayerStub } from '@physical-layer/physical-layer-stub';
 
 export class PhysicalLayer implements PhysicalLayerInterface {
   public readonly audioMonoIo: AudioMonoIoInterface;
 
   protected dspConfig: DspConfig;
 
-  public constructor(dspMode: DspMode = DspMode.NormalBandFastAudibleLower) {
+  public constructor(dspMode: DspMode) {
     this.audioMonoIo = createAudioMonoIo();
     this.setDspMode(dspMode);
   }
@@ -62,6 +62,8 @@ export class PhysicalLayer implements PhysicalLayerInterface {
 
 // -----------------------------------------------------------------------------
 
-export const createPhysicalLayerConfig: CreateConfig = { stub: false };
-export const createPhysicalLayer = (): PhysicalLayerInterface =>
-  createPhysicalLayerConfig.stub ? new PhysicalLayerStub() : new PhysicalLayer();
+export const createPhysicalLayerConfig: { factory: PhysicalLayerStatic } = { factory: PhysicalLayer };
+export const createPhysicalLayer = (dspMode: DspMode = DspMode.NormalBandFastAudibleLower): PhysicalLayerInterface => {
+  const { factory } = createPhysicalLayerConfig;
+  return factory ? new factory(dspMode) : new PhysicalLayerStub(dspMode);
+};

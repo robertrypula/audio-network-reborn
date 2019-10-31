@@ -2,7 +2,7 @@
 
 import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
 import { getFrameConfig } from '@data-link-layer/config-utils';
-import { SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
+import { GET_SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
 import { Frame } from '@data-link-layer/frame/frame';
 import {
   ErrorCorrection,
@@ -25,13 +25,13 @@ export class DataLinkLayer {
 
   public rxErrorCorrection = ErrorCorrection.Off; // keep 'off' as current 'brute-force' solution is just bad... :)
   public rxSelfReception = SelfReception.On;
+  public scrambleSequence: number[] = GET_SCRAMBLE_SEQUENCE();
 
   protected frameConfig: FrameConfig;
   protected rxFrameHistory: FixedSizeBuffer<FrameHistoryEntry>;
   protected rxRawBytesA: FixedSizeBuffer<number>;
   protected rxRawBytesB: FixedSizeBuffer<number>;
   protected rxRawBytesCounter = 0;
-  protected scrambleSequence: number[] = SCRAMBLE_SEQUENCE();
   protected txFrame: Frame;
   protected txRawBytesCounter = 0;
 

@@ -11,6 +11,7 @@ import {
   TxTimeTickState
 } from '@data-link-layer/model';
 import { createPhysicalLayerConfig } from '@physical-layer/physical-layer';
+import { PhysicalLayerStub } from '@physical-layer/physical-layer-stub';
 import { getHexFromBytes, padStart } from '@shared/utils';
 
 describe('Data link layer', (): void => {
@@ -23,7 +24,7 @@ describe('Data link layer', (): void => {
   let txIntervalMilliseconds: number;
 
   beforeEach((): void => {
-    createPhysicalLayerConfig.stub = true;
+    createPhysicalLayerConfig.factory = PhysicalLayerStub;
     dataLinkLayer = new DataLinkLayer();
     currentTime = 0;
     rxIntervalMilliseconds = dataLinkLayer.physicalLayer.getDspConfig().rxIntervalMilliseconds;
@@ -98,9 +99,9 @@ describe('Data link layer', (): void => {
 
       it('should return only one out of two identical frames that are separated by one RX step (offset)', (): void => {
         expect(rxTest([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([
-          // tx:       ``````````  ``````````  ``````````  ``````````  ``````````
-          //           \________________________________/  \________/
-          //                scrambled 3 B of header         scrambled 1 B of data
+          // tx:             ``````````  ``````````  ``````````  ``````````  ``````````
+          //                 \________________________________/  \________/
+          //                      scrambled 3 B of header         scrambled 1 B of data
           { bytes: [0x61], receivedAtTime: 441 }
         ]);
       });
@@ -129,6 +130,12 @@ describe('Data link layer', (): void => {
 
     describe('Multiple valid frames detection', () => {
       // TODO mock the isValid function - make all functions valid
+      it.only('should ', (): void => {
+        dataLinkLayer.scrambleSequence = [0];
+        expect(rxTest([0x21, 0x21, 0x1a, 0x1a, 0x2d, 0x2d, 0x61, 0x61, 0x62, 0x62, null])).toEqual([
+          { bytes: [0x61, 0x62], receivedAtTime: 504 }
+        ]);
+      });
     });
   });
 

@@ -1,8 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { AudioMonoIoStub } from '@physical-layer/audio-mono-io/audio-mono-io.stub';
-import { AudioMonoIoInterface } from '@physical-layer/model';
-import { CreateConfig } from '@shared/model';
+import { AudioMonoIoStub } from '@physical-layer/audio-mono-io/audio-mono-io-stub';
+import { AudioMonoIoInterface, AudioMonoIoStatic } from '@physical-layer/model';
 
 export class AudioMonoIo implements AudioMonoIoInterface {
   protected audioContext: AudioContext;
@@ -125,6 +124,8 @@ export class AudioMonoIo implements AudioMonoIoInterface {
 
 // -----------------------------------------------------------------------------
 
-export const createAudioMonoIoConfig: CreateConfig = { stub: false };
-export const createAudioMonoIo = (): AudioMonoIoInterface =>
-  createAudioMonoIoConfig.stub ? new AudioMonoIoStub() : new AudioMonoIo();
+export const createAudioMonoIoConfig: { factory: AudioMonoIoStatic } = { factory: AudioMonoIo };
+export const createAudioMonoIo = (): AudioMonoIoInterface => {
+  const { factory } = createAudioMonoIoConfig;
+  return factory ? new factory() : new AudioMonoIoStub();
+};
