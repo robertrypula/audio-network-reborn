@@ -15,7 +15,7 @@ import {
 } from '@data-link-layer/model';
 import { createPhysicalLayerConfig } from '@physical-layer/physical-layer';
 import { PhysicalLayerStub } from '@physical-layer/physical-layer-stub';
-import { getHexFromBytes, padStart } from '@shared/utils';
+import { getBytesFromHex, getHexFromBytes, padStart } from '@shared/utils';
 
 describe('Data link layer', (): void => {
   const hex = (value: number): string => (value === null ? 'null' : '0x' + getHexFromBytes([value]));
@@ -36,9 +36,10 @@ describe('Data link layer', (): void => {
   });
 
   describe('RX', (): void => {
-    const rxTest = (rx: number[]): RxBytesCollector[] => {
-      const rxBytesCollector: RxBytesCollector[] = [];
+    const rxTest = (rxHex: string): RxBytesCollector[] => {
       const isRxErrorCorrectionOn: boolean = dataLinkLayer.rxErrorCorrection === ErrorCorrection.On;
+      const rx = [...getBytesFromHex(rxHex), null];
+      const rxBytesCollector: RxBytesCollector[] = [];
       let rxTimeTickState: RxTimeTickState;
 
       spyRx = spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake(() => rx.shift());
@@ -77,12 +78,12 @@ describe('Data link layer', (): void => {
     let spyRxTimeTickExpectation: string[];
 
     it('should generate proper RX calls', (): void => {
-      rxTest([0x12, 0x23, 0x34, 0x45, 0x56, null]);
+      rxTest('12 23 34 45 56');
 
       spyRxExpectation = spyRx.calls.all().map(spyRxMapper);
       expect(spyRxExpectation.join(' | ')).toEqual(
-        '   0: 0x12 |   63: 0x23 |  126: 0x34 |  189: 0x45 |  252: 0x56 |  315: null'
-      );
+        '   0: 0x12 |   63: 0x23 |  126: 0x34 |  189: 0x45 |  252: 0x56 |  315: null' // TODO show zeros like: 0063
+      ); // TODO show null as -- and bytes as 2 characters hex
 
       spyRxTimeTickExpectation = spyRxTimeTick.calls.all().map(spyRxTimeTickMapper);
       expect(spyRxTimeTickExpectation.join(' | ')).toEqual(
@@ -90,21 +91,43 @@ describe('Data link layer', (): void => {
       );
     });
 
-    describe('Frame detection and duplicates removal', (): void => {
+    describe('Frame detection and duplicates removal - scramble sequence enabled (default)', (): void => {
       it('should return only one out of two identical frames that are separated by one RX step', (): void => {
-        expect(rxTest([0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([
-          // tx:       ``````````  ``````````  ``````````  ``````````  ``````````
-          //           \________________________________/  \________/
-          //                scrambled 3 B of header         scrambled 1 B of data
+        expect(rxTest('0b 0b 22 22 70 70 14 14 00')).toEqual([
+          // tx:       ````` ````` ````` ````` `````
+          //           \_______________/ \___/
+          //    3 B of scrambled header   1 B of scrambled data
           { bytes: [0x61], receivedAtTime: 378 }
         ]);
       });
 
       it('should return only one out of two identical frames that are separated by one RX step (offset)', (): void => {
-        expect(rxTest([0x00, 0x0b, 0x0b, 0x22, 0x22, 0x70, 0x70, 0x14, 0x14, 0x00, null])).toEqual([
-          // tx:             ``````````  ``````````  ``````````  ``````````  ``````````
-          //                 \________________________________/  \________/
-          //                      scrambled 3 B of header         scrambled 1 B of data
+        expect(rxTest('00 0b 0b 22 22 70 70 14 14 00')).toEqual([
+          // tx:          ````` ````` ````` ````` `````
+          //              \_______________/ \___/
+          //       3 B of scrambled header   1 B of scrambled data
+          { bytes: [0x61], receivedAtTime: 441 }
+        ]);
+      });
+    });
+
+    describe('Frame detection and duplicates removal - scramble sequence disabled', (): void => {
+      it('should return only one out of two identical frames that are separated by one RX step', (): void => {
+        dataLinkLayer.scrambleSequence = [0];
+        expect(rxTest('12 12 57 57 13 13 61 61 00')).toEqual([
+          // tx:       ````` ````` ````` ````` `````
+          //           \_______________/ \___/
+          //             3 B of header    1 B of data
+          { bytes: [0x61], receivedAtTime: 378 }
+        ]);
+      });
+
+      it('should return only one out of two identical frames that are separated by one RX step (offset)', (): void => {
+        dataLinkLayer.scrambleSequence = [0];
+        expect(rxTest('00 12 12 57 57 13 13 61 61 00')).toEqual([
+          // tx:          ````` ````` ````` ````` `````
+          //              \_______________/ \___/
+          //                3 B of header    1 B of data
           { bytes: [0x61], receivedAtTime: 441 }
         ]);
       });
@@ -112,35 +135,33 @@ describe('Data link layer', (): void => {
 
     describe('Error correction', (): void => {
       it('should return error-free frame via getRxBytesCollection method', (): void => {
-        const byte = 0x22;
-
         dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
-        expect(rxTest([0x0b, 0x0b, byte, byte, 0x70, 0x70, 0x14, 0x14, null])).toEqual([
+        expect(rxTest('0b 0b 22 22 70 70 14 14')).toEqual([
           { bytes: [0x61], isErrorCorrected: false, receivedAtTime: 378 }
         ]);
       });
 
       it('should return error-at-one-byte frame via getRxBytesErrorCorrectedCollection method', (): void => {
-        const ERROR = 32;
-        const byte = 0x22 + ERROR;
-
         dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
-        expect(rxTest([0x0b, 0x0b, byte, byte, 0x70, 0x70, 0x14, 0x14, null])).toEqual([
+        expect(rxTest('0b 0b ff ff 70 70 14 14')).toEqual([
+          //                 ^^ ^^ error as it should be: 22 22
           { bytes: [0x61], isErrorCorrected: true, receivedAtTime: 378 }
         ]);
       });
     });
 
     describe('Multiple valid frames detection', () => {
-      // TODO mock the isValid function - make all functions valid
       /*
+      // TODO finish
       it.only('should ', (): void => {
-        createFrameConfig.factory = FrameStub;
-        frameStubHooks.isValid = (frame: FrameInterface) => true;
+        const validRawBytes: string[] = ['12 57 13 61'];
+
         dataLinkLayer.scrambleSequence = [0];
-        expect(rxTest([0x21, 0x21, 0x1a, 0x1a, 0x2d, 0x2d, 0x61, 0x61, 0x62, 0x62, null])).toEqual([
-          { bytes: [0x61, 0x62], receivedAtTime: 504 }
-        ]);
+        createFrameConfig.factory = FrameStub;
+        frameStubHooks.isValid = (frame: FrameInterface): boolean =>
+          validRawBytes.includes(getHexFromBytes(frame.getRawBytes()));
+
+        expect(rxTest('12 12 57 57 13 13 61 61')).toEqual([{ bytes: [0x61], receivedAtTime: 504 }]);
       });
       */
     });
@@ -196,6 +217,7 @@ describe('Data link layer', (): void => {
   });
 
   describe('TX', (): void => {
+    // TODO move code to txTest and check also non scrambled case
     it('should properly scramble bytes in two subsequent equal frames and generate proper TX calls', (): void => {
       const RANDOM_USER_LAG_MILLISECONDS = 1500;
       const spyGetTxProgress: Spy = spyOn(dataLinkLayer, 'getTxProgress').and.callThrough();

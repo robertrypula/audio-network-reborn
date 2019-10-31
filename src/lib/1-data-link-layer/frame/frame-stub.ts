@@ -32,7 +32,7 @@ export class FrameStub implements FrameInterface {
   }
 
   public isEqualTo(frame: FrameInterface): boolean {
-    return false;
+    return this.rawBytes.join(',') === frame.getRawBytes().join(',');
   }
 
   public isNotEqualTo(frame: FrameInterface): boolean {
