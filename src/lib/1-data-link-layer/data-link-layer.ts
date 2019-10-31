@@ -3,12 +3,13 @@
 import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
 import { getFrameConfig } from '@data-link-layer/config-utils';
 import { GET_SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
-import { Frame } from '@data-link-layer/frame/frame';
+import { createFrame } from '@data-link-layer/frame/frame';
 import {
   ErrorCorrection,
   FrameConfig,
   FrameConfigInitializer,
   FrameHistoryEntry,
+  FrameInterface,
   FrameMode,
   RxTimeTickState,
   ScramblerMode,
@@ -32,7 +33,7 @@ export class DataLinkLayer {
   protected rxRawBytesA: FixedSizeBuffer<number>;
   protected rxRawBytesB: FixedSizeBuffer<number>;
   protected rxRawBytesCounter = 0;
-  protected txFrame: Frame;
+  protected txFrame: FrameInterface;
   protected txRawBytesCounter = 0;
 
   public constructor(frameMode: FrameMode = FrameMode.Header3BytesPayloadLengthBetween1And8BytesCrc24) {
@@ -109,7 +110,7 @@ export class DataLinkLayer {
         this.scrambleSequence,
         this.frameConfig,
         this.rxErrorCorrection,
-        (frameCandidate: Frame, isErrorCorrected: boolean): void => {
+        (frameCandidate: FrameInterface, isErrorCorrected: boolean): void => {
           this.tryToFindValidFrame(frameCandidate, isErrorCorrected) && validFramesCounter++;
         }
       );
@@ -139,7 +140,7 @@ export class DataLinkLayer {
   }
 
   public setTxBytes(bytes: number[]): void {
-    this.txFrame = new Frame(this.frameConfig);
+    this.txFrame = createFrame(this.frameConfig);
     this.txFrame.setPayload(bytes);
     scrambler(this.txFrame.getRawBytes(), ScramblerMode.Scramble, this.scrambleSequence, this.txRawBytesCounter);
     this.txRawBytesCounter += this.txFrame.getRawBytes().length;
@@ -174,9 +175,9 @@ export class DataLinkLayer {
       .map((frameHistoryEntry: FrameHistoryEntry): number[] => frameHistoryEntry.frame.getPayload());
   }
 
-  protected tryToFindValidFrame(frameCandidate: Frame, isErrorCorrected: boolean): boolean {
+  protected tryToFindValidFrame(frameCandidate: FrameInterface, isErrorCorrected: boolean): boolean {
     if (frameCandidate.isValid()) {
-      const frame: Frame = isErrorCorrected ? frameCandidate.clone() : frameCandidate;
+      const frame: FrameInterface = isErrorCorrected ? frameCandidate.clone() : frameCandidate;
       const equalFramesHalfStepBack: FrameHistoryEntry[] = this.rxFrameHistory.data.filter(
         (frameHistoryEntry: FrameHistoryEntry): boolean =>
           frameHistoryEntry.rawBytePosition >= this.rxRawBytesCounter - 1 && frameHistoryEntry.frame.isEqualTo(frame)

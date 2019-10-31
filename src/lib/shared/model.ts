@@ -12,10 +12,6 @@ export enum CheckAlgorithm {
 
 export type CheckAlgorithmImplementation = (bytes: number[]) => number[];
 
-export type CreateConfig = {
-  stub: boolean;
-};
-
 export type MinMaxRange = {
   max: number;
   min: number;

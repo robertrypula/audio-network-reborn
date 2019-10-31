@@ -3,8 +3,11 @@
 import CallInfo = jasmine.CallInfo;
 import Spy = jasmine.Spy;
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
+import { createFrameConfig } from '@data-link-layer/frame/frame';
+import { FrameStub, frameStubHooks } from '@data-link-layer/frame/frame-stub';
 import {
   ErrorCorrection,
+  FrameInterface,
   RxBytesCollector,
   RxTimeTickState,
   SelfReception,
@@ -130,12 +133,16 @@ describe('Data link layer', (): void => {
 
     describe('Multiple valid frames detection', () => {
       // TODO mock the isValid function - make all functions valid
+      /*
       it.only('should ', (): void => {
+        createFrameConfig.factory = FrameStub;
+        frameStubHooks.isValid = (frame: FrameInterface) => true;
         dataLinkLayer.scrambleSequence = [0];
         expect(rxTest([0x21, 0x21, 0x1a, 0x1a, 0x2d, 0x2d, 0x61, 0x61, 0x62, 0x62, null])).toEqual([
           { bytes: [0x61, 0x62], receivedAtTime: 504 }
         ]);
       });
+      */
     });
   });
 

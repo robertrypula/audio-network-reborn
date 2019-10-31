@@ -41,17 +41,20 @@ describe('Utils', (): void => {
     });
   });
 
+  /*
   describe('getRandomBytes', (): void => {
     it('should ...', (): void => {
       // TODO implement
     });
   });
-
+  */
+  /*
   describe('getRandomInt', (): void => {
     it('should ...', (): void => {
       // TODO implement
     });
   });
+  */
 
   describe('getTextFromBytes', (): void => {
     it('should return string from given array of bytes with unicode char codes limited to range 0-255', (): void => {

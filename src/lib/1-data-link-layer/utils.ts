@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { ERROR_CORRECTED_FALSE, ERROR_CORRECTED_TRUE } from '@data-link-layer/constants';
-import { Frame } from '@data-link-layer/frame/frame';
-import { ErrorCorrection, FrameConfig, ScramblerMode } from '@data-link-layer/model';
+import { createFrame } from '@data-link-layer/frame/frame';
+import { ErrorCorrection, FrameConfig, FrameInterface, ScramblerMode } from '@data-link-layer/model';
 
 export const allPossibleRightAlignedArrays = (
   input: number[],
@@ -45,17 +45,17 @@ export const findFrameCandidates = (
   scrambleSequence: number[],
   frameConfig: FrameConfig,
   errorCorrection: ErrorCorrection,
-  callback: (frameCandidate: Frame, isErrorCorrected: boolean) => void
+  callback: (frameCandidate: FrameInterface, isErrorCorrected: boolean) => void
 ): void => {
   const { min } = frameConfig.rawBytesLength;
 
   allPossibleUnScrambledArrays(input, scrambleSequence, (unScrambled: number[]): void => {
     allPossibleRightAlignedArrays(unScrambled, min, (rawBytes: number[]): void => {
-      callback(new Frame(frameConfig).setRawBytes(rawBytes), ERROR_CORRECTED_FALSE);
+      callback(createFrame(frameConfig).setRawBytes(rawBytes), ERROR_CORRECTED_FALSE);
 
       errorCorrection === ErrorCorrection.On &&
         allPossibleSinglePositionErrors(rawBytes, (): void => {
-          callback(new Frame(frameConfig).setRawBytes(rawBytes), ERROR_CORRECTED_TRUE);
+          callback(createFrame(frameConfig).setRawBytes(rawBytes), ERROR_CORRECTED_TRUE);
         });
     });
   });

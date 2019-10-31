@@ -33,9 +33,7 @@ export class PhysicalLayer implements PhysicalLayerInterface {
     const frequencyDomainData: Float32Array = this.audioMonoIo.getFrequencyDomainData(currentTime);
 
     return frequencyDomainData
-      ? new FftResult(frequencyDomainData, this.audioMonoIo.getSampleRate())
-          .pick(this.dspConfig.unifiedBinIndexes)
-          .getLoudestBinIndex()
+      ? new FftResult(frequencyDomainData).pick(this.dspConfig.unifiedBinIndexes).getLoudestBinIndex()
       : null;
   }
 

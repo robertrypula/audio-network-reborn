@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 export class FftResult {
-  public constructor(protected frequencyDomainData: Float32Array, protected sampleRate: number) {}
+  public constructor(protected frequencyDomainData: Float32Array) {}
 
   public getLoudestBinIndex(): number {
     let maxValue = -Infinity;
@@ -25,7 +25,6 @@ export class FftResult {
     });
 
     this.frequencyDomainData = newFrequencyDomainData;
-    this.sampleRate = 0; // after this conversion it's not true anymore
 
     return this;
   }

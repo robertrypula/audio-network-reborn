@@ -3,12 +3,13 @@
 import { FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP } from '@data-link-layer/config';
 import { getFrameConfig } from '@data-link-layer/config-utils';
 import { FRAME_COUNTER_WITH_ZEROS, GET_SCRAMBLE_SEQUENCE } from '@data-link-layer/constants';
-import { Frame } from '@data-link-layer/frame/frame';
-import { mocked512RandomBytesA, mocked512RandomBytesB } from '@data-link-layer/frame/frame-modes-benchmark.spec-data';
+import { mocked512RandomBytesA, mocked512RandomBytesB } from '@data-link-layer/frame/benchmark.spec-data';
+import { createFrame } from '@data-link-layer/frame/frame';
 import {
   ErrorCorrection,
   FrameConfig,
   FrameCounter,
+  FrameInterface,
   FrameMode,
   ScramblerMode,
   TestCaseFrameCounterWithPayload,
@@ -23,9 +24,9 @@ describe('Frame modes benchmark', (): void => {
     const runIntegrityTestCases = (frameMode: FrameMode, testCases: TestCaseFrameIntegrity[]): void => {
       const frameConfig: FrameConfig = getFrameConfig(FRAME_MODE_TO_FRAME_CONFIG_INITIALIZER_LOOK_UP[frameMode]);
       testCases.forEach((testCase: TestCaseFrameIntegrity): void => {
-        const frameA = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
+        const frameA: FrameInterface = createFrame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
         const rawBytes: number[] = frameA.getRawBytes().slice(0);
-        const frameB = new Frame(frameConfig).setRawBytes(rawBytes);
+        const frameB: FrameInterface = createFrame(frameConfig).setRawBytes(rawBytes);
 
         expect({ isValid: frameB.isValid(), rawBytes: getHexFromBytes(rawBytes) }).toEqual({
           isValid: true,
@@ -117,12 +118,12 @@ describe('Frame modes benchmark', (): void => {
         const frameCounter: FrameCounter = { ...FRAME_COUNTER_WITH_ZEROS };
         const rawBytes = new FixedSizeBuffer<number>(max, min);
         const start = new Date().getTime();
-        let frameNotScrambled: Frame;
+        let frameNotScrambled: FrameInterface;
         let rawBytesLongStream: number[] = [];
 
         rawBytesLongStream = rawBytesLongStream.concat(getRandomRawBytes(true));
         if (testCase.payload) {
-          const frame = new Frame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
+          const frame: FrameInterface = createFrame(frameConfig).setPayload(getBytesFromHex(testCase.payload));
           frameNotScrambled = frame.clone();
           scrambler(frame.getRawBytes(), ScramblerMode.Scramble, scrambleSequence);
           rawBytesLongStream = rawBytesLongStream.concat(frame.getRawBytes());

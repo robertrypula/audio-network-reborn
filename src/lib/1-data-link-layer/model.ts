@@ -1,6 +1,5 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { Frame } from '@data-link-layer/frame/frame';
 import { CheckAlgorithm, MinMaxRange } from '@shared/model';
 
 export enum CheckSequenceSource {
@@ -39,6 +38,21 @@ export enum TxTimeTickState {
   Guard = 'Guard',
   Idle = 'Idle',
   Symbol = 'Symbol'
+}
+
+// -----------------------------------------------------------------------------
+
+export interface FrameInterface {
+  clone(): FrameInterface;
+  getNextRawByte(): number;
+  getPayload(): number[];
+  getRawBytePosition(): number;
+  getRawBytes(): number[];
+  isEqualTo(frame: FrameInterface): boolean;
+  isNotEqualTo(frame: FrameInterface): boolean;
+  isValid(): boolean;
+  setPayload(payload: number[]): FrameInterface;
+  setRawBytes(rawBytes: number[]): FrameInterface;
 }
 
 // -----------------------------------------------------------------------------
@@ -87,13 +101,19 @@ export type FrameCounterSimple = {
 };
 
 export type FrameHistoryEntry = {
-  frame: Frame;
+  frame: FrameInterface;
   isErrorCorrected: boolean;
   rawBytePosition: number;
 };
 
 export type FrameModeToFrameConfigInitializerLookUp = {
   [key in keyof typeof FrameMode]: FrameConfigInitializer;
+};
+
+export type FrameStatic = new (frameConfig: FrameConfig) => FrameInterface;
+
+export type FrameStubHooks = {
+  isValid: (frame: FrameInterface) => boolean;
 };
 
 export type HeaderFirstByte = {

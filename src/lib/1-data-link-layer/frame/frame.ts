@@ -1,19 +1,20 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
 import { HEADER_FIRST_BYTE_EMPTY } from '@data-link-layer/constants';
-import { CheckSequenceSource, FrameConfig } from '@data-link-layer/model';
+import { FrameStub } from '@data-link-layer/frame/frame-stub';
+import { CheckSequenceSource, FrameConfig, FrameInterface, FrameStatic } from '@data-link-layer/model';
 import { getCheckAlgorithmImplementation } from '@shared/check-algorithms/check-algorithms';
 import { getFilledArray } from '@shared/utils';
 
 /*tslint:disable:no-bitwise*/
 
-export class Frame {
+export class Frame implements FrameInterface {
   protected rawBytes: number[] = [];
   protected rawBytePosition = 0;
 
   public constructor(protected readonly frameConfig: FrameConfig) {}
 
-  public clone(): Frame {
+  public clone(): FrameInterface {
     const frame = new Frame(this.frameConfig);
 
     frame.rawBytes = this.rawBytes.slice(0);
@@ -38,11 +39,11 @@ export class Frame {
     return this.rawBytes;
   }
 
-  public isEqualTo(frame: Frame): boolean {
-    return this.rawBytes.join(',') === frame.rawBytes.join(',');
+  public isEqualTo(frame: FrameInterface): boolean {
+    return this.rawBytes.join(',') === frame.getRawBytes().join(',');
   }
 
-  public isNotEqualTo(frame: Frame): boolean {
+  public isNotEqualTo(frame: FrameInterface): boolean {
     return !this.isEqualTo(frame);
   }
 
@@ -55,7 +56,7 @@ export class Frame {
     );
   }
 
-  public setPayload(payload: number[]): Frame {
+  public setPayload(payload: number[]): FrameInterface {
     const { headerLength, payloadLengthBitSize, payloadLengthOffset } = this.frameConfig.frameConfigInitializer;
     const { checkSequenceMask, payloadLengthBitShift, payloadLengthMask } = this.frameConfig.headerFirstByte
       ? this.frameConfig.headerFirstByte
@@ -84,7 +85,7 @@ export class Frame {
     return this;
   }
 
-  public setRawBytes(rawBytes: number[]): Frame {
+  public setRawBytes(rawBytes: number[]): FrameInterface {
     this.rawBytes = rawBytes;
     this.rawBytePosition = 0;
 
@@ -133,3 +134,11 @@ export class Frame {
       : payloadLengthFixed;
   }
 }
+
+// -----------------------------------------------------------------------------
+
+export const createFrameConfig: { factory: FrameStatic } = { factory: Frame };
+export const createFrame = (frameConfig: FrameConfig): FrameInterface => {
+  const { factory } = createFrameConfig;
+  return factory ? new factory(frameConfig) : new FrameStub(frameConfig);
+};
