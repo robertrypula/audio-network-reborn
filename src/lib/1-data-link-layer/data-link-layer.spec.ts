@@ -149,7 +149,7 @@ describe('Data link layer', (): void => {
       });
     });
 
-    describe('Multiple valid frames detection', () => {
+    describe('Multiple valid frames detection', (): void => {
       /*
       // TODO finish
       it.only('should ', (): void => {

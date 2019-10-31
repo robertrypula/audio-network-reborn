@@ -13,7 +13,7 @@ const relativePaths = () => {
 };
 
 module.exports = {
-  coveragePathIgnorePatterns: ['/node_modules/', '/src/lib/web-examples/'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/src/lib/examples/'],
   moduleNameMapper: {
     '\\.html$': '<rootDir>/src/setup/jest-html.mock.js',
     '\\.scss$': '<rootDir>/src/setup/jest-scss.mock.js',
