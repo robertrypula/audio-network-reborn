@@ -86,8 +86,6 @@ export type FrameCounterSimple = {
   nonErrorCorrected: number;
 };
 
-export type FrameHistory = FrameHistoryEntry[];
-
 export type FrameHistoryEntry = {
   frame: Frame;
   isErrorCorrected: boolean;

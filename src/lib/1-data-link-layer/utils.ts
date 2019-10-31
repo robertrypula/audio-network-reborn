@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
 
-import { ERROR_CORRECTED_FALSE, ERROR_CORRECTED_TRUE } from '@data-link-layer/config';
 import { Frame } from '@data-link-layer/frame/frame';
 import { ErrorCorrection, FrameConfig, ScramblerMode } from '@data-link-layer/model';
+import { ERROR_CORRECTED_FALSE, ERROR_CORRECTED_TRUE } from '@data-link-layer/constants';
 
 export const allPossibleRightAlignedArrays = (
   input: number[],

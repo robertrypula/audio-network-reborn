@@ -8,7 +8,6 @@ import {
   ErrorCorrection,
   FrameConfig,
   FrameConfigInitializer,
-  FrameHistory,
   FrameHistoryEntry,
   FrameMode,
   RxTimeTickState,
@@ -28,10 +27,7 @@ export class DataLinkLayer {
   public rxSelfReception = SelfReception.On;
 
   protected frameConfig: FrameConfig;
-  protected rxFrameHistoryA: FrameHistory = [];
-  protected rxFrameHistoryB: FrameHistory = [];
-  protected rxFrames: Frame[] = [];
-  protected rxFramesErrorCorrected: Frame[] = [];
+  protected rxFrameHistory: FixedSizeBuffer<FrameHistoryEntry>;
   protected rxRawBytesA: FixedSizeBuffer<number>;
   protected rxRawBytesB: FixedSizeBuffer<number>;
   protected rxRawBytesCounter = 0;
@@ -49,13 +45,19 @@ export class DataLinkLayer {
   }
 
   public getRxBytesCollection(): number[][] {
-    return this.rxFrames.length ? this.rxFrames.map((frame: Frame): number[] => frame.getPayload()) : [];
+    return this.getRxBytesCollectionFromFrameHistory(
+      this.rxFrameHistory.data.filter(
+        (frameHistoryEntry: FrameHistoryEntry): boolean => !frameHistoryEntry.isErrorCorrected
+      )
+    );
   }
 
   public getRxBytesErrorCorrectedCollection(): number[][] {
-    return this.rxFramesErrorCorrected.length
-      ? this.rxFramesErrorCorrected.map((frame: Frame): number[] => frame.getPayload())
-      : [];
+    return this.getRxBytesCollectionFromFrameHistory(
+      this.rxFrameHistory.data.filter(
+        (frameHistoryEntry: FrameHistoryEntry): boolean => frameHistoryEntry.isErrorCorrected
+      )
+    );
   }
 
   public getTxGuardMilliseconds(): number {
@@ -89,7 +91,6 @@ export class DataLinkLayer {
     }
 
     rxRawBytes.insert(rxRawByte);
-    this.rxRawBytesCounter++;
     /* TODO finalize class changes
     console.log(
       this.rxRawBytesCounter,
@@ -101,24 +102,20 @@ export class DataLinkLayer {
       this.rxRawBytesB.data.join(',')
     );
     */
-    if (rxRawBytes.isBelowMinimalLength()) {
-      return RxTimeTickState.Listening;
-    }
 
-    this.rxFrames = [];
-    this.rxFramesErrorCorrected = [];
-
-    findFrameCandidates(
-      rxRawBytes.data,
-      this.scrambleSequence,
-      this.frameConfig,
-      this.rxErrorCorrection,
-      (frameCandidate: Frame, isErrorCorrected: boolean): void => {
-        this.tryToFindValidFrame(frameCandidate, isErrorCorrected) && validFramesCounter++;
-      }
-    );
+    !rxRawBytes.isBelowMinimalLength() &&
+      findFrameCandidates(
+        rxRawBytes.data,
+        this.scrambleSequence,
+        this.frameConfig,
+        this.rxErrorCorrection,
+        (frameCandidate: Frame, isErrorCorrected: boolean): void => {
+          this.tryToFindValidFrame(frameCandidate, isErrorCorrected) && validFramesCounter++;
+        }
+      );
     /*tslint:disable-next-line:no-console*/
     // validFramesCounter && console.log(new Date().getTime() - start); // TODO remove me
+    this.rxRawBytesCounter++;
 
     return RxTimeTickState.Listening;
   }
@@ -132,6 +129,7 @@ export class DataLinkLayer {
     lengthMin = this.frameConfig.rawBytesLength.min;
     this.rxRawBytesA = new FixedSizeBuffer<number>(lengthMax, lengthMin);
     this.rxRawBytesB = new FixedSizeBuffer<number>(lengthMax, lengthMin);
+    this.rxFrameHistory = new FixedSizeBuffer<FrameHistoryEntry>(100); // TODO calculate this value and make it smaller
   }
 
   public setFrameMode(frameMode: FrameMode): void {
@@ -162,21 +160,30 @@ export class DataLinkLayer {
     return TxTimeTickState.Idle;
   }
 
-  protected tryToFindValidFrame(frameCandidate: Frame, isErrorCorrected: boolean): boolean {
-    const isEven: boolean = this.rxRawBytesCounter % 2 === 0;
-    const rxFrameHistory: FrameHistory = isEven ? this.rxFrameHistoryA : this.rxFrameHistoryB;
-    const rxFrameHistoryHalfStepBack: FrameHistory = isEven ? this.rxFrameHistoryB : this.rxFrameHistoryA;
+  protected getRxBytesCollectionFromFrameHistory(rxFrameHistoryFiltered: FrameHistoryEntry[]): number[][] {
+    const rawBytePositionLast: number = rxFrameHistoryFiltered.length
+      ? this.rxFrameHistory.data[rxFrameHistoryFiltered.length - 1].rawBytePosition
+      : null;
+    const rawBytePositionToFilter: number =
+      rawBytePositionLast === this.rxRawBytesCounter - 1 ? rawBytePositionLast : null;
 
+    return rxFrameHistoryFiltered
+      .filter(
+        (frameHistoryEntry: FrameHistoryEntry): boolean => frameHistoryEntry.rawBytePosition === rawBytePositionToFilter
+      )
+      .map((frameHistoryEntry: FrameHistoryEntry): number[] => frameHistoryEntry.frame.getPayload());
+  }
+
+  protected tryToFindValidFrame(frameCandidate: Frame, isErrorCorrected: boolean): boolean {
     if (frameCandidate.isValid()) {
       const frame: Frame = isErrorCorrected ? frameCandidate.clone() : frameCandidate;
-      const equalFramesHalfStepBack: FrameHistory = rxFrameHistoryHalfStepBack.filter(
+      const equalFramesHalfStepBack: FrameHistoryEntry[] = this.rxFrameHistory.data.filter(
         (frameHistoryEntry: FrameHistoryEntry): boolean =>
           frameHistoryEntry.rawBytePosition >= this.rxRawBytesCounter - 1 && frameHistoryEntry.frame.isEqualTo(frame)
       );
 
       if (equalFramesHalfStepBack.length === 0) {
-        rxFrameHistory.push({ frame, isErrorCorrected, rawBytePosition: this.rxRawBytesCounter });
-        isErrorCorrected ? this.rxFramesErrorCorrected.push(frame) : this.rxFrames.push(frame);
+        this.rxFrameHistory.insert({ frame, isErrorCorrected, rawBytePosition: this.rxRawBytesCounter });
 
         return true;
       }
