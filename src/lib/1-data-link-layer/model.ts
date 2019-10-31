@@ -123,7 +123,7 @@ export type HeaderFirstByte = {
 };
 
 export type RxBytesCollector = {
-  bytes: number[];
+  bytes: string;
   isErrorCorrected?: boolean;
   receivedAtTime: number;
 };

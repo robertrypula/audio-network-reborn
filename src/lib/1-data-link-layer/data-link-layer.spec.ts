@@ -18,8 +18,8 @@ import { PhysicalLayerStub } from '@physical-layer/physical-layer-stub';
 import { getBytesFromHex, getHexFromBytes, padStart } from '@shared/utils';
 
 describe('Data link layer', (): void => {
-  const hex = (value: number): string => (value === null ? 'null' : '0x' + getHexFromBytes([value]));
-  const time = (value: number): string => padStart(value, 10, 4, ' ');
+  const hex = (value: number): string => (value === null ? '--' : getHexFromBytes([value]));
+  const time = (value: number): string => padStart(value, 10, 4, '0');
   let currentTime: number;
   let dataLinkLayer: DataLinkLayer;
   let rxIntervalMilliseconds: number;
@@ -44,6 +44,7 @@ describe('Data link layer', (): void => {
 
       spyRx = spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake(() => rx.shift());
       spyRxTimeTick = spyOn(dataLinkLayer, 'rxTimeTick').and.callThrough();
+
       do {
         rxTimeTickState = dataLinkLayer.rxTimeTick(currentTime);
         dataLinkLayer
@@ -51,8 +52,8 @@ describe('Data link layer', (): void => {
           .forEach((bytes: number[]): number =>
             rxBytesCollector.push(
               isRxErrorCorrectionOn
-                ? { bytes, isErrorCorrected: false, receivedAtTime: currentTime }
-                : { bytes, receivedAtTime: currentTime }
+                ? { bytes: getHexFromBytes(bytes), isErrorCorrected: false, receivedAtTime: currentTime }
+                : { bytes: getHexFromBytes(bytes), receivedAtTime: currentTime }
             )
           );
         isRxErrorCorrectionOn &&
@@ -61,8 +62,8 @@ describe('Data link layer', (): void => {
             .forEach((bytes: number[]): number =>
               rxBytesCollector.push(
                 isRxErrorCorrectionOn
-                  ? { bytes, isErrorCorrected: true, receivedAtTime: currentTime }
-                  : { bytes, receivedAtTime: currentTime }
+                  ? { bytes: getHexFromBytes(bytes), isErrorCorrected: true, receivedAtTime: currentTime }
+                  : { bytes: getHexFromBytes(bytes), receivedAtTime: currentTime }
               )
             );
         currentTime += rxIntervalMilliseconds;
@@ -81,23 +82,21 @@ describe('Data link layer', (): void => {
       rxTest('12 23 34 45 56');
 
       spyRxExpectation = spyRx.calls.all().map(spyRxMapper);
-      expect(spyRxExpectation.join(' | ')).toEqual(
-        '   0: 0x12 |   63: 0x23 |  126: 0x34 |  189: 0x45 |  252: 0x56 |  315: null' // TODO show zeros like: 0063
-      ); // TODO show null as -- and bytes as 2 characters hex
+      expect(spyRxExpectation.join(' | ')).toEqual('0000: 12 | 0063: 23 | 0126: 34 | 0189: 45 | 0252: 56 | 0315: --');
 
       spyRxTimeTickExpectation = spyRxTimeTick.calls.all().map(spyRxTimeTickMapper);
       expect(spyRxTimeTickExpectation.join(' | ')).toEqual(
-        '   0: Listening |   63: Listening |  126: Listening |  189: Listening |  252: Listening |  315: Stopped'
+        '0000: Listening | 0063: Listening | 0126: Listening | 0189: Listening | 0252: Listening | 0315: Stopped'
       );
     });
 
-    describe('Frame detection and duplicates removal - scramble sequence enabled (default)', (): void => {
+    describe('Frame detection and duplicates removal - scramble sequence ACTIVE (default)', (): void => {
       it('should return only one out of two identical frames that are separated by one RX step', (): void => {
         expect(rxTest('0b 0b 22 22 70 70 14 14 00')).toEqual([
           // tx:       ````` ````` ````` ````` `````
           //           \_______________/ \___/
           //    3 B of scrambled header   1 B of scrambled data
-          { bytes: [0x61], receivedAtTime: 378 }
+          { bytes: '61', receivedAtTime: 378 }
         ]);
       });
 
@@ -106,19 +105,19 @@ describe('Data link layer', (): void => {
           // tx:          ````` ````` ````` ````` `````
           //              \_______________/ \___/
           //       3 B of scrambled header   1 B of scrambled data
-          { bytes: [0x61], receivedAtTime: 441 }
+          { bytes: '61', receivedAtTime: 441 }
         ]);
       });
     });
 
-    describe('Frame detection and duplicates removal - scramble sequence disabled', (): void => {
+    describe('Frame detection and duplicates removal - scramble sequence DISABLED', (): void => {
       it('should return only one out of two identical frames that are separated by one RX step', (): void => {
         dataLinkLayer.scrambleSequence = [0];
         expect(rxTest('12 12 57 57 13 13 61 61 00')).toEqual([
           // tx:       ````` ````` ````` ````` `````
           //           \_______________/ \___/
           //             3 B of header    1 B of data
-          { bytes: [0x61], receivedAtTime: 378 }
+          { bytes: '61', receivedAtTime: 378 }
         ]);
       });
 
@@ -128,7 +127,7 @@ describe('Data link layer', (): void => {
           // tx:          ````` ````` ````` ````` `````
           //              \_______________/ \___/
           //                3 B of header    1 B of data
-          { bytes: [0x61], receivedAtTime: 441 }
+          { bytes: '61', receivedAtTime: 441 }
         ]);
       });
     });
@@ -137,7 +136,7 @@ describe('Data link layer', (): void => {
       it('should return error-free frame via getRxBytesCollection method', (): void => {
         dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
         expect(rxTest('0b 0b 22 22 70 70 14 14')).toEqual([
-          { bytes: [0x61], isErrorCorrected: false, receivedAtTime: 378 }
+          { bytes: '61', isErrorCorrected: false, receivedAtTime: 378 }
         ]);
       });
 
@@ -145,7 +144,7 @@ describe('Data link layer', (): void => {
         dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
         expect(rxTest('0b 0b ff ff 70 70 14 14')).toEqual([
           //                 ^^ ^^ error as it should be: 22 22
-          { bytes: [0x61], isErrorCorrected: true, receivedAtTime: 378 }
+          { bytes: '61', isErrorCorrected: true, receivedAtTime: 378 }
         ]);
       });
     });
@@ -168,8 +167,7 @@ describe('Data link layer', (): void => {
   });
 
   describe('RX <-> TX', (): void => {
-    const RX_TX_TEST_BYTES = [0x61, 0x62, 0x63];
-    const rxTxTest = (): RxBytesCollector[] => {
+    const rxTxTest = (txHex: string): RxBytesCollector[] => {
       const rxBytesCollector: RxBytesCollector[] = [];
       const TEST_SAFE_MARGIN = 4;
       let currentTxByte = 0;
@@ -181,12 +179,14 @@ describe('Data link layer', (): void => {
         currentTxByte = byte !== null ? byte : 0;
       });
 
+      dataLinkLayer.setTxBytes(getBytesFromHex(txHex));
+
       do {
         i % 2 === 0 && dataLinkLayer.txTimeTick(currentTime);
         dataLinkLayer.rxTimeTick(currentTime);
         dataLinkLayer.getRxBytesCollection().map((bytes: number[]): void => {
           rxBytesCollector.push({
-            bytes,
+            bytes: getHexFromBytes(bytes),
             receivedAtTime: currentTime
           });
         });
@@ -203,36 +203,26 @@ describe('Data link layer', (): void => {
 
     it('should receive the data that was transmitted at the same device when rxSelfReception is On', (): void => {
       dataLinkLayer.rxSelfReception = SelfReception.On;
-      dataLinkLayer.setTxBytes(RX_TX_TEST_BYTES);
-      expect(rxTxTest()).toEqual([{ bytes: RX_TX_TEST_BYTES, receivedAtTime: 630 }]);
+      expect(rxTxTest('61 62 63')).toEqual([{ bytes: '61 62 63', receivedAtTime: 630 }]);
     });
 
-    /* TODO enable this test cases when SelfReception.Off will be implemented
     it('should NOT receive the data that was transmitted at the same device when rxSelfReception is Off', (): void => {
       dataLinkLayer.rxSelfReception = SelfReception.Off;
-      dataLinkLayer.setTxBytes(RX_TX_TEST_BYTES);
-      expect(rxTxTest()).toEqual([]);
+      // expect(rxTxTest('61 62 63')).toEqual([]); // TODO enable when implemented in the DataLinkLayer class
     });
-    */
   });
 
   describe('TX', (): void => {
-    // TODO move code to txTest and check also non scrambled case
-    it('should properly scramble bytes in two subsequent equal frames and generate proper TX calls', (): void => {
+    const txTest = (txHex: string): string => {
       const RANDOM_USER_LAG_MILLISECONDS = 1500;
-      const spyGetTxProgress: Spy = spyOn(dataLinkLayer, 'getTxProgress').and.callThrough();
-      const spyGetTxProgressMapper = (callInfo: CallInfo): string => callInfo.returnValue.toFixed(4);
-      const spyTx: Spy = spyOn(dataLinkLayer.physicalLayer, 'tx');
-      const spyTxMapper = (callInfo: CallInfo): string => `${time(callInfo.args[1])}: ${hex(callInfo.args[0])}`;
-      const spyTxTimeTick: Spy = spyOn(dataLinkLayer, 'txTimeTick').and.callThrough();
-      const spyTxTimeTickMapper = (callInfo: CallInfo): string => `${time(callInfo.args[0])}: ${callInfo.returnValue}`;
-      let spyGetTxProgressExpectation: string[];
-      let spyTxExpectation: string[];
-      let spyTxTimeTickExpectation: string[];
       let txTimeTickState: TxTimeTickState;
 
+      spyGetTxProgress = spyOn(dataLinkLayer, 'getTxProgress').and.callThrough();
+      spyTx = spyOn(dataLinkLayer.physicalLayer, 'tx');
+      spyTxTimeTick = spyOn(dataLinkLayer, 'txTimeTick').and.callThrough();
+
       for (let i = 0; i < 2; i++) {
-        dataLinkLayer.setTxBytes([0x61]);
+        dataLinkLayer.setTxBytes(getBytesFromHex(txHex));
         dataLinkLayer.getTxProgress();
         do {
           txTimeTickState = dataLinkLayer.txTimeTick(currentTime);
@@ -246,6 +236,23 @@ describe('Data link layer', (): void => {
         } while (txTimeTickState !== TxTimeTickState.Idle);
       }
 
+      spyTxExpectation = spyTx.calls.all().map(spyTxMapper);
+
+      return spyTxExpectation.join(' | ');
+    };
+    const spyGetTxProgressMapper = (callInfo: CallInfo): string => callInfo.returnValue.toFixed(4);
+    const spyTxMapper = (callInfo: CallInfo): string => `${time(callInfo.args[1])}: ${hex(callInfo.args[0])}`;
+    const spyTxTimeTickMapper = (callInfo: CallInfo): string => `${time(callInfo.args[0])}: ${callInfo.returnValue}`;
+    let spyGetTxProgress: Spy;
+    let spyGetTxProgressExpectation: string[];
+    let spyTx: Spy;
+    let spyTxExpectation: string[];
+    let spyTxTimeTick: Spy;
+    let spyTxTimeTickExpectation: string[];
+
+    it('should generate proper TX status and progress', (): void => {
+      txTest('61');
+
       spyGetTxProgressExpectation = spyGetTxProgress.calls.all().map(spyGetTxProgressMapper);
       expect(spyGetTxProgressExpectation.join(' | ')).toEqual(
         '' +
@@ -253,20 +260,35 @@ describe('Data link layer', (): void => {
           '0.0000 | 0.2355 | 0.4710 | 0.7065 | 0.9421 | 1.0000 | 1.0000'
       );
 
-      spyTxExpectation = spyTx.calls.all().map(spyTxMapper);
-      expect(spyTxExpectation.join(' | ')).toEqual(
-        '' + //  header       header       header       data         silence (null) to stop playing last tone
-          //     ....         ....         ....         ....         ....
-          '   0: 0x0b |  126: 0x22 |  252: 0x70 |  378: 0x14 |  504: null | ' +
-          '2035: 0xe0 | 2161: 0xb1 | 2287: 0x9b | 2413: 0xbf | 2539: null'
-      );
-
       spyTxTimeTickExpectation = spyTxTimeTick.calls.all().map(spyTxTimeTickMapper);
       expect(spyTxTimeTickExpectation.join(' | ')).toEqual(
         '' +
-          '   0: Symbol |  126: Symbol |  252: Symbol |  378: Symbol |  504: Guard |  535: Idle | ' +
+          '0000: Symbol | 0126: Symbol | 0252: Symbol | 0378: Symbol | 0504: Guard | 0535: Idle | ' +
           '2035: Symbol | 2161: Symbol | 2287: Symbol | 2413: Symbol | 2539: Guard | 2570: Idle'
       );
+    });
+
+    describe('Two subsequent equal frames', (): void => {
+      it('should properly scramble bytes when scramble sequence is ACTIVE (default)', (): void => {
+        expect(txTest('61')).toEqual(
+          '' +
+            '0000: 0b | 0126: 22 | 0252: 70 | 0378: 14 | 0504: -- | ' +
+            '2035: e0 | 2161: b1 | 2287: 9b | 2413: bf | 2539: --'
+          //       ^^         ^^         ^^         ^^         ^^
+          //     header     header     header      data      silence (null) to stop playing last tone
+        );
+      });
+
+      it('should not scramble bytes when scramble sequence is DISABLED', (): void => {
+        dataLinkLayer.scrambleSequence = [0];
+        expect(txTest('61')).toEqual(
+          '' +
+            '0000: 12 | 0126: 57 | 0252: 13 | 0378: 61 | 0504: -- | ' +
+            '2035: 12 | 2161: 57 | 2287: 13 | 2413: 61 | 2539: --'
+          //       ^^         ^^         ^^         ^^         ^^
+          //     header     header     header      data      silence (null) to stop playing last tone
+        );
+      });
     });
   });
 });
