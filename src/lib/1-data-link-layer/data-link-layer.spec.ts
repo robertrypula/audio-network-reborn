@@ -79,33 +79,37 @@ describe('Data link layer', (): void => {
     let spyRxTimeTickExpectation: string[];
 
     it('should generate proper RX calls', (): void => {
-      rxTest('12 23 34 45 56');
+      rxTest('01 23 45 67 89 ab cd ef');
 
       spyRxExpectation = spyRx.calls.all().map(spyRxMapper);
-      expect(spyRxExpectation.join(' | ')).toEqual('0000: 12 | 0063: 23 | 0126: 34 | 0189: 45 | 0252: 56 | 0315: --');
+      expect(spyRxExpectation.join(' | ')).toEqual(
+        '0000: 01 | 0063: 23 | 0126: 45 | 0189: 67 | 0252: 89 | 0315: ab | 0378: cd | 0441: ef | 0504: --'
+      );
 
       spyRxTimeTickExpectation = spyRxTimeTick.calls.all().map(spyRxTimeTickMapper);
       expect(spyRxTimeTickExpectation.join(' | ')).toEqual(
-        '0000: Listening | 0063: Listening | 0126: Listening | 0189: Listening | 0252: Listening | 0315: Stopped'
+        '' +
+          '0000: Listening | 0063: Listening | 0126: Listening | 0189: Listening | 0252: Listening | ' +
+          '0315: Listening | 0378: Listening | 0441: Listening | 0504: Stopped'
       );
     });
 
     describe('Frame detection and duplicates removal - scramble sequence ACTIVE (default)', (): void => {
       it('should return only one out of two identical frames that are separated by one RX step', (): void => {
-        expect(rxTest('0b 0b 22 22 70 70 14 14 00')).toEqual([
-          // tx:       ````` ````` ````` ````` `````
-          //           \_______________/ \___/
-          //    3 B of scrambled header   1 B of scrambled data
-          { bytes: '61', receivedAtTime: 378 }
+        expect(rxTest('2f 2f 10 10 d6 d6 ed ed f7 f7 00')).toEqual([
+          // tx:       ````` ````` ````` ````` ````` `````
+          //           \_______________/ \_________/
+          //    3 B of scrambled header   2 B of scrambled data
+          { bytes: '3a 29', receivedAtTime: 504 }
         ]);
       });
 
       it('should return only one out of two identical frames that are separated by one RX step (offset)', (): void => {
-        expect(rxTest('00 0b 0b 22 22 70 70 14 14 00')).toEqual([
-          // tx:          ````` ````` ````` ````` `````
-          //              \_______________/ \___/
-          //       3 B of scrambled header   1 B of scrambled data
-          { bytes: '61', receivedAtTime: 441 }
+        expect(rxTest('00 2f 2f 10 10 d6 d6 ed ed f7 f7 00')).toEqual([
+          // tx:          ````` ````` ````` ````` ````` `````
+          //              \_______________/ \_________/
+          //       3 B of scrambled header   2 B of scrambled data
+          { bytes: '3a 29', receivedAtTime: 567 }
         ]);
       });
     });
@@ -113,21 +117,21 @@ describe('Data link layer', (): void => {
     describe('Frame detection and duplicates removal - scramble sequence DISABLED', (): void => {
       it('should return only one out of two identical frames that are separated by one RX step', (): void => {
         dataLinkLayer.scrambleSequence = [0];
-        expect(rxTest('12 12 57 57 13 13 61 61 00')).toEqual([
-          // tx:       ````` ````` ````` ````` `````
-          //           \_______________/ \___/
-          //             3 B of header    1 B of data
-          { bytes: '61', receivedAtTime: 378 }
+        expect(rxTest('36 36 45 45 79 79 3a 3a 29 29 00')).toEqual([
+          // tx:       ````` ````` ````` ````` ````` `````
+          //           \_______________/ \_________/
+          //             3 B of header   2 B of data
+          { bytes: '3a 29', receivedAtTime: 504 }
         ]);
       });
 
       it('should return only one out of two identical frames that are separated by one RX step (offset)', (): void => {
         dataLinkLayer.scrambleSequence = [0];
-        expect(rxTest('00 12 12 57 57 13 13 61 61 00')).toEqual([
-          // tx:          ````` ````` ````` ````` `````
-          //              \_______________/ \___/
-          //                3 B of header    1 B of data
-          { bytes: '61', receivedAtTime: 441 }
+        expect(rxTest('00 36 36 45 45 79 79 3a 3a 29 29 00')).toEqual([
+          // tx:          ````` ````` ````` ````` ````` `````
+          //              \_______________/ \_________/
+          //                3 B of header   2 B of data
+          { bytes: '3a 29', receivedAtTime: 567 }
         ]);
       });
     });
@@ -135,16 +139,17 @@ describe('Data link layer', (): void => {
     describe('Error correction', (): void => {
       it('should return error-free frame via getRxBytesCollection method', (): void => {
         dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
-        expect(rxTest('0b 0b 22 22 70 70 14 14')).toEqual([
-          { bytes: '61', isErrorCorrected: false, receivedAtTime: 378 }
+        expect(rxTest('2f 2f 10 10 d6 d6 ed ed f7 f7')).toEqual([
+          //                 ^^ ^^ no error
+          { bytes: '3a 29', isErrorCorrected: false, receivedAtTime: 504 }
         ]);
       });
 
       it('should return error-at-one-byte frame via getRxBytesErrorCorrectedCollection method', (): void => {
         dataLinkLayer.rxErrorCorrection = ErrorCorrection.On;
-        expect(rxTest('0b 0b ff ff 70 70 14 14')).toEqual([
-          //                 ^^ ^^ error as it should be: 22 22
-          { bytes: '61', isErrorCorrected: true, receivedAtTime: 378 }
+        expect(rxTest('2f 2f ff ff d6 d6 ed ed f7 f7')).toEqual([
+          //                 ^^ ^^ error as it should be 10 10
+          { bytes: '3a 29', isErrorCorrected: true, receivedAtTime: 504 }
         ]);
       });
     });
@@ -203,12 +208,12 @@ describe('Data link layer', (): void => {
 
     it('should receive the data that was transmitted at the same device when rxSelfReception is On', (): void => {
       dataLinkLayer.rxSelfReception = SelfReception.On;
-      expect(rxTxTest('61 62 63')).toEqual([{ bytes: '61 62 63', receivedAtTime: 630 }]);
+      expect(rxTxTest('68 65 6c 6c 6f')).toEqual([{ bytes: '68 65 6c 6c 6f', receivedAtTime: 882 }]);
     });
 
     it('should NOT receive the data that was transmitted at the same device when rxSelfReception is Off', (): void => {
       dataLinkLayer.rxSelfReception = SelfReception.Off;
-      // expect(rxTxTest('61 62 63')).toEqual([]); // TODO enable when implemented in the DataLinkLayer class
+      // expect(rxTxTest('68 65 6c 6c 6f')).toEqual([]); // TODO enable when implemented in the DataLinkLayer class
     });
   });
 
@@ -251,43 +256,43 @@ describe('Data link layer', (): void => {
     let spyTxTimeTickExpectation: string[];
 
     it('should generate proper TX status and progress', (): void => {
-      txTest('61');
+      txTest('3a 29');
 
       spyGetTxProgressExpectation = spyGetTxProgress.calls.all().map(spyGetTxProgressMapper);
       expect(spyGetTxProgressExpectation.join(' | ')).toEqual(
         '' +
-          '0.0000 | 0.2355 | 0.4710 | 0.7065 | 0.9421 | 1.0000 | 1.0000 | ' +
-          '0.0000 | 0.2355 | 0.4710 | 0.7065 | 0.9421 | 1.0000 | 1.0000'
+          '0.0000 | 0.1906 | 0.3812 | 0.5719 | 0.7625 | 0.9531 | 1.0000 | 1.0000 | ' +
+          '0.0000 | 0.1906 | 0.3812 | 0.5719 | 0.7625 | 0.9531 | 1.0000 | 1.0000'
       );
 
       spyTxTimeTickExpectation = spyTxTimeTick.calls.all().map(spyTxTimeTickMapper);
       expect(spyTxTimeTickExpectation.join(' | ')).toEqual(
         '' +
-          '0000: Symbol | 0126: Symbol | 0252: Symbol | 0378: Symbol | 0504: Guard | 0535: Idle | ' +
-          '2035: Symbol | 2161: Symbol | 2287: Symbol | 2413: Symbol | 2539: Guard | 2570: Idle'
+          '0000: Symbol | 0126: Symbol | 0252: Symbol | 0378: Symbol | 0504: Symbol | 0630: Guard | 0661: Idle | ' +
+          '2161: Symbol | 2287: Symbol | 2413: Symbol | 2539: Symbol | 2665: Symbol | 2791: Guard | 2822: Idle'
       );
     });
 
     describe('Two subsequent equal frames', (): void => {
       it('should properly scramble bytes when scramble sequence is ACTIVE (default)', (): void => {
-        expect(txTest('61')).toEqual(
+        expect(txTest('3a 29')).toEqual(
           '' +
-            '0000: 0b | 0126: 22 | 0252: 70 | 0378: 14 | 0504: -- | ' +
-            '2035: e0 | 2161: b1 | 2287: 9b | 2413: bf | 2539: --'
-          //       ^^         ^^         ^^         ^^         ^^
-          //     header     header     header      data      silence (null) to stop playing last tone
-        );
+            '0000: 2f | 0126: 10 | 0252: d6 | 0378: ed | 0504: f7 | 0630: -- | ' +
+            '2161: 90 | 2287: cd | 2413: d7 | 2539: 20 | 2665: d3 | 2791: --'
+          //       ^^         ^^         ^^         ^^         ^^         ^^
+          //     header     header     header      data       data    silence (null) to stop
+        ); //                                                           playing last tone
       });
 
       it('should not scramble bytes when scramble sequence is DISABLED', (): void => {
         dataLinkLayer.scrambleSequence = [0];
-        expect(txTest('61')).toEqual(
+        expect(txTest('3a 29')).toEqual(
           '' +
-            '0000: 12 | 0126: 57 | 0252: 13 | 0378: 61 | 0504: -- | ' +
-            '2035: 12 | 2161: 57 | 2287: 13 | 2413: 61 | 2539: --'
-          //       ^^         ^^         ^^         ^^         ^^
-          //     header     header     header      data      silence (null) to stop playing last tone
-        );
+            '0000: 36 | 0126: 45 | 0252: 79 | 0378: 3a | 0504: 29 | 0630: -- | ' +
+            '2161: 36 | 2287: 45 | 2413: 79 | 2539: 3a | 2665: 29 | 2791: --'
+          //       ^^         ^^         ^^         ^^         ^^         ^^
+          //     header     header     header      data       data    silence (null) to stop
+        ); //                                                           playing last tone
       });
     });
   });
