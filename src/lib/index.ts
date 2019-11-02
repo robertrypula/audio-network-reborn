@@ -115,7 +115,7 @@ TODO #1:
       + we don't need separate history for odd & even rxRawBytes,
       + we can return frames at getRxBytesCollection/getRxBytesErrorCorrectedCollection directly from history
       + add createFrame and FrameInterface, as currently it's not possible to mock isValid function
-      - add unit test for multiple valid frames detection (scramble sequence equal [0] for test simplification purposes)
+      + add unit test for multiple valid frames detection (scramble sequence equal [0] for test simplification purposes)
   - find better solution for TRUE/FALSE constants in 1-data-link-layer/constant.ts file
   - add wrappers for setTimeout, setInterval and 'new Date().getTime()' at shared directory
   - finalize advanced chat example

@@ -9,9 +9,9 @@ describe('Check algorithms', (): void => {
     checkAlgorithmImplementation: CheckAlgorithmImplementation,
     testCases: TestCaseInOut[]
   ): void => {
-    testCases.forEach((testCase: TestCaseInOut) =>
-      expect(getHexFromBytes(checkAlgorithmImplementation(getBytesFromText(testCase.in)))).toEqual(testCase.out)
-    );
+    testCases.forEach((testCase: TestCaseInOut): void => {
+      expect(getHexFromBytes(checkAlgorithmImplementation(getBytesFromText(testCase.in)))).toEqual(testCase.out);
+    });
   };
 
   describe('getCrc08', (): void => {

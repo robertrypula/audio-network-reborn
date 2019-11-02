@@ -45,11 +45,11 @@ describe('Frame', (): void => {
   describe('getRawBytes', (): void => {
     it('should properly generate raw bytes (header + payload) for given payload', (): void => {
       // TODO implement
-      // const fakeCheckSequence = getBytesFromHex('ab bc de');
+      // const fakeCheckSequence: number[] = getBytesFromHex('ab bc de');
       // const frame: FrameInterface = createFrame(frameConfig);
-      // const payload = getBytesFromHex('06 07 08 09 0a 43 64 34');
+      // const payload: number[] = getBytesFromHex('06 07 08 09 0a 43 64 34');
       //
-      // spyOn(fromCheckAlgorithms, 'getCheckAlgorithmImplementation').and.callFake(() => fakeCheckSequence);
+      // spyOn(fromCheckAlgorithms, 'getCheckAlgorithmImplementation').and.callFake((): number[] => fakeCheckSequence);
       // expect(frame.setPayload(payload).getRawBytes()).toEqual([...fakeCheckSequence, ...payload]);
     });
   });
@@ -73,8 +73,8 @@ describe('Frame', (): void => {
     it('should detect errors', (): void => {
       // TODO implement
       // const frame: FrameInterface = createFrame(frameConfig);
-      // const payload = getBytesFromHex('f6 f7 f8 f9 fa fb fc fd');
-      // let checksum = getBytesFromHex('ab cd ef');
+      // const payload: number[] = getBytesFromHex('f6 f7 f8 f9 fa fb fc fd');
+      // let checksum: number[] = getBytesFromHex('ab cd ef');
       //
       // spyOn(fromCheckAlgorithms, 'getCheckAlgorithmImplementation').and.returnValue(() => () => [...checksum]);
       // frame.setPayload(payload);

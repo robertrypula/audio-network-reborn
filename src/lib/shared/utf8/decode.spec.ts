@@ -7,9 +7,9 @@ import { getBytesFromHex } from '@shared/utils';
 describe('Utf8 decode', (): void => {
   describe('getTextFromUtf8Bytes', (): void => {
     const runTestCases = (testCases: TestCaseInOut[]): void => {
-      testCases.forEach((testCase: TestCaseInOut) =>
-        expect(getTextFromUtf8Bytes(getBytesFromHex(testCase.in))).toEqual(testCase.out)
-      );
+      testCases.forEach((testCase: TestCaseInOut): void => {
+        expect(getTextFromUtf8Bytes(getBytesFromHex(testCase.in))).toEqual(testCase.out);
+      });
     };
 
     it('should work', (): void => {

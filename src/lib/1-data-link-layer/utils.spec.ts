@@ -19,9 +19,9 @@ describe('Utils', (): void => {
       const result: number[][] = [];
       const lengthMin = 3;
 
-      fromUtils.allPossibleRightAlignedArrays([100, 200, 300, 400, 500, 600], lengthMin, (output: number[]) =>
-        result.push(output)
-      );
+      fromUtils.allPossibleRightAlignedArrays([100, 200, 300, 400, 500, 600], lengthMin, (output: number[]): void => {
+        result.push(output);
+      });
       expect(result).toEqual([
         [100, 200, 300, 400, 500, 600],
         /**/ [200, 300, 400, 500, 600],
@@ -34,7 +34,9 @@ describe('Utils', (): void => {
       const result: number[][] = [];
       const lengthMin = 3;
 
-      fromUtils.allPossibleRightAlignedArrays([100], lengthMin, (output: number[]) => result.push(output));
+      fromUtils.allPossibleRightAlignedArrays([100], lengthMin, (output: number[]): void => {
+        result.push(output);
+      });
       expect(result).toEqual([]);
     });
   });
@@ -46,7 +48,13 @@ describe('Utils', (): void => {
       const result: number[][] = [];
       const range = 3;
 
-      fromUtils.allPossibleSinglePositionErrors(data, () => result.push(data.slice(0)), range);
+      fromUtils.allPossibleSinglePositionErrors(
+        data,
+        (): void => {
+          result.push(data.slice(0));
+        },
+        range
+      );
       expect(result).toEqual([[0, 2, 0], [2, 2, 0], [1, 0, 0], [1, 1, 0], [1, 2, 1], [1, 2, 2]]);
       expect(data).toEqual(dataOriginal);
     });
@@ -56,7 +64,9 @@ describe('Utils', (): void => {
       const data: number[] = dataOriginal.slice(0);
       let counter = 0;
 
-      fromUtils.allPossibleSinglePositionErrors(data, () => counter++);
+      fromUtils.allPossibleSinglePositionErrors(data, (): void => {
+        counter++;
+      });
       expect(data).toEqual(dataOriginal);
       expect(counter).toEqual(dataOriginal.length * 255);
     });
@@ -67,9 +77,9 @@ describe('Utils', (): void => {
       const result: number[][] = [];
       const scrambleSequence = [10, 20, 30, 12];
 
-      fromUtils.allPossibleUnScrambledArrays([0, 100, 200], scrambleSequence, (scrambledArray: number[]) =>
-        result.push(scrambledArray)
-      );
+      fromUtils.allPossibleUnScrambledArrays([0, 100, 200], scrambleSequence, (scrambledArray: number[]): void => {
+        result.push(scrambledArray);
+      });
       expect(result).toEqual([[256 - 10, 80, 170], [256 - 20, 70, 188], [256 - 30, 88, 190], [256 - 12, 90, 180]]);
     });
 
@@ -81,7 +91,9 @@ describe('Utils', (): void => {
       fromUtils.allPossibleUnScrambledArrays(
         [16, 2],
         scrambleSequence,
-        (output: number[]) => result.push(output),
+        (output: number[]): void => {
+          result.push(output);
+        },
         range
       );
       expect(result).toEqual([[11, 16], [10, 17]]);

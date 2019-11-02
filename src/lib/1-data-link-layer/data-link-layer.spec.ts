@@ -42,7 +42,7 @@ describe('Data link layer', (): void => {
       const rxBytesCollector: RxBytesCollector[] = [];
       let rxTimeTickState: RxTimeTickState;
 
-      spyRx = spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake(() => rx.shift());
+      spyRx = spyOn(dataLinkLayer.physicalLayer, 'rx').and.callFake((): number => rx.shift());
       spyRxTimeTick = spyOn(dataLinkLayer, 'rxTimeTick').and.callThrough();
 
       do {
