@@ -3,7 +3,7 @@
 import CallInfo = jasmine.CallInfo;
 import Spy = jasmine.Spy;
 import { DataLinkLayer } from '@data-link-layer/data-link-layer';
-import { createFrameConfig } from '@data-link-layer/frame/frame';
+import { createFrameConfig, Frame } from '@data-link-layer/frame/frame';
 import { FrameStub, frameStubHooks } from '@data-link-layer/frame/frame-stub';
 import {
   ErrorCorrection,
@@ -154,20 +154,55 @@ describe('Data link layer', (): void => {
       });
     });
 
-    describe('Multiple valid frames detection', (): void => {
-      /*
-      // TODO finish
-      it.only('should ', (): void => {
-        const validRawBytes: string[] = ['12 57 13 61'];
+    describe('Multiple valid frames detection vs duplicates removal', (): void => {
+      it('should detect expected number of frames with proper timing', (): void => {
+        const mapper = (rxBytes: RxBytesCollector): string => {
+          const bytes: string[] = rxBytes.bytes.split(' ');
+          const line: string[] = '.. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..'.split(' ');
+          const toInsert: string[] = [];
+          let position: number;
+
+          for (let i = 0; i < dataLinkLayer.getFrameConfig().frameConfigInitializer.headerLength; i++) {
+            bytes.unshift('##'); // in this mapper we cannot determine what are the real header bytes so lets use '##'
+          }
+          bytes.forEach(byte => toInsert.push('..', byte));
+          position = rxBytes.receivedAtTime / rxIntervalMilliseconds - toInsert.length + 1;
+          line.splice(position, toInsert.length, ...toInsert);
+
+          return '            ' + line.join(' ');
+        };
+        const validRawBytes: string[] = [
+          /*    */ '23 67 ab ef dc',
+          /*       */ '67 ab ef dc',
+          /*       */ 'ff ff ff ff',
+          /* */ 'ff ff ff ff ff ff',
+          /*       */ 'ff ff ff 11'
+        ];
 
         dataLinkLayer.scrambleSequence = [0];
         createFrameConfig.factory = FrameStub;
         frameStubHooks.isValid = (frame: FrameInterface): boolean =>
           validRawBytes.includes(getHexFromBytes(frame.getRawBytes()));
 
-        expect(rxTest('12 12 57 57 13 13 61 61')).toEqual([{ bytes: [0x61], receivedAtTime: 504 }]);
+        // Legend below assumes that rxIntervalMilliseconds is equal to 63:
+        //              0    126   252   378   504   630   756   882  1008  1134  1260  1386
+        //              |  63 | 189 | 315 | 441 | 567 | 693 | 819 | 945 |1071 |1197 |1323 |1449
+        //              |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+        expect(rxTest('01 23 45 67 ff ab ff ef ff dc ff ff ff ff ff ff ff ff ff 11 11 ff').map(mapper)).toEqual([
+          '            .. ## .. ## .. ## .. ef .. dc .. .. .. .. .. .. .. .. .. .. .. .. .. ..',
+          '            .. .. .. ## .. ## .. ## .. dc .. .. .. .. .. .. .. .. .. .. .. .. .. ..',
+          '            .. .. .. .. ## .. ## .. ## .. ff .. .. .. .. .. .. .. .. .. .. .. .. ..',
+          '            .. .. .. .. .. .. ## .. ## .. ## .. ff .. .. .. .. .. .. .. .. .. .. ..',
+          '            .. .. .. .. ## .. ## .. ## .. ff .. ff .. ff .. .. .. .. .. .. .. .. ..',
+          '            .. .. .. .. .. .. .. .. ## .. ## .. ## .. ff .. .. .. .. .. .. .. .. ..',
+          '            .. .. .. .. .. .. ## .. ## .. ## .. ff .. ff .. ff .. .. .. .. .. .. ..',
+          '            .. .. .. .. .. .. .. .. .. .. ## .. ## .. ## .. ff .. .. .. .. .. .. ..',
+          '            .. .. .. .. .. .. .. .. ## .. ## .. ## .. ff .. ff .. ff .. .. .. .. ..',
+          '            .. .. .. .. .. .. .. .. .. .. .. .. ## .. ## .. ## .. ff .. .. .. .. ..',
+          '            .. .. .. .. .. .. .. .. .. .. .. .. .. ## .. ## .. ## .. 11 .. .. .. ..'
+        ]);
+        createFrameConfig.factory = Frame;
       });
-      */
     });
   });
 
