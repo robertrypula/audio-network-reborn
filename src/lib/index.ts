@@ -111,7 +111,7 @@ TODO #1:
   + use 'type' instead of 'interface' in types that never be implemented by any class
   + implement data-link-layer unit tests
   + adds return types to all arrow functions
-  - detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
+  + detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
       + we don't need separate history for odd & even rxRawBytes,
       + we can return frames at getRxBytesCollection/getRxBytesErrorCorrectedCollection directly from history
       + add createFrame and FrameInterface, as currently it's not possible to mock isValid function

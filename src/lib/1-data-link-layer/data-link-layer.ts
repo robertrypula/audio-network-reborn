@@ -82,8 +82,9 @@ export class DataLinkLayer {
 
   public rxTimeTick(currentTime: number): RxTimeTickState {
     const isEven: boolean = this.rxRawBytesCounter % 2 === 0;
-    const rxRawBytes: FixedSizeBuffer<number> = isEven ? this.rxRawBytesA : this.rxRawBytesB;
     const rxRawByte: number = this.physicalLayer.rx(currentTime);
+    const rxRawBytes: FixedSizeBuffer<number> = isEven ? this.rxRawBytesA : this.rxRawBytesB;
+    const shouldTryToFindFrameCandidates: boolean = this.shouldTryToFindFrameCandidates();
     // const start = new Date().getTime(); // TODO remove me
     let validFramesCounter = 0; // TODO remove me
 
@@ -91,20 +92,10 @@ export class DataLinkLayer {
       return RxTimeTickState.Stopped;
     }
 
-    rxRawBytes.insert(rxRawByte);
-    /* TODO finalize class changes
-    console.log(
-      this.rxRawBytesCounter,
-      ' - ',
-      isEven,
-      ' - ',
-      this.rxRawBytesA.data.join(','),
-      ' ||| ',
-      this.rxRawBytesB.data.join(',')
-    );
-    */
+    rxRawBytes.insert(shouldTryToFindFrameCandidates ? rxRawByte : 0);
 
-    !rxRawBytes.isBelowMinimalLength() &&
+    rxRawBytes.isMinimalLengthReached() &&
+      shouldTryToFindFrameCandidates &&
       findFrameCandidates(
         rxRawBytes.data,
         this.scrambleSequence,
@@ -173,6 +164,10 @@ export class DataLinkLayer {
         (frameHistoryEntry: FrameHistoryEntry): boolean => frameHistoryEntry.rawBytePosition === rawBytePositionToFilter
       )
       .map((frameHistoryEntry: FrameHistoryEntry): number[] => frameHistoryEntry.frame.getPayload());
+  }
+
+  protected shouldTryToFindFrameCandidates(): boolean {
+    return this.rxSelfReception === SelfReception.On || (this.rxSelfReception === SelfReception.Off && !this.txFrame);
   }
 
   protected tryToFindValidFrame(frameCandidate: FrameInterface, isErrorCorrected: boolean): boolean {

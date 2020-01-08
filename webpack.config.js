@@ -26,6 +26,7 @@ const relativePaths = () => {
 
 function getConfig(env) {
   return {
+    entry: { [`${packageJson.name}-v${packageJson.version}`]: './src/lib/index.ts' },
     module: {
       rules: [
         {
@@ -50,26 +51,15 @@ function getConfig(env) {
             'sass-loader' // compiles Sass to CSS
           ]
         },
-        {
-          test: /\.ts$/,
-          use: 'ts-loader',
-          exclude: /node_modules/
-        }
+        { test: /\.ts$/, use: 'ts-loader', exclude: /node_modules/ }
       ]
     },
-    resolve: {
-      alias: {
-        ...relativePaths()
-      },
-      extensions: ['.ts', '.js']
-    },
-    target: 'web',
     output: {
       filename: '[name].js',
+      globalObject: 'this',
       library: libraryName,
       libraryTarget: 'umd',
-      path: path.resolve(__dirname, 'dist'),
-      globalObject: 'this'
+      path: path.resolve(__dirname, 'dist')
     },
     plugins: [
       new HtmlWebpackPlugin({
@@ -82,41 +72,32 @@ function getConfig(env) {
         DEVELOPMENT: JSON.stringify(env.DEVELOPMENT === true),
         PRODUCTION: JSON.stringify(env.PRODUCTION === true)
       })
-    ]
+    ],
+    resolve: {
+      alias: { ...relativePaths() },
+      extensions: ['.ts', '.js']
+    },
+    target: 'web'
   };
 }
 
 function fillDev(config) {
-  config.mode = 'development';
-  config.entry = {
-    [`${packageJson.name}-v${packageJson.version}`]: './src/lib/index.ts'
-  };
-
-  config.devtool = 'inline-source-map';
-
   config.devServer = {
-    contentBase: path.resolve(__dirname), // TODO probably not needed
-    publicPath: '/dist/',
     compress: true,
-    port: 8000,
+    contentBase: path.resolve(__dirname), // TODO probably not needed
     hot: false,
     openPage: 'dist/index.html',
-    overlay: {
-      warnings: true,
-      errors: true
-    }
+    overlay: { warnings: true, errors: true },
+    port: 8000,
+    publicPath: '/dist/'
   };
+  config.devtool = 'inline-source-map';
+  config.mode = 'development';
 }
 
 function fillProd(config, env) {
   config.mode = 'production';
-  config.entry = {
-    [`${packageJson.name}-v${packageJson.version}`]: './src/lib/index.ts'
-  };
   env.ANALYZER && config.plugins.push(new BundleAnalyzerPlugin());
-
-  // TODO think if source maps will be ever needed on production, if no delete this line:
-  // config.devtool = 'source-map';
 }
 
 module.exports = env => {

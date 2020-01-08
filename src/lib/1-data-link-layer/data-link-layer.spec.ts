@@ -248,7 +248,7 @@ describe('Data link layer', (): void => {
 
     it('should NOT receive the data that was transmitted at the same device when rxSelfReception is Off', (): void => {
       dataLinkLayer.rxSelfReception = SelfReception.Off;
-      // expect(rxTxTest('68 65 6c 6c 6f')).toEqual([]); // TODO enable when implemented in the DataLinkLayer class
+      expect(rxTxTest('68 65 6c 6c 6f')).toEqual([]);
     });
   });
 

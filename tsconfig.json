@@ -3,7 +3,6 @@
     "baseUrl": "src/lib",
     "declaration": true,
     "declarationDir": "./dist",
-    "experimentalDecorators": true,
     "jsx": "react",
     "lib": ["es2015", "dom"],
     "module": "commonjs",
@@ -22,7 +21,5 @@
     },
     "sourceMap": true,
     "target": "es5"
-  },
-  "exclude": [],
-  "include": ["src/**/*"]
+  }
 }

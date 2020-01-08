@@ -6,8 +6,9 @@ import {
   getBytesFromHex,
   getHexFromBytes,
   getTextFromUtf8Bytes,
-  getUtf8BytesFromText
-} from '@'; // in your code it would be: ... from 'audio-network-reborn';
+  getUtf8BytesFromText,
+  SelfReception
+} from '@'; // in your code it would be: ... from 'audio-network-reborn'
 import * as domUtils from '@examples/web/dom-utils';
 
 export class DataLinkLayerChatSimpleWebExample {
@@ -17,7 +18,6 @@ export class DataLinkLayerChatSimpleWebExample {
     domUtils.getByTagName('html').classList.add('data-link-layer-chat-simple');
     domUtils.getById('audio-network-reborn-root').innerHTML = require('./chat-simple.html');
     this.dataLinkLayerWrapper = new DataLinkLayerWrapper(new DataLinkLayer());
-
     /*
     this.dataLinkLayerWrapper.dataLinkLayer.setFrameConfigInitializer({
       checkAlgorithm: CheckAlgorithm.Sha1,
@@ -71,6 +71,12 @@ export class DataLinkLayerChatSimpleWebExample {
   }
 
   protected initializeHtmlElements(): void {
+    const dataLinkLayer: DataLinkLayer = this.dataLinkLayerWrapper.dataLinkLayer;
+
+    domUtils.getByIdInput('self-reception-checkbox').checked = dataLinkLayer.rxSelfReception === SelfReception.On;
+    domUtils.getById('self-reception-checkbox').addEventListener('change', (event: Event): void => {
+      dataLinkLayer.rxSelfReception = (event.target as HTMLInputElement).checked ? SelfReception.On : SelfReception.Off;
+    });
     domUtils.getById('send-button').addEventListener('click', (): void => this.send());
     domUtils.getById('listen-enable-button').addEventListener('click', (): void => this.listenEnable());
     domUtils.getById('send-field').addEventListener('keydown', (event: KeyboardEvent): void => {

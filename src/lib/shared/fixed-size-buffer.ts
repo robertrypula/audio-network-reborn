@@ -15,4 +15,8 @@ export class FixedSizeBuffer<T> {
   public isBelowMinimalLength(): boolean {
     return this.data.length < this.lengthMin;
   }
+
+  public isMinimalLengthReached(): boolean {
+    return !this.isBelowMinimalLength();
+  }
 }
