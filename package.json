@@ -1,6 +1,6 @@
 {
   "name": "audio-network-reborn",
-  "version": "0.1.0-rc20",
+  "version": "0.1.0",
   "description": "",
   "keywords": [],
   "author": "Robert Rypuła",
@@ -14,14 +14,14 @@
     "prettier:write": "prettier src/**/*.{html,js,scss,ts} *.{js,json,yml} --write",
     "start": "yarn clean && webpack-dev-server --env.DEVELOPMENT --open",
     "start:node": "yarn clean && webpack --env.DEVELOPMENT && yarn start:node:existing",
-    "start:node:existing": "node dist/audio-network-reborn-v0.1.0-rc20.js audioNetworkReborn.run.nodeExample",
+    "start:node:existing": "node dist/audio-network-reborn-v0.1.0.js audioNetworkReborn.run.nodeExample",
     "test": "jest --watch",
     "test:clear-cache": "jest --clearCache",
     "test:coverage": "jest --coverage",
     "test:report-coverage": "cat ./coverage/lcov.info | coveralls",
     "u:i": "yarn upgrade-interactive --latest"
   },
-  "main": "dist/audio-network-reborn-v0.1.0-rc20.js",
+  "main": "dist/audio-network-reborn-v0.1.0.js",
   "types": "dist/lib/index.d.ts",
   "files": [
     "dist/"

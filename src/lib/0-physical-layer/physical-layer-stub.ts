@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP } from '@physical-layer/config';
 import { getDspConfig } from '@physical-layer/config-utils';

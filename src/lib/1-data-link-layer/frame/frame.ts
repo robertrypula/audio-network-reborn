@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { HEADER_FIRST_BYTE_EMPTY } from '@data-link-layer/constants';
 import { FrameStub } from '@data-link-layer/frame/frame-stub';

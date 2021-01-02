@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { FREQUENCY_08_0_KHZ, FREQUENCY_16_0_KHZ, FREQUENCY_19_5_KHZ } from '@physical-layer/constants';
 import { DspModeToDspConfigInitializerLookUp } from '@physical-layer/model';

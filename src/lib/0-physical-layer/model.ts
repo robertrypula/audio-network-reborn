@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 export enum DspMode {
   // NOTE: names picked in a way that they sort alphabetically from fast to slow

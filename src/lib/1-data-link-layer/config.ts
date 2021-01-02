@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import * as fromConstants from '@data-link-layer/constants';
 import { FrameModeToFrameConfigInitializerLookUp } from '@data-link-layer/model';

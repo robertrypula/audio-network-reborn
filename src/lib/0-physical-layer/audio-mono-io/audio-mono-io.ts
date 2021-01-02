@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { AudioMonoIoStub } from '@physical-layer/audio-mono-io/audio-mono-io-stub';
 import { AudioMonoIoInterface, AudioMonoIoStatic } from '@physical-layer/model';

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { ERROR_CORRECTED_FALSE, ERROR_CORRECTED_TRUE } from '@data-link-layer/constants';
 import { createFrame } from '@data-link-layer/frame/frame';

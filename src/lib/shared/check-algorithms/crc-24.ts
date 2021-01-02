@@ -1,8 +1,10 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { CheckAlgorithmImplementation } from '@shared/model';
 
 /*tslint:disable:no-bitwise*/
+
+// TODO remove lookup table to reduce bundle size (https://github.com/latysheff/node-polycrc/blob/master/polycrc.js)
 
 const CRC_24_LOOKUP_TABLE: number[] = `
   000000,864cfb,8ad50d,0c99f6,93e6e1,15aa1a,1933ec,9f7f17,a18139,27cdc2,2b5434,ad18cf,3267d8,b42b23,b8b2d5,3efe2e,

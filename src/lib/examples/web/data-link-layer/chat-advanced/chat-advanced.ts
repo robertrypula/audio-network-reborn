@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { DataLinkLayerWrapper } from '@'; // in your code it would be: ... from 'audio-network-reborn';
 import * as domUtils from '@examples/web/dom-utils';

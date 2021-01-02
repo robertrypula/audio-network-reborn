@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { NYQUIST_TWICE } from '@physical-layer/constants';
 import { SimpleCanvas } from '@visualization/simple-canvas/simple-canvas';

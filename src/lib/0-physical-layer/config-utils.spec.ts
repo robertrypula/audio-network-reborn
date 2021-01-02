@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { getDspConfigsFromAllDspModes } from '@physical-layer/config-utils';
 import { DspConfig, DspMode } from '@physical-layer/model';

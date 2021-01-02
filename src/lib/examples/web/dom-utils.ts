@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 export const createElement = (tag: string): HTMLElement => document.createElement(tag) as HTMLElement;
 export const getById = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;

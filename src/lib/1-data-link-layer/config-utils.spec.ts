@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { getFrameConfigsFromAllFrameModes } from '@data-link-layer/config-utils';
 import { FrameConfig, FrameMode } from '@data-link-layer/model';

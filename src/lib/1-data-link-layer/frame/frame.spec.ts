@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { getFrameConfig } from '@data-link-layer/config-utils';
 import { HEADER_3_BYTES_PAYLOAD_LENGTH_BETWEEN_1_AND_8_BYTES } from '@data-link-layer/constants';

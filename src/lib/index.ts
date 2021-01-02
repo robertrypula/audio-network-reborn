@@ -1,9 +1,9 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 export const libraryInfo = {
   author: 'Robert Rypuła',
   gitHub: 'https://github.com/robertrypula/audio-network-reborn',
-  version: '0.1.0-rc20'
+  version: '0.1.0'
 };
 
 export * from '@physical-layer/audio-mono-io/audio-mono-io';

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import * as fromConfig from '@physical-layer/config';
 import { BYTE_UNIQUE_VALUES, MILLISECONDS_IN_SECOND, NYQUIST_TWICE } from '@physical-layer/constants';

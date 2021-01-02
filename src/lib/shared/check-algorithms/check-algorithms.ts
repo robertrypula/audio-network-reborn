@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { getCrc08 } from '@shared/check-algorithms/crc-08';
 import { getCrc16 } from '@shared/check-algorithms/crc-16';

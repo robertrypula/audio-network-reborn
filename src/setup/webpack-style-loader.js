@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 // Code based on: https://github.com/webpack-contrib/style-loader
 // It was extremely simplified and adopted to web & node environments in order
@@ -25,7 +25,7 @@ module.exports.pitch = function loader(request) {
 
   validateOptions(schema, options, 'Style Loader');
 
-  return `  
+  return `
 var styles = require(${loaderUtils.stringifyRequest(this, `!!${request}`)});
 var options = ${JSON.stringify(options)};
 

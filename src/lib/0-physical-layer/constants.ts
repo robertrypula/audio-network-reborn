@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 export const BYTE_UNIQUE_VALUES = 256;
 export const MILLISECONDS_IN_SECOND = 1000;

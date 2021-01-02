@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Robert Rypuła - https://github.com/robertrypula
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
 
 import { TestCaseInOut } from '@shared/model';
 import { getUtf8BytesFromText } from '@shared/utf8/encode';
