@@ -23,52 +23,58 @@ export const FREQUENCY_END_INAUDIBLE = FREQUENCY_19_5_KHZ - FREQUENCY_MARGIN;
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  SAFE_MARGIN_FACTOR_FAST (~1.3 in example below):
+  SAFE_MARGIN_FACTOR_FAST (~0.72 in example below):
+              ..................      ..................          longestFftWindowTimeMilliseconds #1
+  ..................      ..................                      longestFftWindowTimeMilliseconds #2
   `           `           `           `           `           `   rxIntervalMilliseconds intervals
   '                       '                       '               txIntervalMilliseconds intervals
-              ..................      ..................          fftWindowTime #1
-  ..................      ..................                      fftWindowTime #2
 
-  SAFE_MARGIN_FACTOR_SLOW (~2.2 in example below):
+  SAFE_MARGIN_FACTOR_SLOW (~1.11 in example below):
+                     ..................                    ..................     longestFftWindowTimeMilliseconds #1
+  ..................                    ..................                        longestFftWindowTimeMilliseconds #2
   `                  `                  `                  `                  `   rxIntervalMilliseconds intervals
   '                                     '                                     '   txIntervalMilliseconds intervals
-                     ..................                    ..................     fftWindowTime #1
-  ..................                    ..................                        fftWindowTime #2
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   Simplified formula to understand the relation between parameters:
 
-    txIntervalMilliseconds = safeMarginFactor * fftWindowTime
+    rxIntervalMilliseconds = CEIL(safeMarginFactor * longestFftWindowTimeMilliseconds)
+    txIntervalMilliseconds = 2 * rxIntervalMilliseconds
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  Theoretical limits (safeMarginFactor = 1, supported sample rates 48 kHz and 44.1 kHz):
+  Theoretical limits (safeMarginFactor = 0.5):
 
-    +-----------------+-----------+-----------------+-------------+---------------+
-    |    band name    |  fftSize  |  fftWindowTime  |  bandwidth  |  rawByteRate  |
-    +-----------------+-----------+-----------------+-------------+---------------+
-    |  Extraordinary  |    1024   |      23.2 ms    |   12.0 kHz  |    43.1 B/s   |
-    |  Fat            |    2048   |      46.4 ms    |    6.0 kHz  |    21.5 B/s   |
-    |  Normal         |    4096   |      92.9 ms    |    3.0 kHz  |    10.8 B/s   |
-    |  Slim           |    8192   |     185.8 ms    |    1.5 kHz  |     5.4 B/s   |
-    +-----------------+-----------+-----------------+-------------+---------------+
+    +-----------------+-----------+------------------------------------+------------+-------------+---------------+
+    |    band name    |  fftSize  |  longestFftWindowTimeMilliseconds  | resolution |  bandwidth  |  rawByteRate  |
+    +-----------------+-----------+------------------------------------+------------+-------------+---------------+
+    |  Extraordinary  |    1024   |                          23.2 ms   |            |   12.0 kHz  |    43.07 B/s  |
+    |  Fat            |    2048   |                          46.4 ms   |            |    6.0 kHz  |    21.53 B/s  |
+    |  Normal         |    4096   |                          92.9 ms   |            |    3.0 kHz  |    10.77 B/s  |
+    |  Slim           |    8192   |                         185.8 ms   |            |    1.5 kHz  |     5.38 B/s  |
+    +-----------------+-----------+------------------------------------+------------+-------------+---------------+
+                                           longestFftWindowTimeMilliseconds occurs on slowest sampleRate (44.1 kHz)
+                      bandwidth assumes worst frequency bin resolution that occurs on fastest sampleRate (48.0 kHz)
+           bandwidth shows minimal required bandwidth that can hold 256 frequency bins (8/16 kHz gaps NOT included)
+                                                                             on 48.0 kHz there is still some margin
+                                                                                     on 44.1 kHz it's on the limits
 */
 
-const SAFE_MARGIN_FACTOR_FAST = 1.344;
-const SAFE_MARGIN_FACTOR_SLOW = 2.15;
+const SAFE_MARGIN_FACTOR_FAST = 0.672;
+const SAFE_MARGIN_FACTOR_SLOW = 1.075;
 
 export const DSP_MODE_TO_DSP_CONFIG_INITIALIZER_LOOK_UP: DspModeToDspConfigInitializerLookUp = {
   // Extraordinary band ~ 12.0 kHz
   ExtraordinaryBandFast: {
     fftSize: 1024,
     frequencyEnd: FREQUENCY_END_INAUDIBLE,
-    safeMarginFactor: 1.7
+    safeMarginFactor: 0.85
   },
   ExtraordinaryBandSlow: {
     fftSize: 1024,
     frequencyEnd: FREQUENCY_END_INAUDIBLE,
-    safeMarginFactor: 2.24
+    safeMarginFactor: 1.12
   },
 
   // Fat band ~ 6.0 kHz

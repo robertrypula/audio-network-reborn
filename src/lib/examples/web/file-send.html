@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+  </head>
+  <body>
+    <pre>
+Physical    - Audio samples
+
+DataLink    - Audio frames
+              8 bytes of payload
+
+Network     - none as it's broadcast
+
+Transport   - [portId3bitANDsegmentPosition5bit_01byte][segmentPosition_01byte][payload]
+              8 ports, 8192 segments, 8 - 2 = 6 bytes of payload in each segment, 49152 bytes per port (48 KiB)
+              1.5 h to transmit one port (48 KiB) at 15 B/s
+
+Application - [checksum_08bytes][filenameSize_01byte][---title---][fileSize_02bytes][---file---]
+</pre
+    >
+  </body>
+</html>

@@ -53,6 +53,7 @@ export const findFrameCandidates = (
     allPossibleRightAlignedArrays(unScrambled, min, (rawBytes: number[]): void => {
       callback(createFrame(frameConfig).setRawBytes(rawBytes), ERROR_CORRECTED_FALSE);
 
+      // current 'brute-force' implementation is just bad... :)
       errorCorrection === ErrorCorrection.On &&
         allPossibleSinglePositionErrors(rawBytes, (): void => {
           callback(createFrame(frameConfig).setRawBytes(rawBytes), ERROR_CORRECTED_TRUE);

@@ -61,7 +61,7 @@ if (isNode && argc >= 3 && argv[2] === 'audioNetworkReborn.run.nodeExample') {
 }
 
 /*
-TODO #1:
+TODO finalized:
   + move example to lib (web-examples directory)
   + rename methods at Data Link class: setTxBytes, getRxBytes
   + move configs outside package.json: jest, prettier
@@ -111,6 +111,35 @@ TODO #1:
   + use 'type' instead of 'interface' in types that never be implemented by any class
   + implement data-link-layer unit tests
   + adds return types to all arrow functions
+  + update copyright year
+
+  EVERYTHING ABOVE IS PART OF RELEASE 0.1.0
+
+-------------------------------------------
+
+TODO current
+  + clean the safeMarginFactor logic and parameters (they were not understandable even by me after few months...)
+
+  - check visualizeUnifiedFrequencies if this is really producing proper frequencies
+  - remove clicking sound (maybe linearRampToValueAtTime will do the trick)
+    https://stackoverflow.com/a/48467308
+    https://webaudiotech.com/2017/02/27/stopping-a-web-audio-oscillator-at-cycle-completion/
+  - experiment with a bit higher safeMarginFactor
+  - performance checker (log entire RX/TX loop time)
+  - performance checker (store previous getFrequencyData array and compare with current) + example
+
+  - fix hex-bytes-simple.ts example as it doesn't use DataLinkLayerWrapper
+  - update README: add example
+  - check microphone constraints: https://github.com/quiet/quiet-js/blob/master/quiet.js#L565
+  - reduce the sequence number length
+  - PhysicalLayer should store history based on time tick values (getHistory, setHistory methods?)
+  - get rid of CRC lookup tables in order to reduce the bundle size
+  - migrate visualizers like spectrogram
+  - experiment with scheduling tx frame frequencies at web audio api rather than setInternal from the clients side
+
+-------------------------------------------
+
+TODO old and maybe obsolete list
   - detect own transmitted frame caught by the microphone on the same machine and refactor history handling:
       + we don't need separate history for odd & even rxRawBytes,
       + we can return frames at getRxBytesCollection/getRxBytesErrorCorrectedCollection directly from history
@@ -119,26 +148,11 @@ TODO #1:
   - find better solution for TRUE/FALSE constants in 1-data-link-layer/constant.ts file
   - add wrappers for setTimeout, setInterval and 'new Date().getTime()' at shared directory
   - finalize advanced chat example
-  - remove hex-bytes example
   - rename CliNodeExample?
-  - update README: add example
-  - PREPARE THE RELEASE: 0.1.0
-
-TODO #2:
-  - reduce the sequence number length
   - add createDataLinkLayer function (same as PhysicalLayer/AudioMonoIo) and DataLinkLayerInterface
   - implement ApplicationLayer/TransportLayer code with chat examples
-  - PhysicalLayer should store history based on time tick values (getHistory, setHistory methods?)
   - implement 'integration' test for full stack of layers and refactor data-link-layer.spec.ts
-  - PREPARE THE RELEASE: 0.2.0
-
-TODO #3:
-  - performance checker (store previous getFrequencyData array and compare with current) + example
-  - experiment with scheduling tx frame frequencies at web audio api rather than setInternal from the clients side
-  - experiment with a bit higher safeMarginFactor to produce rawByteRates like: 3, 4, 6, 8, 12, 16, 20/24?, 24/32?
-  - check microphone constraints: https://github.com/quiet/quiet-js/blob/master/quiet.js#L565
   - add yarn task to output analyzer node viewer code (currently it's only running local server)
-  - get rid of CRC lookup tables in order to reduce the bundle size
   - replace css-loader with custom code
   - experiment with splitting the examples code to dedicated bundle: https://stackoverflow.com/questions/51045727
   - find alternative for coveralls

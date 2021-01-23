@@ -24,7 +24,7 @@ export const getDspConfig = (dspConfigInitializer: DspConfigInitializer, sampleR
     fromConfig.SUPPORTED_SAMPLE_RATES
   );
   const rxIntervalMilliseconds: number = getRxIntervalMilliseconds(dspConfigInitializer);
-  const txIntervalMilliseconds: number = NYQUIST_TWICE * rxIntervalMilliseconds;
+  const txIntervalMilliseconds: number = NYQUIST_TWICE * rxIntervalMilliseconds; // strict relation: 2 * rx = tx
   const dspConfig: DspConfig = {
     band: {
       bandwidth: unifiedFrequencies[unifiedFrequencies.length - 1] - unifiedFrequencies[0],
@@ -33,7 +33,7 @@ export const getDspConfig = (dspConfigInitializer: DspConfigInitializer, sampleR
     },
     dspConfigInitializer,
     dspMode: detectDspMode(dspConfigInitializer),
-    longestFftWindowTimeMilliseconds: MILLISECONDS_IN_SECOND * getLongestFftWindowTime(dspConfigInitializer),
+    longestFftWindowTimeMilliseconds: getLongestFftWindowTimeMilliseconds(dspConfigInitializer),
     rawByteRate: MILLISECONDS_IN_SECOND / txIntervalMilliseconds,
     rxIntervalMilliseconds,
     txIntervalMilliseconds
@@ -54,17 +54,12 @@ export const getDspConfigsFromAllDspModes = (sampleRate: number = null): DspConf
   );
 };
 
-export const getLongestFftWindowTime = (dspConfigInitializer: DspConfigInitializer): number => {
-  return dspConfigInitializer.fftSize / Math.min(...fromConfig.SUPPORTED_SAMPLE_RATES);
+export const getLongestFftWindowTimeMilliseconds = (dspConfigInitializer: DspConfigInitializer): number => {
+  return (MILLISECONDS_IN_SECOND * dspConfigInitializer.fftSize) / Math.min(...fromConfig.SUPPORTED_SAMPLE_RATES);
 };
 
 export const getRxIntervalMilliseconds = (dspConfigInitializer: DspConfigInitializer): number => {
-  // NOTE: division by NYQUIST_TWICE at 'RX' and multiplication by NYQUIST_TWICE at 'TX' done on purpose
-  // in order to keep both values in 3 digits after dot and still have strict relation: 2rx = tx
-  return Math.ceil(
-    (MILLISECONDS_IN_SECOND * dspConfigInitializer.safeMarginFactor * getLongestFftWindowTime(dspConfigInitializer)) /
-      NYQUIST_TWICE
-  );
+  return Math.ceil(dspConfigInitializer.safeMarginFactor * getLongestFftWindowTimeMilliseconds(dspConfigInitializer));
 };
 
 export const getUnifiedFrequencies = (
@@ -120,8 +115,8 @@ export const isInsideForbiddenFrequencies = (frequency: number): boolean => {
 export const validateDspConfigInitializer = (dspConfigInitializer: DspConfigInitializer): void => {
   const { fftSize, safeMarginFactor } = dspConfigInitializer;
 
-  if (safeMarginFactor < 1) {
-    throw new Error(`Safe margin factor is equal to ${safeMarginFactor} but it needs to be higher or equal one`);
+  if (safeMarginFactor < 0.5) {
+    throw new Error(`Safe margin factor is equal to ${safeMarginFactor} but it needs to be higher or equal 0.5`);
   }
 
   if (![32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768].includes(fftSize)) {

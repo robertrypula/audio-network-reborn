@@ -26,7 +26,7 @@ export const mainHtml: string = `
 `;
 
 const kHzPipe = (value: number): string => {
-  const s: string = (value / 1000).toFixed(1);
+  const s: string = (value / 1000).toFixed(3);
 
   return s.indexOf('.') === 1 ? '&nbsp;' + s : s;
 };
@@ -45,5 +45,5 @@ export const dropdownOptionEmpty = '<option value="">--- Select Dsp Mode ---</op
 export const dropdownOption = (dspConfig: DspConfig): string =>
   `<option value="${dspConfig.dspMode}">` +
   `${byteRatePipe(dspConfig.rawByteRate)} B/s | ${kHzPipe(dspConfig.band.begin)}-${kHzPipe(dspConfig.band.end)} kHz ` +
-  `(${(dspConfig.band.bandwidth / 1000).toFixed(1)} kHz)` +
+  `(${(dspConfig.band.bandwidth / 1000).toFixed(3)} kHz)` +
   '</option>';

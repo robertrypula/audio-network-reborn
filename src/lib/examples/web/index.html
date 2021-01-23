@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AudioNetworkReborn - single channel control</title>
+    <style>
+      html {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        margin: 0;
+        padding: 16px;
+      }
+
+      h2 {
+        margin: 0;
+        padding: 0 0 24px 0;
+      }
+
+      .stick-axis-wrapper {
+        padding: 16px;
+        background: white;
+        border: 1px solid lightgray;
+        box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.75);
+        border-radius: 4px;
+      }
+
+      .rx-stick {
+        border: 1px solid gray;
+        background-color: lightgray;
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .rx-stick div {
+        height: 100%;
+        background-color: limegreen;
+        width: 75%;
+      }
+
+      .value-info {
+        text-align: center;
+        padding-top: 16px;
+      }
+
+      .value-info span {
+        font-family: Consolas, monospace;
+        font-size: 50px;
+        line-height: 1em;
+        font-weight: bold;
+      }
+
+      button {
+        display: inline-block;
+        margin: 0 8px 8px 0;
+      }
+
+      input[type='range'] {
+        width: 100%;
+        display: block;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body onLoad="main()">
+    <div id="mode-selection">
+      <h2>AudioNetworkReborn - single channel <strike>radio</strike> audio control</h2>
+
+      <div id="loading-container">
+        loading...
+      </div>
+
+      <div id="init-buttons-container" style="display: none;">
+        <button type="button" onclick="receiverInit()">
+          I'd like to be RECEIVER
+        </button>
+        <br />
+        <button type="button" onclick="transmitterInit()">
+          I'd like to be TRANSMITTER
+        </button>
+        <br />
+        <br />
+      </div>
+
+      <div></div>
+
+      <a href="https://github.com/robertrypula/audio-network-reborn" target="_blank">
+        https://github.com/robertrypula/audio-network-reborn
+      </a>
+    </div>
+
+    <div id="tx-mode-container" class="stick-axis-wrapper" style="display: none;">
+      <input id="stick-axis-x" type="range" min="0" max="255" step="1" />
+      <div class="value-info">
+        <span id="tx-value">-</span>
+        <span></span>
+      </div>
+    </div>
+
+    <div id="rx-mode-container" class="stick-axis-wrapper" style="display: none;">
+      <div class="rx-stick">
+        <div id="rx-stick-bar"></div>
+      </div>
+      <div class="value-info">
+        <span id="rx-value">waiting for first frame</span>
+      </div>
+    </div>
+
+    <script>
+      let dataLinkLayerWrapper;
+      let anr;
+
+      const main = () => {
+        document.getElementById('loading-container').style.display = 'none';
+        document.getElementById('init-buttons-container').style.display = 'block';
+      };
+
+      const commonInit = () => {
+        anr = AudioNetworkReborn;
+        dataLinkLayerWrapper = new anr.DataLinkLayerWrapper(new anr.DataLinkLayer());
+
+        dataLinkLayerWrapper.dataLinkLayer.physicalLayer.setDspMode(anr.DspMode.NormalBandFastAudibleLower);
+
+        dataLinkLayerWrapper.dataLinkLayer.setFrameConfigInitializer({
+          checkAlgorithm: anr.CheckAlgorithm.Crc16,
+          guardFactor: anr.GUARD_FACTOR,
+          headerLength: 2,
+          payloadLengthBitSize: 0,
+          payloadLengthFixed: 1
+        });
+        document.getElementById('mode-selection').style.display = 'none';
+      };
+
+      const receiverInit = () => {
+        commonInit();
+        document.getElementById('rx-mode-container').style.display = 'block';
+        dataLinkLayerWrapper.listen({
+          complete: () => {
+            // console.log('rx complete');
+          },
+          next: bytes => {
+            if (bytes.length === 1) {
+              updateRxUi(bytes[0]);
+            }
+          }
+        });
+      };
+
+      const transmitterInit = () => {
+        commonInit();
+        document.getElementById('tx-mode-container').style.display = 'block';
+        // document.getElementById('stick-axis-x').addEventListener('input', event => updateTxUi(event.target.value));
+        transmit();
+      };
+
+      const transmit = () => {
+        const byte = parseInt(document.getElementById('stick-axis-x').value);
+
+        dataLinkLayerWrapper.send([byte], {
+          complete: () => {
+            transmit(); // transmit in infinite loop
+          },
+          next: progress => {
+            updateTxUi(byte, progress);
+          }
+        });
+      };
+
+      const updateRxUi = value => {
+        updateBackground(value);
+        document.getElementById('rx-value').innerHTML = value;
+        document.getElementById('rx-stick-bar').style.width = (100 * value) / 255 + '%';
+      };
+
+      const updateTxUi = (value, progress) => {
+        updateBackground(value);
+        document.getElementById('tx-value').innerHTML = value + ' ' + ((100 * progress).toFixed(1) + '%');
+      };
+
+      const updateBackground = value => {
+        const hue = Math.round((360 * parseInt(value)) / 255);
+
+        document.querySelector('body').style.backgroundColor = `hsl(${hue}, 100%, 40%)`;
+      };
+    </script>
+    <script src="https://unpkg.com/audio-network-reborn"></script>
+  </body>
+</html>
