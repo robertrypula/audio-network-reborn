@@ -10,21 +10,23 @@
 
   Differences to the article:
    - supports only binary frames (max payload length < 64 KiB)
-   - supports HTTPS/WSS
+   - supports HTTP/WS and HTTPS/WSS
    - WebSocket frames are parsed even if NodeJs buffer chunks are not aligned
-   - supports fragmented frames but message is split into smaller messages
+   - THEORETICALLY it supports fragmented frames but message is split into smaller messages
+     (NOT TESTED as I never get fragmented frame from the browser)
    - sends received data in the broadcast mode to all connected clients
  */
 
-const http = require('http');
-const https = require('https');
 const crypto = require('crypto');
-const fs = require('fs');
+const { createServer: createServerHttp } = require('http');
+const { createServer: createServerHttps } = require('https');
+const { networkInterfaces } = require('os');
+const { readFileSync } = require('fs');
 
 const IS_HTTPS = false;
-const PORT = 5612;
-const HTTP_426_UPGRADE_REQUIRED = 426;
-let connectedSockets = [];
+const PORT = 6175;
+
+// ---------------------------------------------------------
 
 /*
     Self-signed certificate solution:
@@ -39,10 +41,8 @@ let connectedSockets = [];
     - https://advancedweb.hu/how-to-use-lets-encrypt-with-node-js-and-express/
     - https://stackoverflow.com/questions/48078083/lets-encrypt-ssl-couldnt-start-by-error-eacces-permission-denied-open-et
  */
-const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
+
+const HTTP_426_UPGRADE_REQUIRED = 426;
 
 const requestListener = (localRequest, localResponse) => {
   localRequest.on('data', () => undefined);
@@ -54,17 +54,34 @@ const requestListener = (localRequest, localResponse) => {
     localResponse.setHeader('Upgrade', 'WebSocket');
     localResponse.setHeader('Content-Type', 'text/html; charset=UTF-8');
     localResponse.end(
-      '<html>\n' +
-        '  <head><link rel="icon" href="data:,"></head>\n' +
+      '<!DOCTYPE html>\n' +
+        '<html lang="en">\n' +
+        '  <head><meta charSet="UTF-8"/><title>WebSocket server</title><link rel="icon" href="data:,"></head>\n' +
         '  <body>This service supports only WebSockets</body>\n' +
         '</html>'
     );
   });
 };
 
-const server = IS_HTTPS ? https.createServer(options, requestListener) : http.createServer(requestListener);
+const server = IS_HTTPS
+  ? createServerHttps({ key: readFileSync('key.pem'), cert: readFileSync('cert.pem') }, requestListener)
+  : createServerHttp(requestListener);
 
 server.listen(PORT, '0.0.0.0');
+
+// ---------------------------------------------------------
+
+const getIpv4Addresses = () => {
+  const nets = networkInterfaces();
+  const ipv4Addresses = [];
+
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      net.family === 'IPv4' && ipv4Addresses.push(net.address);
+    }
+  }
+  return ipv4Addresses;
+};
 
 if (server) {
   [
@@ -73,10 +90,90 @@ if (server) {
     '       :: WebSocket server ::       ',
     '------------------------------------',
     '',
-    'Waiting for first call on port ' + PORT,
+    ...getIpv4Addresses().map(ipv4Address => `Waiting on ${IS_HTTPS ? 'wss' : 'ws'}://${ipv4Address}:${PORT}`),
     ''
   ].forEach(line => console.log(line));
 }
+
+// ---------------------------------------------------------
+
+const debugBuffer = (bufferName, buffer) => {
+  const length = buffer ? buffer.length : '---';
+
+  console.log(`:: DEBUG - ${bufferName} | ${length} | `, buffer, '\n');
+};
+
+const getSecWebSocketAccept = acceptKey => {
+  // WFT is this long GUID? Answer below ;)
+  // https://stackoverflow.com/questions/13456017
+
+  return crypto
+    .createHash('sha1')
+    .update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary')
+    .digest('base64');
+};
+
+const getUpgradeResponseHeader = req => {
+  return [
+    'HTTP/1.1 101 Web Socket Protocol Handshake',
+    'Upgrade: websocket',
+    'Connection: Upgrade',
+    `Sec-WebSocket-Accept: ${getSecWebSocketAccept(req.headers['sec-websocket-key'])}`,
+    `Sec-WebSocket-Protocol: audio-network-reborn`
+  ];
+};
+
+// ---------------------------------------------------------
+
+let connectedSockets = [];
+
+server.on('upgrade', (req, socket) => {
+  let bufferToParse = Buffer.alloc(0);
+
+  if (req.headers['upgrade'] !== 'websocket') {
+    socket.end('HTTP/1.1 400 Bad Request');
+    return;
+  }
+
+  socket.on('data', buffer => {
+    let parsedBuffer;
+
+    bufferToParse = Buffer.concat([bufferToParse, buffer]);
+
+    do {
+      parsedBuffer = getParsedBuffer(bufferToParse);
+
+      debugBuffer('buffer', buffer);
+      debugBuffer('bufferToParse', bufferToParse);
+      debugBuffer('parsedBuffer.payload', parsedBuffer.payload);
+      debugBuffer('parsedBuffer.bufferRemainingBytes', parsedBuffer.bufferRemainingBytes);
+
+      bufferToParse = parsedBuffer.bufferRemainingBytes;
+
+      if (parsedBuffer.payload) {
+        connectedSockets = connectedSockets.filter(connectedSocket => connectedSocket.readyState === 'open');
+
+        console.log(`[sending parsedBuffer.payload to ${connectedSockets.length} active connection(s)]\n`);
+        connectedSockets.forEach(connectedSocket => connectedSocket.write(createWebSocketFrame(parsedBuffer.payload)));
+      }
+    } while (parsedBuffer.payload && parsedBuffer.bufferRemainingBytes.length);
+
+    console.log('----------------------------------------------------------------\n');
+  });
+
+  socket.on('close', () => console.log('[socket close]\n'));
+  socket.on('connect', () => console.log('[socket connect]\n'));
+  socket.on('drain', () => console.log('[socket drain]\n'));
+  socket.on('end', () => console.log('[socket end]\n'));
+  socket.on('ready', () => console.log('[socket ready]\n'));
+  socket.on('error', () => console.log('[socket error]\n'));
+  socket.on('timeout', () => console.log('[socket timeout]\n'));
+  socket.write(getUpgradeResponseHeader(req).join('\r\n') + '\r\n\r\n');
+
+  console.log('[new connection]\n');
+
+  connectedSockets.push(socket);
+});
 
 // ---------------------------------------------------------
 
@@ -112,62 +209,6 @@ if (server) {
     %xA denotes a pong
     %xB-F are reserved for further control frames
 */
-
-server.on('upgrade', (req, socket) => {
-  if (req.headers['upgrade'] !== 'websocket') {
-    socket.end('HTTP/1.1 400 Bad Request');
-    return;
-  }
-
-  const responseHeaders = [
-    'HTTP/1.1 101 Web Socket Protocol Handshake',
-    'Upgrade: websocket',
-    'Connection: Upgrade',
-    `Sec-WebSocket-Accept: ${getSecWebSocketAccept(req.headers['sec-websocket-key'])}`,
-    `Sec-WebSocket-Protocol: audio-network-reborn`
-  ];
-  let bufferToParse = Buffer.alloc(0);
-
-  socket.on('data', buffer => {
-    let parsedBuffer;
-
-    bufferToParse = Buffer.concat([bufferToParse, buffer]);
-
-    do {
-      parsedBuffer = getParsedBuffer(bufferToParse);
-
-      console.log(':: DEBUG - buffer | ' + buffer.length, ' | ', buffer, '\n');
-      console.log(':: DEBUG - bufferToParse | ' + bufferToParse.length, ' | ', bufferToParse, '\n');
-      console.log(':: DEBUG - parsedBuffer.payload | ' + (parsedBuffer.payload ? parsedBuffer.payload.length : '---'), ' | ', parsedBuffer.payload, '\n');
-      console.log(':: DEBUG - parsedBuffer.bufferRemainingBytes | ' + parsedBuffer.bufferRemainingBytes.length, ' | ', parsedBuffer.bufferRemainingBytes, '\n');
-
-      bufferToParse = parsedBuffer.bufferRemainingBytes;
-
-      if (parsedBuffer.payload) {
-        connectedSockets = connectedSockets.filter(connectedSocket => connectedSocket.readyState === 'open');
-
-        console.log('[sending payload to ' + connectedSockets.length + ' active connection(s)] ' + parsedBuffer.payload.length, ' | ', parsedBuffer.payload, '\n');
-
-        connectedSockets.forEach(connectedSocket => connectedSocket.write(createWebSocketFrame(parsedBuffer.payload)));
-      }
-    } while (parsedBuffer.payload && parsedBuffer.bufferRemainingBytes.length);
-
-    console.log('----------------------------------------------------------------\n');
-  });
-
-  socket.on('close', () => console.log('[socket close]\n'));
-  socket.on('connect', () => console.log('[socket connect]\n'));
-  socket.on('drain', () => console.log('[socket drain]\n'));
-  socket.on('end', () => console.log('[socket end]\n'));
-  socket.on('ready', () => console.log('[socket ready]\n'));
-  socket.on('error', () => console.log('[socket error]\n'));
-  socket.on('timeout', () => console.log('[socket timeout]\n'));
-  socket.write(responseHeaders.join('\r\n') + '\r\n\r\n');
-
-  console.log('[new connection]\n');
-
-  connectedSockets.push(socket);
-});
 
 // ---------------------------------------------------------
 
@@ -212,8 +253,17 @@ const getParsedBuffer = buffer => {
   const isMasked = !!((secondByte >>> 7) & 0x1); // https://security.stackexchange.com/questions/113297
   let payloadLength = secondByte & 0x7f;
 
-  if (!isFinalFrame && opCode !== 0x0) {
-    throw new Error('Invalid frame detected - when frame is not final then opcode should be always 0');
+  if (!isFinalFrame) {
+    console.log('[not final frame detected]\n');
+  }
+
+  if (opCode === 0x8) {
+    console.log('[connection close frame]\n');
+    // TODO read payload, for example payload equal to <0x03 0xe9> means 1001:
+    //   1001 indicates that an endpoint is "going away", such as a server
+    //   going down or a browser having navigated away from a page.
+    // More info here: https://tools.ietf.org/html/rfc6455#section-7.4
+    return { payload: null, bufferRemainingBytes: null };
   }
 
   if (opCode !== 0x2 && opCode !== 0x0) {
@@ -266,16 +316,4 @@ const getParsedBuffer = buffer => {
   }
 
   return { payload, bufferRemainingBytes };
-};
-
-// ---------------------------------------------------------
-
-const getSecWebSocketAccept = acceptKey => {
-  // WFT is this long GUID? Answer below ;)
-  // https://stackoverflow.com/questions/13456017
-
-  return crypto
-    .createHash('sha1')
-    .update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary')
-    .digest('base64');
 };

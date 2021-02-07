@@ -3,65 +3,228 @@
   <head>
     <meta charset="UTF-8" />
     <title>WebSocket client</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <script>
       let webSocket;
+
+      const parseHex = string => {
+        return string
+          .split(' ')
+          .filter(value => value !== '')
+          .map(value => parseInt(value, 16) % 256)
+          .filter(value => value || value === 0);
+      };
+
+      const getHex = rawBytes => rawBytes.map(rawByte => (rawByte < 16 ? '0' : '') + rawByte.toString(16)).join(' ');
+
+      const fileRead = file => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+
+          if (file) {
+            reader.onload = () => resolve(Array.from(new Uint8Array(reader.result)));
+            reader.readAsArrayBuffer(file);
+          } else {
+            reject('File was not selected');
+          }
+        });
+      };
+
+      const fileSave = (filename, bytes) => {
+        const blob = new Blob([new Uint8Array(bytes)]); // , { type: 'application/pdf' }
+        const link = document.createElement('a');
+
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+      };
+
+      const toKiB = rawBytesLength => `${(rawBytesLength / 1024).toFixed(2)} KiB`;
+
+      const showError = error => {
+        console.log(error);
+        document.getElementById('container-error').style.display = 'block';
+        document.getElementById('container-error').innerHTML = error instanceof Event ? 'Unknown error' : error;
+        connectionPendingDisable();
+      };
+
+      const connectionUp = () => {
+        document.getElementById('container-connect').style.display = 'none';
+        document.getElementById('container-send').style.display = 'block';
+        document.getElementById('container-error').innerHTML = '';
+        sendChange();
+      };
+
+      const connectionDown = () => {
+        document.getElementById('container-connect').style.display = 'block';
+        document.getElementById('container-send').style.display = 'none';
+        connectionPendingDisable();
+      };
+
+      const connectionPendingEnable = () => {
+        document.getElementById('connect').setAttribute('disabled', 'disabled');
+        document.getElementById('url').setAttribute('disabled', 'disabled');
+      };
+
+      const connectionPendingDisable = () => {
+        document.getElementById('connect').removeAttribute('disabled');
+        document.getElementById('url').removeAttribute('disabled');
+      };
+
+      const fileReadHandler = rawBytes => {
+        if (confirm(`Would you like to put ${rawBytes.length} bytes (${toKiB(rawBytes.length)}) into the textarea?`)) {
+          document.getElementById('send').value = getHex(rawBytes);
+          sendChange();
+        }
+      };
 
       const send = () => {
         if (!webSocket || webSocket.readyState !== WebSocket.OPEN || webSocket.bufferedAmount) {
           return false;
         }
 
-        const bytesRaw = document
-          .getElementById('send')
-          .value.split(' ')
-          .filter(value => value !== '')
-          .map(value => parseInt(value, 16) % 256)
-          .filter(value => value || value === 0);
-
-        const arrayBuffer = new Uint8Array(bytesRaw).buffer;
+        const arrayBuffer = new Uint8Array(parseHex(document.getElementById('send').value)).buffer;
 
         webSocket.send(arrayBuffer);
 
         return true;
       };
 
-      const connect = url => {
-        document.getElementById('container-connect').style.display = 'none';
-        document.getElementById('container-send').style.display = 'block';
+      const sendChange = () => {
+        const rawBytes = parseHex(document.getElementById('send').value);
 
+        document.getElementById('send-button').innerHTML = `Send ${rawBytes.length} bytes (${toKiB(rawBytes.length)})`;
+      };
+
+      const receive = rawBytes => {
+        const receivedDataElement = document.createElement('div');
+        const receivedDataHexElement = document.createElement('div');
+        const receivedDataSaveElement = document.createElement('button');
+
+        receivedDataHexElement.innerHTML = getHex(rawBytes);
+        receivedDataSaveElement.innerHTML = `Save ${rawBytes.length} bytes to file (${toKiB(rawBytes.length)})`;
+        document.getElementById('container-received-data').appendChild(receivedDataElement);
+        receivedDataElement.appendChild(receivedDataHexElement);
+        receivedDataElement.appendChild(receivedDataSaveElement);
+
+        receivedDataSaveElement.addEventListener('click', event => {
+          const filename = new Date()
+            .toISOString()
+            .slice(0, 19)
+            .replace(/[:\-]/g, '')
+            .replace('T', '_');
+
+          fileSave(filename + '.bin', parseHex(event.target.parentNode.querySelector('div').innerHTML));
+        });
+      };
+
+      const connect = () => {
         try {
-          webSocket = new WebSocket(url, ['audio-network-reborn']);
+          connectionPendingEnable();
+          webSocket = new WebSocket(document.getElementById('url').value, ['audio-network-reborn']);
 
           webSocket.binaryType = 'arraybuffer';
-          webSocket.addEventListener('open', () => console.log('webSocket open'));
-          webSocket.addEventListener('close', () => console.log('webSocket close'));
-          webSocket.addEventListener('error', event => console.log('webSocket error', event));
-
-          webSocket.addEventListener('message', event => {
-            const rawBytes = [...new Uint8Array(event.data)];
-            const logElement = document.getElementById('log');
-            const logLine = rawBytes.map(rawByte => (rawByte < 16 ? '0' : '') + rawByte.toString(16)).join(' ');
-
-            logElement.innerHTML = logElement.innerHTML + '\n' + logLine;
-          });
+          webSocket.addEventListener('open', () => connectionUp());
+          webSocket.addEventListener('close', () => connectionDown());
+          webSocket.addEventListener('error', event => showError(event));
+          webSocket.addEventListener('message', event => receive([...new Uint8Array(event.data)]));
         } catch (error) {
-          console.log(error);
+          showError(error);
         }
       };
     </script>
+
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+      }
+
+      h1 {
+        display: block;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        padding: 16px;
+      }
+
+      .row {
+        padding-bottom: 8px;
+      }
+
+      textarea {
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        min-height: 300px;
+        padding: 8px;
+      }
+
+      textarea::placeholder {
+        color: #cecece;
+      }
+
+      #container-received-data > div {
+        margin-bottom: 16px;
+        border-radius: 8px;
+        padding: 16px;
+        background-color: lightgray;
+      }
+
+      #container-received-data > div > div {
+        margin-bottom: 8px;
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 16px;
+        max-height: 100px;
+        overflow-y: auto;
+      }
+    </style>
   </head>
   <body>
-    <div id="container-connect">
-      <input type="text" id="url" value="ws://51.83.135.17:5612" />
-      <button onClick="connect(document.getElementById('url').value)">Connect</button>
+    <div class="container">
+      <h1>WebSocket - binary broadcast example</h1>
     </div>
 
-    <div id="container-send" style="display: none">
-      <textarea id="send">61 75 64 69 6f 20 6e 65 74 77 6f 72 6b 20 72 65 62 6f 72 6e</textarea>
-      <button onClick="send()">Send</button>
+    <div class="container" id="container-connect">
+      <input type="text" id="url" value="ws://sndu.pl:6175" />
+      <button id="connect" onClick="connect()">Connect</button>
+    </div>
 
-      <pre id="log"></pre>
+    <div class="container" id="container-error" style="display: none"></div>
+
+    <div class="container" id="container-send" style="display: none">
+      <div class="row">
+        <input
+          type="file"
+          id="file-attachment"
+          onchange="fileRead(this.files[0]).then(rawBytes => fileReadHandler(rawBytes)).catch(error => showError(error))"
+        />
+      </div>
+      <div class="row">
+        <textarea
+          id="send"
+          oninput="sendChange()"
+          placeholder="Hex values like: 48 65 6c 6c 6f 20 77 6f 72 6c 64 21"
+        ></textarea>
+      </div>
+      <div class="row">
+        <button id="send-button" onClick="send()">Send</button>
+      </div>
+      <div class="row">
+        <strong>NOTE:</strong> Server will fail when you will try to send more than 65535 bytes of data (>= 64 KiB)
+      </div>
+    </div>
+
+    <div class="container" id="container-received-data"></div>
+
+    <div class="container">
+      Copyright (c) 2019-2021 Robert Rypuła -
+      <a href="https://github.com/robertrypula" target="_blank">https://github.com/robertrypula</a>
     </div>
   </body>
 </html>
