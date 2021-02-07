@@ -1,17 +1,42 @@
+// Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
+// POC - binary broadcast WebSocket server
+//
 // Based on great article created by Srushtika Neelakantam:
 // https://medium.com/hackernoon/implementing-a-websocket-server-with-node-js-d9b78ec5ffa8
 
 const http = require('http');
+const https = require('https');
 const crypto = require('crypto');
+const fs = require('fs');
+
+const IS_HTTPS = false;
 const PORT = 5612;
 const HTTP_426_UPGRADE_REQUIRED = 426;
-const sockets = [];
+let connectedSockets = [];
 
-const createServerHandler = (localRequest, localResponse) => {
+/*
+    Self-signed certificate solution:
+      - https://nodejs.org/en/knowledge/HTTP/servers/how-to-create-a-HTTPS-server/
+
+      openssl genrsa -out key.pem
+      openssl req -new -key key.pem -out csr.pem
+      openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
+      rm csr.pem
+
+    Let's Encrypt solution:
+    - https://advancedweb.hu/how-to-use-lets-encrypt-with-node-js-and-express/
+    - https://stackoverflow.com/questions/48078083/lets-encrypt-ssl-couldnt-start-by-error-eacces-permission-denied-open-et
+ */
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
+const requestListener = (localRequest, localResponse) => {
   localRequest.on('data', () => undefined);
 
   localRequest.on('end', () => {
-    console.log('[normal HTTP request]');
+    console.log('[normal HTTP request]\n');
 
     localResponse.statusCode = HTTP_426_UPGRADE_REQUIRED;
     localResponse.setHeader('Upgrade', 'WebSocket');
@@ -25,7 +50,9 @@ const createServerHandler = (localRequest, localResponse) => {
   });
 };
 
-server = http.createServer(createServerHandler).listen(PORT, '0.0.0.0');
+const server = IS_HTTPS ? https.createServer(options, requestListener) : http.createServer(requestListener);
+
+server.listen(PORT, '0.0.0.0');
 
 if (server) {
   [
@@ -34,7 +61,7 @@ if (server) {
     '       :: WebSocket server ::       ',
     '------------------------------------',
     '',
-    'Waiting for first call on localhost:' + PORT,
+    'Waiting for first call on port ' + PORT,
     ''
   ].forEach(line => console.log(line));
 }
@@ -92,30 +119,30 @@ server.on('upgrade', (req, socket) => {
     const payloadReceived = getWebSocketFramePayload(buffer);
 
     if (payloadReceived) {
-      console.log(payloadReceived, sockets.length);
+      connectedSockets = connectedSockets.filter(connectedSocket => connectedSocket.readyState === 'open');
 
-      // const arrayBuffer = new ArrayBuffer(3);
-      // const payloadTransmit = new Uint8Array(arrayBuffer);
-      // payloadTransmit[0] = 0x10;
-      // payloadTransmit[1] = 0x16;
-      // payloadTransmit[2] = 0x00;
+      console.log('[sending below buffer to ' + connectedSockets.length + ' active connection(s)]');
+      console.log(payloadReceived, '\n');
 
-      sockets.forEach(s => s.write(createWebSocketFrame(payloadReceived)));
+      // broadcast payload everywhere (even to the sender)
+      connectedSockets.forEach(connectedSocket => {
+        connectedSocket.write(createWebSocketFrame(payloadReceived));
+      });
     }
   });
 
-  socket.on('close', () => console.log('socket close'));
-  socket.on('connect', () => console.log('socket connect'));
-  socket.on('drain', () => console.log('socket drain'));
-  socket.on('end', () => console.log('socket end'));
-  socket.on('ready', () => console.log('socket ready'));
-  socket.on('error', () => console.log('socket error'));
-  socket.on('timeout', () => console.log('socket timeout'));
+  socket.on('close', () => console.log('socket close\n'));
+  socket.on('connect', () => console.log('socket connect\n'));
+  socket.on('drain', () => console.log('socket drain\n'));
+  socket.on('end', () => console.log('socket end\n'));
+  socket.on('ready', () => console.log('socket ready\n'));
+  socket.on('error', () => console.log('socket error\n'));
+  socket.on('timeout', () => console.log('socket timeout\n'));
   socket.write(responseHeaders.join('\r\n') + '\r\n\r\n');
 
-  console.log('[new connection]', sockets.length);
+  console.log('[new connection]\n');
 
-  sockets.push(socket);
+  connectedSockets.push(socket);
 });
 
 // ---------------------------------------------------------
@@ -125,7 +152,11 @@ const createWebSocketFrame = payload => {
   const buffer = Buffer.alloc(2 + payloadLengthByteCount + payload.length);
   let payloadOffset = 2;
 
-  buffer.writeUInt8(0b10000010, 0);
+  if (payload.length >= 65536) {
+    throw new Error('Payload bigger than 64 KiB is not supported');
+  }
+
+  buffer.writeUInt8(0b10000010, 0); // FIN flag = 1, opcode = 2 (binary frame)
   buffer.writeUInt8(payload.length < 126 ? payload.length : 126, 1);
 
   if (payloadLengthByteCount > 0) {
@@ -135,12 +166,6 @@ const createWebSocketFrame = payload => {
 
   payload.copy(buffer, payloadOffset);
 
-  // when buffer is ArrayBuffer
-  // for (let i = 0; i < payload.length; i++) {
-  //   // buffer.readUInt8(currentOffset++);
-  //   buffer.writeUInt8(payload[i], 2 + payloadLengthByteCount + i);
-  // }
-
   return buffer;
 };
 
@@ -149,6 +174,7 @@ const createWebSocketFrame = payload => {
 const getWebSocketFramePayload = buffer => {
   const firstByte = buffer.readUInt8(0);
   const secondByte = buffer.readUInt8(1);
+  const isFinalFrame = !!((firstByte >>> 7) & 0x1);
   const opCode = firstByte & 0xf;
   const isMasked = !!((secondByte >>> 7) & 0x1);
   let payloadLength = secondByte & 0x7f;
@@ -160,25 +186,48 @@ const getWebSocketFramePayload = buffer => {
     return; // frames other than binary are not processed
   }
 
+  if (!isFinalFrame) {
+    throw new Error('Frames other than final is not supported');
+  }
+
   if (payloadLength > 125) {
     if (payloadLength === 126) {
       payloadLength = buffer.readUInt16BE(currentOffset);
       currentOffset += 2;
     } else {
-      throw new Error('Large payloads not currently implemented');
+      throw new Error('Payload bigger than 64 KiB is not supported');
     }
   }
 
   payload = Buffer.alloc(payloadLength);
 
   if (isMasked) {
+    // Why we need masking explained here:
+    // https://security.stackexchange.com/questions/113297
     maskingKey = buffer.readUInt32BE(currentOffset);
     currentOffset += 4;
+
+    if (buffer.length !== currentOffset + payloadLength) {
+      // TODO implement better solution - this 'solves' RangeError [ERR_OUT_OF_RANGE] issue described below
+      console.log('\n');
+      console.log('    [BIG ISSUE OCCURRED - length misalignment between WebSocket frame and NodeJs Buffer!!!!!]\n');
+      console.log('\n');
+      return;
+    }
 
     for (let i = 0, j = 0; i < payloadLength; ++i, j = i % 4) {
       const shift = j === 3 ? 0 : (3 - j) << 3;
       const mask = (shift === 0 ? maskingKey : maskingKey >>> shift) & 0xff;
       const payloadByteMasked = buffer.readUInt8(currentOffset++);
+      /*                               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        TODO for larger payloads and/or fast rate of incoming frames I get this error
+        RangeError [ERR_OUT_OF_RANGE]: The value of "offset" is out of range. It must be >= 0 and <= 7. Received 8
+            at boundsError (internal/buffer.js:81:9)
+            at Buffer.readUInt8 (internal/buffer.js:247:5)
+            at getWebSocketFramePayload (...\server.js:213:40)
+
+        Similar problem here: https://stackoverflow.com/questions/61313134/native-websocket-api-nodejs-for-larger-messages
+       */
 
       payload.writeUInt8(mask ^ payloadByteMasked, i);
     }
@@ -192,6 +241,9 @@ const getWebSocketFramePayload = buffer => {
 // ---------------------------------------------------------
 
 const getSecWebSocketAccept = acceptKey => {
+  // WFT is this long GUID? Answer below ;)
+  // https://stackoverflow.com/questions/13456017
+
   return crypto
     .createHash('sha1')
     .update(acceptKey + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', 'binary')
