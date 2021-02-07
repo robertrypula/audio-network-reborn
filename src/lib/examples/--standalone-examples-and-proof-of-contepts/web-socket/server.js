@@ -1,8 +1,20 @@
 // Copyright (c) 2019-2021 Robert Rypuła - https://github.com/robertrypula
-// POC - binary broadcast WebSocket server
-//
-// Based on great article created by Srushtika Neelakantam:
-// https://medium.com/hackernoon/implementing-a-websocket-server-with-node-js-d9b78ec5ffa8
+
+/*
+  +--------------------------------------------------+
+  | Binary broadcast WebSocket server in pure NodeJs |
+  +--------------------------------------------------+
+
+  Based on great article created by Srushtika Neelakantam:
+  https://medium.com/hackernoon/implementing-a-websocket-server-with-node-js-d9b78ec5ffa8
+
+  Differences to the article:
+   - supports only binary frames (max payload length < 64 KiB)
+   - supports HTTPS/WSS
+   - WebSocket frames are parsed even if NodeJs buffer chunks are not aligned
+   - supports fragmented frames but message is split into smaller messages
+   - sends received data in the broadcast mode to all connected clients
+ */
 
 const http = require('http');
 const https = require('https');
@@ -114,30 +126,42 @@ server.on('upgrade', (req, socket) => {
     `Sec-WebSocket-Accept: ${getSecWebSocketAccept(req.headers['sec-websocket-key'])}`,
     `Sec-WebSocket-Protocol: audio-network-reborn`
   ];
+  let bufferToParse = Buffer.alloc(0);
 
   socket.on('data', buffer => {
-    const payloadReceived = getWebSocketFramePayload(buffer);
+    let parsedBuffer;
 
-    if (payloadReceived) {
-      connectedSockets = connectedSockets.filter(connectedSocket => connectedSocket.readyState === 'open');
+    bufferToParse = Buffer.concat([bufferToParse, buffer]);
 
-      console.log('[sending below buffer to ' + connectedSockets.length + ' active connection(s)]');
-      console.log(payloadReceived, '\n');
+    do {
+      parsedBuffer = getParsedBuffer(bufferToParse);
 
-      // broadcast payload everywhere (even to the sender)
-      connectedSockets.forEach(connectedSocket => {
-        connectedSocket.write(createWebSocketFrame(payloadReceived));
-      });
-    }
+      console.log(':: DEBUG - buffer | ' + buffer.length, ' | ', buffer, '\n');
+      console.log(':: DEBUG - bufferToParse | ' + bufferToParse.length, ' | ', bufferToParse, '\n');
+      console.log(':: DEBUG - parsedBuffer.payload | ' + (parsedBuffer.payload ? parsedBuffer.payload.length : '---'), ' | ', parsedBuffer.payload, '\n');
+      console.log(':: DEBUG - parsedBuffer.bufferRemainingBytes | ' + parsedBuffer.bufferRemainingBytes.length, ' | ', parsedBuffer.bufferRemainingBytes, '\n');
+
+      bufferToParse = parsedBuffer.bufferRemainingBytes;
+
+      if (parsedBuffer.payload) {
+        connectedSockets = connectedSockets.filter(connectedSocket => connectedSocket.readyState === 'open');
+
+        console.log('[sending payload to ' + connectedSockets.length + ' active connection(s)] ' + parsedBuffer.payload.length, ' | ', parsedBuffer.payload, '\n');
+
+        connectedSockets.forEach(connectedSocket => connectedSocket.write(createWebSocketFrame(parsedBuffer.payload)));
+      }
+    } while (parsedBuffer.payload && parsedBuffer.bufferRemainingBytes.length);
+
+    console.log('----------------------------------------------------------------\n');
   });
 
-  socket.on('close', () => console.log('socket close\n'));
-  socket.on('connect', () => console.log('socket connect\n'));
-  socket.on('drain', () => console.log('socket drain\n'));
-  socket.on('end', () => console.log('socket end\n'));
-  socket.on('ready', () => console.log('socket ready\n'));
-  socket.on('error', () => console.log('socket error\n'));
-  socket.on('timeout', () => console.log('socket timeout\n'));
+  socket.on('close', () => console.log('[socket close]\n'));
+  socket.on('connect', () => console.log('[socket connect]\n'));
+  socket.on('drain', () => console.log('[socket drain]\n'));
+  socket.on('end', () => console.log('[socket end]\n'));
+  socket.on('ready', () => console.log('[socket ready]\n'));
+  socket.on('error', () => console.log('[socket error]\n'));
+  socket.on('timeout', () => console.log('[socket timeout]\n'));
   socket.write(responseHeaders.join('\r\n') + '\r\n\r\n');
 
   console.log('[new connection]\n');
@@ -152,8 +176,8 @@ const createWebSocketFrame = payload => {
   const buffer = Buffer.alloc(2 + payloadLengthByteCount + payload.length);
   let payloadOffset = 2;
 
-  if (payload.length >= 65536) {
-    throw new Error('Payload bigger than 64 KiB is not supported');
+  if (payload.length >= Math.pow(2, 16)) {
+    throw new Error('Payload equal or bigger than 64 KiB is not supported');
   }
 
   buffer.writeUInt8(0b10000010, 0); // FIN flag = 1, opcode = 2 (binary frame)
@@ -171,71 +195,77 @@ const createWebSocketFrame = payload => {
 
 // ---------------------------------------------------------
 
-const getWebSocketFramePayload = buffer => {
-  const firstByte = buffer.readUInt8(0);
-  const secondByte = buffer.readUInt8(1);
-  const isFinalFrame = !!((firstByte >>> 7) & 0x1);
-  const opCode = firstByte & 0xf;
-  const isMasked = !!((secondByte >>> 7) & 0x1);
-  let payloadLength = secondByte & 0x7f;
-  let currentOffset = 2;
+const getParsedBuffer = buffer => {
+  let bufferRemainingBytes;
+  let currentOffset = 0;
   let maskingKey;
   let payload;
 
-  if (opCode !== 0x2) {
-    return; // frames other than binary are not processed
+  if (currentOffset + 2 > buffer.length) {
+    return { payload: null, bufferRemainingBytes: buffer };
   }
 
-  if (!isFinalFrame) {
-    throw new Error('Frames other than final is not supported');
+  const firstByte = buffer.readUInt8(currentOffset++);
+  const secondByte = buffer.readUInt8(currentOffset++);
+  const isFinalFrame = !!((firstByte >>> 7) & 0x1);
+  const opCode = firstByte & 0xf;
+  const isMasked = !!((secondByte >>> 7) & 0x1); // https://security.stackexchange.com/questions/113297
+  let payloadLength = secondByte & 0x7f;
+
+  if (!isFinalFrame && opCode !== 0x0) {
+    throw new Error('Invalid frame detected - when frame is not final then opcode should be always 0');
+  }
+
+  if (opCode !== 0x2 && opCode !== 0x0) {
+    throw new Error('Only binary and continuation frames are supported');
   }
 
   if (payloadLength > 125) {
     if (payloadLength === 126) {
+      if (currentOffset + 2 > buffer.length) {
+        return { payload: null, bufferRemainingBytes: buffer };
+      }
       payloadLength = buffer.readUInt16BE(currentOffset);
       currentOffset += 2;
     } else {
-      throw new Error('Payload bigger than 64 KiB is not supported');
+      throw new Error('Payload equal or bigger than 64 KiB is not supported');
     }
+  }
+
+  if (isMasked) {
+    if (currentOffset + 4 > buffer.length) {
+      return { payload: null, bufferRemainingBytes: buffer };
+    }
+    maskingKey = buffer.readUInt32BE(currentOffset);
+    currentOffset += 4;
+  }
+
+  if (currentOffset + payloadLength > buffer.length) {
+    console.log('[misalignment between WebSocket frame and NodeJs Buffer]\n');
+    return { payload: null, bufferRemainingBytes: buffer };
   }
 
   payload = Buffer.alloc(payloadLength);
 
   if (isMasked) {
-    // Why we need masking explained here:
-    // https://security.stackexchange.com/questions/113297
-    maskingKey = buffer.readUInt32BE(currentOffset);
-    currentOffset += 4;
-
-    if (buffer.length !== currentOffset + payloadLength) {
-      // TODO implement better solution - this 'solves' RangeError [ERR_OUT_OF_RANGE] issue described below
-      console.log('\n');
-      console.log('    [BIG ISSUE OCCURRED - length misalignment between WebSocket frame and NodeJs Buffer!!!!!]\n');
-      console.log('\n');
-      return;
-    }
-
     for (let i = 0, j = 0; i < payloadLength; ++i, j = i % 4) {
       const shift = j === 3 ? 0 : (3 - j) << 3;
       const mask = (shift === 0 ? maskingKey : maskingKey >>> shift) & 0xff;
-      const payloadByteMasked = buffer.readUInt8(currentOffset++);
-      /*                               ^^^^^^^^^^^^^^^^^^^^^^^^^^
-        TODO for larger payloads and/or fast rate of incoming frames I get this error
-        RangeError [ERR_OUT_OF_RANGE]: The value of "offset" is out of range. It must be >= 0 and <= 7. Received 8
-            at boundsError (internal/buffer.js:81:9)
-            at Buffer.readUInt8 (internal/buffer.js:247:5)
-            at getWebSocketFramePayload (...\server.js:213:40)
 
-        Similar problem here: https://stackoverflow.com/questions/61313134/native-websocket-api-nodejs-for-larger-messages
-       */
-
-      payload.writeUInt8(mask ^ payloadByteMasked, i);
+      payload.writeUInt8(mask ^ buffer.readUInt8(currentOffset++), i);
     }
   } else {
-    buffer.copy(payload, 0, currentOffset++);
+    for (let i = 0; i < payloadLength; i++) {
+      payload.writeUInt8(buffer.readUInt8(currentOffset++), i);
+    }
   }
 
-  return payload;
+  bufferRemainingBytes = Buffer.alloc(buffer.length - currentOffset);
+  for (let i = 0; i < bufferRemainingBytes.length; i++) {
+    bufferRemainingBytes.writeUInt8(buffer.readUInt8(currentOffset++), i);
+  }
+
+  return { payload, bufferRemainingBytes };
 };
 
 // ---------------------------------------------------------
