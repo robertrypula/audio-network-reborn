@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebSocket client</title>
+
+    <script>
+      let webSocket;
+
+      const send = () => {
+        if (!webSocket || webSocket.readyState !== WebSocket.OPEN || webSocket.bufferedAmount) {
+          return false;
+        }
+
+        const bytesRaw = document
+          .getElementById('send')
+          .value.split(' ')
+          .filter(value => value !== '')
+          .map(value => parseInt(value, 16) % 256)
+          .filter(value => value || value === 0);
+
+        const arrayBuffer = new Uint8Array(bytesRaw).buffer;
+
+        webSocket.send(arrayBuffer);
+
+        return true;
+      };
+
+      const connect = (url) => {
+        document.getElementById('container-connect').style.display = 'none';
+        document.getElementById('container-send').style.display = 'block';
+
+        try {
+          webSocket = new WebSocket(url, ['audio-network-reborn']);
+
+          webSocket.binaryType = 'arraybuffer';
+          webSocket.addEventListener('open', () => console.log('webSocket open'));
+          webSocket.addEventListener('close', () => console.log('webSocket close'));
+          webSocket.addEventListener('error', event => console.log('webSocket error', event));
+
+          webSocket.addEventListener('message', event => {
+            const rawBytes = [...new Uint8Array(event.data)];
+            const logElement = document.getElementById('log');
+            const logLine = rawBytes.map(rawByte => (rawByte < 16 ? '0' : '') + rawByte.toString(16)).join(' ');
+
+            logElement.innerHTML = logElement.innerHTML + '\n' + logLine;
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <div id="container-connect">
+      <input type="text" id="url" value="ws://51.83.135.17:5612" />
+      <button onClick="connect(document.getElementById('url').value)">Connect</button>
+    </div>
+
+    <div id="container-send" style="display: none">
+      <input type="text" id="send" value="61 75 64 69 6f 20 6e 65 74 77 6f 72 6b 20 72 65 62 6f 72 6e" style="width: 400px" />
+      <button onClick="send()">Send</button>
+
+      <pre id="log"></pre>
+    </div>
+  </body>
+</html>

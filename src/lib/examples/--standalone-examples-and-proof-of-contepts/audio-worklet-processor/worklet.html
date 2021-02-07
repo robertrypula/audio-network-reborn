@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AudioNetworkReborn - AudioWorklet POC</title>
+
+    <style>
+      canvas {
+        outline: 1px solid lightgray;
+        display: block;
+      }
+    </style>
+
+    <script>
+      /*
+      export const ease = (min, max, unitPosition) => {
+        return min + (max - min) * 0.5 * (Math.sin(unitPosition * Math.PI - 0.5 * Math.PI) + 1.0);
+      };
+
+      if (outputChannel0) {
+        const renderingQuantum = outputChannel0.length;
+
+        for (let i = 0; i < outputChannel0.length; i++) {
+          let amplitude = 1;
+
+          if (this.state < 4) {
+            amplitude = ease(0, 1, this.state * 0.25 + i / ((renderingQuantum - 1) * 4));
+          } else if (this.state >= 196) {
+            amplitude = ease(1, 0, (this.state - 196) * 0.25 + i / ((renderingQuantum - 1) * 4));
+          }
+
+          let sin;
+
+          if (this.lookUpDone[this.frequency] === true) {
+            sin = this.lookUp[this.frequency][i];
+            // console.log('from lookup');
+          } else {
+            sin = Math.sin(this.omega * i);
+
+            if (!this.lookUp[this.frequency]) {
+              this.lookUp[this.frequency] = [];
+            }
+            this.lookUp[this.frequency].push(sin);
+            if (this.lookUp[this.frequency].length === renderingQuantum) {
+              this.lookUpDone[this.frequency] = true;
+            }
+          }
+
+          sin = this.useLookup ? sin : Math.sin(this.omega * i);
+
+          outputChannel0[i] = amplitude * sin;
+        }
+      }
+
+      if (this.state === 199) {
+        if (this.frequency > 10000) {
+          this.setFrequency(750);
+        } else {
+          this.setFrequency(this.frequency * 2);
+        }
+      }
+
+      if (this.state === 190) {
+        this.port.postMessage('quantum: ' + outputChannel0.length);
+      }
+
+      this.state = (this.state + 1) % 200;
+        // setFrequency(frequency) {
+  //   this.frequency = frequency;
+  //   this.omega = (this.frequency * 2 * Math.PI) / sampleRate;
+  // }
+      */
+
+      let audioContext;
+      let audioNetworkRebornAudioWorkletNode;
+      let microphoneMediaStream;
+      let microphoneNode;
+
+      let outputSamplesSize;
+      let outputSamplesBuffer;
+      let outputSamples;
+      let outputSamplesCurrentIndex;
+
+      let ctxRx;
+
+      const main = () => {
+        ctxRx = getConfiguredCanvasContext('rx', 24000, 512);
+
+        audioContext = new AudioContext();
+        audioContext.audioWorklet.addModule('worklet.js').then(() => {
+          audioNetworkRebornAudioWorkletNode = new AudioWorkletNode(
+            audioContext,
+            'audio-network-reborn-audio-worklet-processor'
+          );
+
+          audioNetworkRebornAudioWorkletNode.port.onmessage = event => {
+            if ((event.data + '').indexOf('quantum') === 0) {
+              document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '\n' + event.data;
+            } else {
+              try {
+                console.log('MAIN onmessage, length: ', event.data);
+                let array = new Float32Array(event.data);
+                drawTimeDomainData(ctxRx, array);
+
+                delete array;
+                delete event.data;
+              } catch (e) {
+                console.log(e);
+              }
+            }
+          };
+        });
+      };
+
+      const inputEnable = () => {
+        connectMicrophoneTo(audioNetworkRebornAudioWorkletNode);
+      };
+
+      const inputDisable = () => {
+        if (microphoneNode) {
+          microphoneNode.disconnect(this.audioNetworkRebornAudioWorkletNode);
+          microphoneNode = null;
+        }
+
+        if (microphoneMediaStream) {
+          microphoneMediaStream.getTracks().forEach(track => track.stop());
+          microphoneMediaStream = null;
+        }
+      };
+
+      const outputEnable = () => {
+        audioNetworkRebornAudioWorkletNode.connect(audioContext.destination);
+      };
+
+      const outputDisable = () => {
+        audioNetworkRebornAudioWorkletNode.disconnect(audioContext.destination);
+      };
+
+      const sendAudio = () => {
+        const duration = 0.75;
+        const frequency = 500;
+        const omega = (frequency * 2 * Math.PI) / audioContext.sampleRate;
+
+        outputSamplesSize = audioContext.sampleRate * duration;
+        outputSamplesBuffer = new ArrayBuffer(outputSamplesSize * 4);
+        outputSamples = new Float32Array(outputSamplesBuffer);
+        outputSamplesCurrentIndex = 0;
+
+        for (let i = 0; i < outputSamplesSize; i++) {
+          outputSamples[i] = Math.sin((Math.floor(i / 4000) % 2 === 0 ? omega : omega * 6) * i);
+          outputSamplesCurrentIndex++;
+        }
+
+        console.log('BEFORE', outputSamples.length);
+        audioNetworkRebornAudioWorkletNode.port.postMessage(outputSamplesBuffer, [outputSamplesBuffer]);
+        console.log('AFTER', outputSamples.length);
+      };
+
+      const receiveAudio = () => {
+        audioNetworkRebornAudioWorkletNode.port.postMessage(
+          'requestInputSamples|' +
+            document.getElementById('rxFftSize').value +
+            '|' +
+            document.getElementById('rxIntervalMilliseconds').value
+        );
+      };
+
+      // -----------------------------------------------------------------------------
+
+      const connectMicrophoneTo = node => {
+        navigator.mediaDevices
+          .getUserMedia({ audio: true, video: false })
+          .then(mediaStream => {
+            microphoneMediaStream = mediaStream;
+            microphoneNode = audioContext.createMediaStreamSource(mediaStream);
+            microphoneNode.connect(node);
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      };
+
+      // -----------------------------------------------------------------------------
+
+      let sinArray = [];
+      const speedTest = (frequency = 1500, sampleRate = 48000) => {
+        const begin = performance.now();
+        const omega = (frequency * 2 * Math.PI) / sampleRate;
+        let sum = 0;
+
+        sinArray = [];
+        for (let i = 0; i < sampleRate; i++) {
+          let sin = Math.sin(omega * i);
+          sinArray.push(sin);
+          sum += sin;
+        }
+
+        alert((performance.now() - begin).toFixed(2) + ' ms  | ' + sum);
+      };
+      // ----------------------------------------------------------------------------
+
+
+
+      // -----------------------------------------------------------------------
+      // canvas 2d context
+
+      const MAX_WIDTH = 24000;
+      const CANVAS_HEIGHT = 512;
+      const DECIBEL_MIN = -100;
+
+      function clear(ctx) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      }
+
+      function drawLine(ctx, x1, y1, x2, y2) {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.closePath();
+        ctx.stroke();
+      }
+
+      function getConfiguredCanvasContext(elementId, width, height) {
+        let element, ctx;
+
+        element = document.getElementById(elementId);
+        element.width = Math.min(MAX_WIDTH, width);
+        element.height = height;
+        ctx = element.getContext('2d');
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'black';
+
+        return ctx;
+      }
+
+      function drawTimeDomainData(ctx, data) {
+        let limit, hMid, x, y1, y2;
+        let max = 0;
+
+        clear(ctx);
+
+        limit = Math.min(MAX_WIDTH, data.length);
+        hMid = Math.floor(0.5 * CANVAS_HEIGHT);
+
+        for (x = 0; x < limit; x++) {
+          max = Math.max(Math.abs(data[x]), max);
+        }
+
+        for (x = 0; x < limit - 1; x++) {
+          y1 = hMid * (1 - 0.95 * data[x] / max);
+          y2 = hMid * (1 - 0.95 * data[x + 1] / max);
+          drawLine(ctx, x, y1, x + 1, y2);
+        }
+      }
+
+      function drawFrequencyDomainData(ctx, data) {
+        let limit, hMaxPix, x, y1, y2;
+
+        clear(ctx);
+
+        hMaxPix = CANVAS_HEIGHT - 1;
+        limit = Math.min(MAX_WIDTH, data.length);
+        for (x = 0; x < limit - 1; x++) {
+          y1 = hMaxPix * (data[x] / DECIBEL_MIN);
+          y2 = hMaxPix * (data[x + 1] / DECIBEL_MIN);
+          drawLine(ctx, x, y1, x + 1, y2);
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <button onClick="main()">main</button>
+
+    <div>
+      <button onClick="inputEnable()">input enable</button>
+      <button onClick="inputDisable()">input disable</button>
+
+      <button onClick="outputEnable()">output enable</button>
+      <button onClick="outputDisable()">output disable</button>
+    </div>
+
+    <div>
+      <button onClick="sendAudio()">send audio</button>
+      <input id="txIntervalMilliseconds" type="number" value="200" />
+      <input id="txFrequencies" type="text" value="1000,2000,3000,17000,18000,19000" style="width: 700px;" />
+    </div>
+
+    <div>
+      <button onClick="receiveAudio()">receive audio</button>
+      <input id="rxIntervalMilliseconds" type="number" value="100" />
+      <input id="rxFftSize" type="number" value="24000" />
+      <pre id="rx-log"></pre>
+    </div>
+
+    <div>
+      <button onClick="speedTest()">Speed test</button>
+    </div>
+
+    <div>
+      <pre id="log"></pre>
+    </div>
+
+    <canvas id="tx"></canvas>
+    <canvas id="rx"></canvas>
+  </body>
+</html>

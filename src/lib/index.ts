@@ -120,13 +120,15 @@ TODO finalized:
 TODO current
   + clean the safeMarginFactor logic and parameters (they were not understandable even by me after few months...)
 
-  - check visualizeUnifiedFrequencies if this is really producing proper frequencies
+  + check visualizeUnifiedFrequencies if this is really producing proper frequencies
   - remove clicking sound (maybe linearRampToValueAtTime will do the trick)
     https://stackoverflow.com/a/48467308
     https://webaudiotech.com/2017/02/27/stopping-a-web-audio-oscillator-at-cycle-completion/
   - experiment with a bit higher safeMarginFactor
+  - maybe introduce SuperSlim band (fftSize = 16384, bandwidth = 750 Hz)
   - performance checker (log entire RX/TX loop time)
   - performance checker (store previous getFrequencyData array and compare with current) + example
+  - visual guide for all DspModes
 
   - fix hex-bytes-simple.ts example as it doesn't use DataLinkLayerWrapper
   - update README: add example
